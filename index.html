@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OTFTCHCK</title>
+<title>Lucas Dantan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
@@ -36,9 +36,7 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-/* ════════════════════════════════
-   SIDEBAR — fixed left panel
-════════════════════════════════ */
+/* ── SIDEBAR ── */
 #sidebar {
   position: fixed;
   top: 0; left: 0; bottom: 0;
@@ -52,7 +50,6 @@ body {
   background: var(--bg);
   transition: background 0.3s, border-color 0.3s;
 }
-
 .sidebar-logo {
   font-size: 13px;
   font-weight: 700;
@@ -63,7 +60,6 @@ body {
   display: block;
   margin-bottom: 3rem;
 }
-
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -86,7 +82,6 @@ body {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-
 .sidebar-bottom {
   display: flex;
   align-items: center;
@@ -110,44 +105,33 @@ body {
 }
 .sidebar-bottom:hover .skin-label { color: var(--fg); }
 
-/* ════════════════════════════════
-   MAIN
-════════════════════════════════ */
-#main {
-  margin-left: var(--sidebar-w);
-  min-height: 100vh;
-}
-
+/* ── MAIN ── */
+#main { margin-left: var(--sidebar-w); min-height: 100vh; }
 .view { display: none; }
 .view.active { display: block; }
 
 /* ════════════════════════════════
-   HOMEPAGE — 3-col masonry grid
-   Title fades in on hover (info-on-hover)
+   PORTFOLIO HOME
+   3-col masonry, title on hover
 ════════════════════════════════ */
 #portfolio-grid {
   columns: 3;
   column-gap: var(--gap);
   padding: var(--gap);
 }
-
 .portfolio-card {
   break-inside: avoid;
   margin-bottom: var(--gap);
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  display: block;
 }
-
 .portfolio-card img {
   width: 100%;
   height: auto;
   display: block;
   transition: opacity 0.4s;
 }
-
-/* Dark overlay + title, hidden by default, fades in on hover */
 .portfolio-card-overlay {
   position: absolute;
   inset: 0;
@@ -157,26 +141,18 @@ body {
   align-items: flex-end;
   padding: 14px;
 }
-.portfolio-card:hover .portfolio-card-overlay {
-  background: rgba(0,0,0,0.38);
-}
-
+.portfolio-card:hover .portfolio-card-overlay { background: rgba(0,0,0,0.38); }
 .portfolio-card-title {
   font-size: clamp(1rem, 1.8vw, 1.5rem);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.02em;
-  color: #ffffff;
+  color: #fff;
   opacity: 0;
   transform: translateY(6px);
   transition: opacity 0.35s, transform 0.35s;
 }
-.portfolio-card:hover .portfolio-card-title {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Placeholder when no cover photo yet */
+.portfolio-card:hover .portfolio-card-title { opacity: 1; transform: none; }
 .cover-placeholder {
   width: 100%;
   aspect-ratio: 3/4;
@@ -194,16 +170,13 @@ body {
 [data-theme="dark"] .cover-placeholder { background: #1a1a1a; color: #444; }
 
 /* ════════════════════════════════
-   SERIES DETAIL — 3-col masonry
-   Title fixed bottom-left while scrolling
+   SERIES DETAIL PAGE
+   Left: photo grid | Right: title + text
+   Exactly like YUKSEK's layout
 ════════════════════════════════ */
-#view-project { position: relative; }
+#view-project { min-height: 100vh; }
 
 .detail-back {
-  position: fixed;
-  top: 1.5rem;
-  left: calc(var(--sidebar-w) + 1.5rem);
-  z-index: 150;
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -216,62 +189,75 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0;
+  padding: 1.5rem 2rem;
 }
 .detail-back::before { content: '←'; }
 .detail-back:hover { color: var(--fg); }
 
-/* Series title — fixed bottom-left over the photo grid */
-.detail-title-fixed {
-  position: fixed;
-  bottom: 2rem;
-  left: calc(var(--sidebar-w) + 1.5rem);
-  z-index: 150;
-  pointer-events: none;
-  max-width: 420px;
-}
-.detail-title-fixed h1 {
-  font-size: clamp(2rem, 4.5vw, 4rem);
-  font-weight: 700;
-  line-height: 1.0;
-  letter-spacing: -0.03em;
-  color: var(--fg);
+/* Two-column layout */
+.detail-inner {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  min-height: calc(100vh - 60px);
+  align-items: start;
 }
 
-/* Photo masonry inside series */
-#series-photos {
-  columns: 3;
-  column-gap: var(--gap);
+/* LEFT: photo grid — 2 columns of full photos, no cropping */
+.detail-photos-col {
+  padding: 0 0 4rem 0;
+}
+.photo-small-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
   padding: var(--gap);
-  padding-top: 3.5rem; /* space for back button */
 }
-
-.series-photo-item {
-  break-inside: avoid;
-  margin-bottom: var(--gap);
-  overflow: hidden;
+.photo-small-item {
   cursor: pointer;
-  display: block;
+  overflow: hidden;
   position: relative;
 }
-.series-photo-item img {
+.photo-small-item img {
   width: 100%;
-  height: auto;
+  height: auto; /* always fully shown, never cropped */
   display: block;
   transition: opacity 0.3s;
 }
-.series-photo-item:hover img { opacity: 0.85; }
+.photo-small-item:hover img { opacity: 0.82; }
 
 .no-photos {
-  padding: 5rem 2rem;
+  padding: 4rem 2rem;
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
+/* RIGHT: sticky title + description */
+.detail-info-col {
+  position: sticky;
+  top: 0;
+  padding: 2rem 2.5rem 3rem;
+  border-left: 1px solid var(--border);
+  min-height: 100vh;
+}
+.detail-series-title {
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-bottom: 2rem;
+}
+.detail-series-desc {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--muted);
+  font-weight: 300;
+}
+
 /* ════════════════════════════════
-   LIGHTBOX
+   FULLSCREEN LIGHTBOX
+   Click photo → opens full screen
 ════════════════════════════════ */
 #lightbox {
   display: none;
@@ -333,8 +319,7 @@ body {
 /* ════════════════════════════════
    ABOUT
 ════════════════════════════════ */
-#view-about { padding: 3rem 3rem 8rem; }
-
+#view-about { padding: 3rem; }
 .about-back {
   font-size: 11px;
   letter-spacing: 0.12em;
@@ -352,7 +337,6 @@ body {
 }
 .about-back::before { content: '←'; }
 .about-back:hover { color: var(--fg); }
-
 .about-inner { max-width: 580px; }
 .about-name {
   font-size: clamp(2rem, 4vw, 3rem);
@@ -361,12 +345,7 @@ body {
   margin-bottom: 2.5rem;
   letter-spacing: -0.02em;
 }
-.about-bio {
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.85;
-  margin-bottom: 1.25rem;
-}
+.about-bio { color: var(--muted); font-size: 15px; line-height: 1.85; margin-bottom: 1.25rem; }
 .about-bio strong { color: var(--fg); font-weight: 400; }
 .about-links { margin-top: 3rem; }
 .about-row {
@@ -383,22 +362,27 @@ body {
 .about-row a { transition: opacity 0.2s; }
 .about-row a:hover { opacity: 0.45; }
 
-/* ════════════════════════════════
-   MOBILE
-════════════════════════════════ */
+/* ── MOBILE ── */
+@media (max-width: 1024px) {
+  .detail-inner { grid-template-columns: 1fr; }
+  .detail-info-col {
+    position: static;
+    min-height: auto;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+  }
+}
 @media (max-width: 900px) {
-  #portfolio-grid, #series-photos { columns: 2; }
+  #portfolio-grid { columns: 2; }
 }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
   #sidebar {
-    width: 100%;
-    height: 52px;
-    flex-direction: row;
-    align-items: center;
+    width: 100%; height: 52px;
+    flex-direction: row; align-items: center;
     padding: 0 1rem;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
+    border-right: none; border-bottom: 1px solid var(--border);
     bottom: auto;
   }
   .sidebar-logo { margin-bottom: 0; font-size: 11px; }
@@ -407,24 +391,21 @@ body {
   .skin-label { display: none; }
   .skin-icon { width: 24px; height: 24px; }
   #main { margin-left: 0; padding-top: 52px; }
-  #portfolio-grid, #series-photos { columns: 2; }
-  .detail-title-fixed { display: none; }
-  .detail-back { position: static; padding: 1rem 1rem 0.5rem; display: flex; }
-  #series-photos { padding-top: var(--gap); }
-  #view-about { padding: 2rem 1.5rem 6rem; }
+  #portfolio-grid { columns: 1; }
+  .photo-small-grid { grid-template-columns: 1fr; }
+  #view-about { padding: 1.5rem; }
 }
 @media (max-width: 480px) {
-  #portfolio-grid, #series-photos { columns: 1; }
+  .photo-small-grid { grid-template-columns: 1fr; }
 }
 
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside id="sidebar">
   <div>
-    <span class="sidebar-logo" onclick="showView('portfolio')">OTFTCHCK<br>through the eyes of</span>
+    <span class="sidebar-logo" onclick="showView('portfolio')">Lucas Dantan<br>Photography</span>
     <nav class="sidebar-nav">
       <span onclick="showView('portfolio')" id="nav-portfolio" class="active">Portfolio</span>
       <span onclick="showView('about')"     id="nav-about">Infos</span>
@@ -438,23 +419,32 @@ body {
 
 <div id="main">
 
-  <!-- ══ PORTFOLIO HOME ══ -->
+  <!-- PORTFOLIO HOME -->
   <div class="view active" id="view-portfolio">
     <div id="portfolio-grid"></div>
   </div>
 
-  <!-- ══ SERIES DETAIL ══ -->
+  <!-- SERIES DETAIL -->
   <div class="view" id="view-project">
     <button class="detail-back" onclick="showView('portfolio')">All work</button>
-    <div class="detail-title-fixed"><h1 id="detail-title"></h1></div>
-    <div id="series-photos"></div>
+    <div class="detail-inner">
+      <!-- LEFT: photos -->
+      <div class="detail-photos-col">
+        <div class="photo-small-grid" id="series-photos"></div>
+      </div>
+      <!-- RIGHT: title + description -->
+      <div class="detail-info-col">
+        <h1 class="detail-series-title" id="detail-title"></h1>
+        <p class="detail-series-desc" id="detail-desc"></p>
+      </div>
+    </div>
   </div>
 
-  <!-- ══ ABOUT ══ -->
+  <!-- ABOUT -->
   <div class="view" id="view-about">
     <button class="about-back" onclick="showView('portfolio')">All work</button>
     <div class="about-inner">
-      <h1 class="about-name">OTFTCHCK</h1>
+      <h1 class="about-name">Lucas Dantan</h1>
       <p class="about-bio">Write a short bio here — who you are, where you're based, and what drives your work.</p>
       <p class="about-bio"><strong>Your photography style or approach.</strong> Available for commissions and editorial work.</p>
       <div class="about-links">
@@ -478,13 +468,15 @@ body {
 
 <script>
 
-// ═══════════════════════════════════════════════
-//  YOUR SERIES — edit titles and add photo URLs
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  YOUR SERIES — edit titles, descriptions,
+//  cover photos and photo URLs here
+// ═══════════════════════════════════════════
 
 const SERIES = [
   {
     title: "Un bout d'été en Tunisie 🐚",
+    description: "Add a description of this series here — what it's about, where it was shot, what drove you to make it.",
     cover: "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2719_gclk2x.jpg",
     photos: [
       "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498276/IMG_2738_m0q4vc.jpg",
@@ -495,18 +487,17 @@ const SERIES = [
       "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2812_pwyvof.jpg"
     ]
   },
-  { title: "Series Title Two",   cover: null, photos: [] },
-  { title: "Series Title Three", cover: null, photos: [] },
-  { title: "Series Title Four",  cover: null, photos: [] },
-  { title: "Series Title Five",  cover: null, photos: [] },
-  { title: "Series Title Six",   cover: null, photos: [] }
+  { title: "Series Title Two",   description: "Description for series two.", cover: null, photos: [] },
+  { title: "Series Title Three", description: "Description for series three.", cover: null, photos: [] },
+  { title: "Series Title Four",  description: "Description for series four.", cover: null, photos: [] },
+  { title: "Series Title Five",  description: "Description for series five.", cover: null, photos: [] },
+  { title: "Series Title Six",   description: "Description for series six.", cover: null, photos: [] }
 ];
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════
 
 const PH_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
 
-// Build homepage masonry grid
 function buildPortfolioGrid() {
   const grid = document.getElementById('portfolio-grid');
   grid.innerHTML = SERIES.map((s, i) => {
@@ -523,34 +514,32 @@ function buildPortfolioGrid() {
   }).join('');
 }
 
-// Open a series
 let currentPhotos = [];
 let currentLbIndex = 0;
 
 function openSeries(i) {
   const s = SERIES[i];
   document.getElementById('detail-title').textContent = s.title;
+  document.getElementById('detail-desc').textContent = s.description || '';
   currentPhotos = s.photos;
-  buildSeriesGrid(s.photos);
+  buildSeriesPhotos(s.photos);
   showView('project');
 }
 
-// Build series photo masonry
-function buildSeriesGrid(photos) {
-  const container = document.getElementById('series-photos');
-  container.innerHTML = '';
+function buildSeriesPhotos(photos) {
+  const grid = document.getElementById('series-photos');
+  grid.innerHTML = '';
   if (!photos.length) {
-    container.innerHTML = `<p class="no-photos">No photos added yet</p>`;
+    grid.innerHTML = `<p class="no-photos">No photos added yet</p>`;
     return;
   }
-  container.innerHTML = photos.map((url, idx) => `
-    <div class="series-photo-item" onclick="openLightbox(${idx})">
+  grid.innerHTML = photos.map((url, idx) => `
+    <div class="photo-small-item" onclick="openLightbox(${idx})">
       <img src="${url}" alt="" loading="lazy">
     </div>`
   ).join('');
 }
 
-// Lightbox
 function openLightbox(index) {
   currentLbIndex = index;
   updateLightbox();
@@ -580,7 +569,6 @@ document.getElementById('lightbox').addEventListener('click', e => {
   if (e.target.id === 'lightbox') closeLightbox();
 });
 
-// View switching
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
@@ -590,7 +578,6 @@ function showView(name) {
   if (el) el.classList.add('active');
 }
 
-// Theme toggle
 function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
