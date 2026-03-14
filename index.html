@@ -15,13 +15,13 @@ a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 
 :root {
-  --bg:          #ffffff;
-  --fg:          #0a0a0a;
-  --muted:       #999;
-  --border:      #e8e8e8;
-  --nav-h:       60px;
-  --font-serif:  'EB Garamond', Georgia, serif;
-  --font-sans:   'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --bg:         #ffffff;
+  --fg:         #0a0a0a;
+  --muted:      #999;
+  --border:     #e8e8e8;
+  --nav-h:      60px;
+  --font-serif: 'EB Garamond', Georgia, serif;
+  --font-sans:  'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 [data-theme="dark"] {
   --bg:    #0f0f0f;
@@ -40,7 +40,7 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-/* ── NAV ── */
+/* NAV */
 nav {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -54,7 +54,6 @@ nav {
   padding: 0 2rem;
   transition: background 0.3s, border-color 0.3s;
 }
-
 .nav-logo {
   font-family: var(--font-sans);
   font-size: 13px;
@@ -63,13 +62,11 @@ nav {
   text-transform: uppercase;
   cursor: pointer;
 }
-
 .nav-links {
   display: flex;
   align-items: center;
   gap: 2rem;
 }
-
 .nav-links a, .nav-links span {
   font-size: 12px;
   letter-spacing: 0.1em;
@@ -79,7 +76,6 @@ nav {
   transition: opacity 0.2s;
 }
 .nav-links a:hover, .nav-links span:hover { opacity: 0.5; }
-
 .nav-skin {
   font-size: 11px;
   letter-spacing: 0.1em;
@@ -94,33 +90,31 @@ nav {
 }
 .nav-skin:hover { color: var(--fg); }
 
-/* ── VIEWS ── */
+/* VIEWS */
 main { padding-top: var(--nav-h); }
 .view { display: none; }
 .view.active { display: block; }
 
-/* ── PORTFOLIO LIST ── */
+/* PORTFOLIO LIST */
 #series-list {
   max-width: 900px;
   margin: 0 auto;
   padding: 3rem 2rem 6rem;
 }
-
 .project-item {
   margin-bottom: 5rem;
   cursor: pointer;
 }
-
 .project-cover {
   width: 100%;
   overflow: hidden;
-  display: block;
   margin-bottom: 1rem;
 }
-
 .project-cover img {
   width: 100%;
   display: block;
+  /* no fixed aspect-ratio here — image shows in its natural shape */
+  height: auto;
   transition: opacity 0.3s;
 }
 .project-item:hover .project-cover img { opacity: 0.88; }
@@ -128,15 +122,16 @@ main { padding-top: var(--nav-h); }
 .cover-placeholder {
   width: 100%;
   aspect-ratio: 3/2;
-  background: #e8e6e0;
+  background: #ece9e3;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #aaa;
+  color: #bbb;
   gap: 8px;
+  flex-direction: column;
 }
 [data-theme="dark"] .cover-placeholder { background: #1a1a1a; color: #444; }
 
@@ -149,17 +144,15 @@ main { padding-top: var(--nav-h); }
   letter-spacing: -0.01em;
   transition: opacity 0.2s;
 }
-.project-item:hover .project-title { opacity: 0.5; }
+.project-item:hover .project-title { opacity: 0.45; }
 
-/* ── PROJECT DETAIL ── */
+/* PROJECT DETAIL */
 #view-project { min-height: 100vh; }
-
 .detail-nav {
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem 2rem 0;
 }
-
 .back-btn {
   font-size: 11px;
   letter-spacing: 0.12em;
@@ -192,7 +185,7 @@ main { padding-top: var(--nav-h); }
   letter-spacing: -0.02em;
 }
 
-/* Photos inside series — full width, stacked */
+/* PHOTO GRID — natural aspect ratios */
 .detail-photos {
   max-width: 900px;
   margin: 0 auto;
@@ -202,6 +195,7 @@ main { padding-top: var(--nav-h); }
   gap: 0.75rem;
 }
 
+/* Full-width row */
 .photo-row-full {
   width: 100%;
   overflow: hidden;
@@ -209,15 +203,18 @@ main { padding-top: var(--nav-h); }
 }
 .photo-row-full img {
   width: 100%;
+  height: auto;        /* natural height — no cropping */
   display: block;
   transition: opacity 0.3s;
 }
 .photo-row-full:hover img { opacity: 0.88; }
 
+/* Side-by-side row — images show natural ratio, aligned top */
 .photo-row-half {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
+  align-items: start;  /* so portrait and landscape don't stretch each other */
 }
 .photo-half-cell {
   overflow: hidden;
@@ -225,9 +222,8 @@ main { padding-top: var(--nav-h); }
 }
 .photo-half-cell img {
   width: 100%;
+  height: auto;        /* natural height — no forced cropping */
   display: block;
-  aspect-ratio: 3/2;
-  object-fit: cover;
   transition: opacity 0.3s;
 }
 .photo-half-cell:hover img { opacity: 0.88; }
@@ -240,7 +236,7 @@ main { padding-top: var(--nav-h); }
   color: var(--muted);
 }
 
-/* ── LIGHTBOX ── */
+/* LIGHTBOX */
 #lightbox {
   display: none;
   position: fixed;
@@ -298,7 +294,7 @@ main { padding-top: var(--nav-h); }
   letter-spacing: 0.15em;
 }
 
-/* ── ABOUT ── */
+/* ABOUT */
 .about-wrap {
   max-width: 640px;
   margin: 0 auto;
@@ -333,11 +329,11 @@ main { padding-top: var(--nav-h); }
 .about-row a { transition: opacity 0.2s; }
 .about-row a:hover { opacity: 0.45; }
 
-/* ── FOOTER ── */
+/* FOOTER */
 .site-footer {
   max-width: 900px;
   margin: 0 auto;
-  padding: 2rem 2rem;
+  padding: 2rem;
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
@@ -345,8 +341,8 @@ main { padding-top: var(--nav-h); }
   letter-spacing: 0.08em;
   color: var(--muted);
 }
-.site-footer a { transition: opacity 0.2s; }
-.site-footer a:hover { opacity: 0.5; }
+.site-footer a, .site-footer span[onclick] { transition: opacity 0.2s; cursor: pointer; }
+.site-footer a:hover, .site-footer span[onclick]:hover { opacity: 0.5; }
 
 @media (max-width: 600px) {
   .nav-links .hide-mobile { display: none; }
@@ -359,19 +355,17 @@ main { padding-top: var(--nav-h); }
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <span class="nav-logo" onclick="showView('portfolio')">Your Name</span>
   <div class="nav-links">
     <span onclick="showView('portfolio')">Portfolio</span>
     <span onclick="showView('about')" class="hide-mobile">Infos</span>
-    <button class="nav-skin" onclick="toggleTheme()" id="skinBtn">Change skin</button>
+    <button class="nav-skin" onclick="toggleTheme()">Change skin</button>
   </div>
 </nav>
 
 <main>
 
-  <!-- PORTFOLIO -->
   <div class="view active" id="view-portfolio">
     <div id="series-list"></div>
     <footer class="site-footer">
@@ -380,7 +374,6 @@ main { padding-top: var(--nav-h); }
     </footer>
   </div>
 
-  <!-- PROJECT DETAIL -->
   <div class="view" id="view-project">
     <div class="detail-nav">
       <button class="back-btn" onclick="showView('portfolio')">All work</button>
@@ -391,11 +384,10 @@ main { padding-top: var(--nav-h); }
     <div class="detail-photos" id="detail-photos"></div>
     <footer class="site-footer">
       <span>© 2025 Your Name</span>
-      <span onclick="showView('portfolio')" style="cursor:pointer">← All work</span>
+      <span onclick="showView('portfolio')">← All work</span>
     </footer>
   </div>
 
-  <!-- ABOUT -->
   <div class="view" id="view-about">
     <div class="detail-nav">
       <button class="back-btn" onclick="showView('portfolio')">All work</button>
@@ -427,7 +419,6 @@ main { padding-top: var(--nav-h); }
 
 </main>
 
-<!-- LIGHTBOX -->
 <div id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">Close ✕</button>
   <button class="lb-arrow lb-prev" onclick="lbMove(-1)">← Prev</button>
@@ -472,7 +463,7 @@ function buildList() {
   list.innerHTML = SERIES.map((s, i) => {
     const coverHtml = s.cover
       ? `<img src="${s.cover}" alt="${s.title}" loading="lazy">`
-      : `<div class="cover-placeholder">${PH_ICON} Add cover photo</div>`;
+      : `<div class="cover-placeholder">${PH_ICON}<span>Add cover photo</span></div>`;
     return `
       <div class="project-item" onclick="openSeries(${i})">
         <div class="project-cover">${coverHtml}</div>
@@ -499,10 +490,17 @@ function buildPhotoGrid(photos) {
     grid.innerHTML = `<p class="no-photos">No photos added yet</p>`;
     return;
   }
+
+  // We load each image to detect if it's landscape or portrait,
+  // then decide whether to place it full-width or pair it side by side.
   let i = 0;
   let fullWidth = true;
-  while (i < photos.length) {
+
+  function placeNext() {
+    if (i >= photos.length) return;
+
     if (fullWidth || i + 1 >= photos.length) {
+      // Full width
       const div = document.createElement('div');
       div.className = 'photo-row-full';
       const idx = i;
@@ -511,18 +509,58 @@ function buildPhotoGrid(photos) {
       grid.appendChild(div);
       i++;
       fullWidth = false;
+      placeNext();
     } else {
-      const row = document.createElement('div');
-      row.className = 'photo-row-half';
-      const i1 = i, i2 = i + 1;
-      row.innerHTML = `
-        <div class="photo-half-cell" onclick="openLightbox(${i1})"><img src="${photos[i1]}" alt="" loading="lazy"></div>
-        <div class="photo-half-cell" onclick="openLightbox(${i2})"><img src="${photos[i2]}" alt="" loading="lazy"></div>`;
-      grid.appendChild(row);
-      i += 2;
-      fullWidth = true;
+      // Try to detect orientations of next 2 images
+      const url1 = photos[i];
+      const url2 = photos[i + 1];
+      let loaded = 0;
+      let img1 = new Image(), img2 = new Image();
+
+      function onBothLoaded() {
+        loaded++;
+        if (loaded < 2) return;
+
+        const portrait1 = img1.naturalHeight > img1.naturalWidth;
+        const portrait2 = img2.naturalHeight > img2.naturalWidth;
+
+        // If both portrait OR both landscape → pair them side by side
+        // If one portrait one landscape → show first full-width, revisit second
+        if (portrait1 === portrait2) {
+          // Same orientation — place side by side
+          const row = document.createElement('div');
+          row.className = 'photo-row-half';
+          const i1 = i, i2 = i + 1;
+          row.innerHTML = `
+            <div class="photo-half-cell" onclick="openLightbox(${i1})"><img src="${url1}" alt="" loading="lazy"></div>
+            <div class="photo-half-cell" onclick="openLightbox(${i2})"><img src="${url2}" alt="" loading="lazy"></div>`;
+          grid.appendChild(row);
+          i += 2;
+          fullWidth = true;
+        } else {
+          // Mixed — show first full width
+          const div = document.createElement('div');
+          div.className = 'photo-row-full';
+          const idx = i;
+          div.onclick = () => openLightbox(idx);
+          div.innerHTML = `<img src="${url1}" alt="" loading="lazy">`;
+          grid.appendChild(div);
+          i++;
+          fullWidth = false;
+        }
+        placeNext();
+      }
+
+      img1.onload = onBothLoaded;
+      img2.onload = onBothLoaded;
+      img1.onerror = onBothLoaded;
+      img2.onerror = onBothLoaded;
+      img1.src = url1;
+      img2.src = url2;
     }
   }
+
+  placeNext();
 }
 
 function openLightbox(index) {
