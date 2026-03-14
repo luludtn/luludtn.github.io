@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Name — Photography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Helvetica+Neue:wght@300;400&family=EB+Garamond:ital,wght@0,400;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+
+/* ─── RESET ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+img { display: block; width: 100%; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+/* ─── THEME ─────────────────────────────────────────────── */
+:root {
+  --bg:       #f5f4f0;
+  --fg:       #111110;
+  --muted:    #888884;
+  --border:   rgba(0,0,0,0.10);
+  --hover-bg: rgba(0,0,0,0.03);
+  --overlay:  rgba(0,0,0,0.42);
+  --font-serif: 'EB Garamond', 'Libre Baskerville', Georgia, serif;
+  --font-sans:  'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --nav-h: 56px;
+}
+[data-theme="dark"] {
+  --bg:       #111110;
+  --fg:       #e8e6e0;
+  --muted:    #666662;
+  --border:   rgba(255,255,255,0.09);
+  --hover-bg: rgba(255,255,255,0.04);
+  --overlay:  rgba(0,0,0,0.55);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.5;
+  transition: background 0.4s, color 0.4s;
+  cursor: default;
+}
+
+/* ─── NAV ────────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.4s, border-color 0.4s;
+}
+
+.nav-logo {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+}
+
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.nav-link:hover { color: var(--fg); }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* skin toggle */
+.skin-toggle {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  padding: 4px 0;
+}
+.skin-toggle:hover { color: var(--fg); }
+
+/* ─── MAIN CONTENT ──────────────────────────────────────── */
+main {
+  padding-top: var(--nav-h);
+}
+
+/* ─── VIEWS ──────────────────────────────────────────────── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── PORTFOLIO LIST ─────────────────────────────────────── */
+#view-portfolio {}
+
+.project-item {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.project-item:first-child { border-top: 1px solid var(--border); }
+
+/* Cover image area */
+.project-cover {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.project-cover-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94),
+              filter 0.5s;
+  filter: brightness(0.92);
+}
+
+/* Placeholder covers using pure CSS — replace with real <img> */
+.cover-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+  font-family: var(--font-sans);
+  font-weight: 300;
+}
+/* Unique tones per project */
+.cp-1 { background: #2a2622; }
+.cp-2 { background: #1c2428; }
+.cp-3 { background: #28241e; }
+.cp-4 { background: #1e2820; }
+.cp-5 { background: #2c1e1e; }
+.cp-6 { background: #1e1e2c; }
+.cp-7 { background: #241c20; }
+.cp-8 { background: #202420; }
+
+/* Hover lift */
+.project-item:hover .cover-placeholder,
+.project-item:hover .project-cover-img {
+  transform: scale(1.025);
+  filter: brightness(0.82);
+}
+
+/* Overlay on hover */
+.project-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--overlay);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.project-item:hover .project-cover::after { opacity: 1; }
+
+/* View series hint */
+.project-hint {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 2rem;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.4s;
+  z-index: 2;
+}
+.project-item:hover .project-hint { opacity: 0.8; }
+
+/* Title bar below image */
+.project-meta {
+  padding: 1.1rem 2rem 1.1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.project-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  transition: opacity 0.2s;
+}
+.project-item:hover .project-title { opacity: 0.7; }
+.project-year {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ─── PROJECT DETAIL ─────────────────────────────────────── */
+#view-project {
+  min-height: 100vh;
+}
+
+.project-detail-header {
+  padding: 3rem 2rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.project-detail-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.project-detail-info {
+  text-align: right;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  line-height: 1.9;
+}
+.back-btn {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  margin-bottom: 2rem;
+  padding: 0;
+}
+.back-btn:hover { color: var(--fg); }
+.back-btn::before { content: '←'; }
+
+.detail-photos {
+  padding: 0;
+}
+.detail-photo {
+  width: 100%;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.detail-photo .cover-placeholder {
+  aspect-ratio: 3/2;
+  color: rgba(255,255,255,0.2);
+}
+.detail-photo img {
+  width: 100%;
+  display: block;
+}
+/* alternating layout: some full-width, some 2-col */
+.detail-photos .row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.detail-photos .row-2 .cover-placeholder { aspect-ratio: 2/3; }
+
+/* ─── ABOUT ──────────────────────────────────────────────── */
+#view-about {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 5rem 2rem;
+}
+.about-name {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.05;
+  margin-bottom: 2.5rem;
+}
+.about-bio {
+  color: var(--muted);
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+  font-size: 14px;
+  font-weight: 300;
+}
+.about-bio strong {
+  color: var(--fg);
+  font-weight: 400;
+}
+.about-links {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.about-link-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.about-link-item span { color: var(--muted); }
+.about-link-item a {
+  color: var(--fg);
+  transition: opacity 0.2s;
+}
+.about-link-item a:hover { opacity: 0.5; }
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+footer {
+  padding: 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ─── TRANSITIONS ────────────────────────────────────────── */
+.view {
+  animation: fadeView 0.35s ease forwards;
+}
+@keyframes fadeView {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .nav-center { display: none; }
+  .project-meta { padding: 0.9rem 1rem; }
+  .detail-photos .row-2 { grid-template-columns: 1fr; }
+  .project-detail-header { flex-direction: column; align-items: flex-start; }
+  .project-detail-info { text-align: left; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showView('portfolio')" style="cursor:pointer">Your Name</div>
+  <div class="nav-center">
+    <span class="nav-link" onclick="showView('portfolio')">Portfolio</span>
+    <span class="nav-link" onclick="showView('about')">Infos</span>
+  </div>
+  <div class="nav-right">
+    <button class="skin-toggle" onclick="toggleTheme()" id="skinBtn">Dark</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ══ PORTFOLIO LIST ══════════════════════════════════════ -->
+  <div class="view active" id="view-portfolio">
+
+    <!-- Project 1 -->
+    <div class="project-item" onclick="showProject(0)">
+      <div class="project-cover">
+        <!--
+          REPLACE THIS with:
+          <img src="your-photo.jpg" class="project-cover-img" alt="Series name">
+        -->
+        <div class="cover-placeholder cp-1">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Add your cover photo here
+        </div>
+        <span class="project-hint">View series →</span>
+      </div>
+      <div class="project-meta">
+        <h2 class="project-title">Series Title One</h2>
+        <span class="project-year">2024</span>
+      </div>
+    </div>
+
+    <!-- Project 2 -->
+    <div class="project-item" onclick="showProject(1)">
+      <div class="project-cover">
+        <div class="cover-placeholder cp-2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Add your cover photo here
+        </div>
+        <span class="project-hint">View series →</span>
+      </div>
+      <div class="project-meta">
+        <h2 class="project-title">Series Title Two</h2>
+        <span class="project-year">2024</span>
+      </div>
+    </div>
+
+    <!-- Project 3 -->
+    <div class="project-item" onclick="showProject(2)">
+      <div class="project-cover">
+        <div class="cover-placeholder cp-3">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Add your cover photo here
+        </div>
+        <span class="project-hint">View series →</span>
+      </div>
+      <div class="project-meta">
+        <h2 class="project-title">Series Title Three</h2>
+        <span class="project-year">2023</span>
+      </div>
+    </div>
+
+    <!-- Project 4 -->
+    <div class="project-item" onclick="showProject(3)">
+      <div class="project-cover">
+        <div class="cover-placeholder cp-4">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Add your cover photo here
+        </div>
+        <span class="project-hint">View series →</span>
+      </div>
+      <div class="project-meta">
+        <h2 class="project-title">Series Title Four</h2>
+        <span class="project-year">2023</span>
+      </div>
+    </div>
+
+    <!-- Project 5 -->
+    <div class="project-item" onclick="showProject(4)">
+      <div class="project-cover">
+        <div class="cover-placeholder cp-5">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Add your cover photo here
+        </div>
+        <span class="project-hint">View series →</span>
+      </div>
+      <div class="project-meta">
+        <h2 class="project-title">Series Title Five</h2>
+        <span class="project-year">2022</span>
+      </div>
+    </div>
+
+    <!-- Project 6 -->
+    <div class="project-item" onclick="showProject(5)">
+      <div class="project-cover">
+        <div class="cover-placeholder cp-6">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Add your cover photo here
+        </div>
+        <span class="project-hint">View series →</span>
+      </div>
+      <div class="project-meta">
+        <h2 class="project-title">Series Title Six</h2>
+        <span class="project-year">2022</span>
+      </div>
+    </div>
+
+    <footer>
+      <span>© 2025 Your Name</span>
+      <a href="#" onclick="showView('about');return false;">Instagram</a>
+    </footer>
+  </div>
+
+  <!-- ══ PROJECT DETAIL ══════════════════════════════════════ -->
+  <div class="view" id="view-project">
+    <div style="padding: 1.5rem 2rem 0;">
+      <button class="back-btn" onclick="showView('portfolio')">All work</button>
+    </div>
+    <div class="project-detail-header">
+      <h1 class="project-detail-title" id="detail-title">Series Title</h1>
+      <div class="project-detail-info" id="detail-info">
+        2024<br>Photography
+      </div>
+    </div>
+    <div class="detail-photos" id="detail-photos">
+      <!-- injected by JS -->
+    </div>
+    <footer>
+      <span>© 2025 Your Name</span>
+      <span onclick="showView('portfolio')" style="cursor:pointer">← All work</span>
+    </footer>
+  </div>
+
+  <!-- ══ ABOUT ═══════════════════════════════════════════════ -->
+  <div class="view" id="view-about">
+    <div id="view-about-inner">
+      <div style="padding: 1.5rem 2rem 0;">
+        <button class="back-btn" onclick="showView('portfolio')">All work</button>
+      </div>
+      <div class="view" style="display:block" id="about-content">
+        <div style="max-width:680px; margin: 0 auto; padding: 3rem 2rem 5rem;">
+          <h1 class="about-name">Your Name</h1>
+          <p class="about-bio">
+            Write a short bio here — who you are, where you're based, and what drives your work.
+            <strong>Your photography style, subjects, or approach</strong> can be described here.
+          </p>
+          <p class="about-bio">
+            Available for commissions, editorial work, exhibitions. Based in your city.
+          </p>
+          <div class="about-links">
+            <div class="about-link-item">
+              <span>Instagram</span>
+              <a href="https://instagram.com" target="_blank">@yourhandle</a>
+            </div>
+            <div class="about-link-item">
+              <span>Email</span>
+              <a href="mailto:you@email.com">you@email.com</a>
+            </div>
+            <div class="about-link-item">
+              <span>Based in</span>
+              <a>Your City</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <span>© 2025 Your Name</span>
+      <a href="https://instagram.com" target="_blank">Instagram</a>
+    </footer>
+  </div>
+
+</main>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────
+// Edit this array to add your series and photos
+const projects = [
+  {
+    title: "Series Title One",
+    year: "2024",
+    category: "Documentary",
+    description: "A short description of this series.",
+    coverClass: "cp-1",
+    photos: ["cp-1","cp-2","cp-3","cp-1","cp-4","cp-5"]
+  },
+  {
+    title: "Series Title Two",
+    year: "2024",
+    category: "Portrait",
+    description: "A short description of this series.",
+    coverClass: "cp-2",
+    photos: ["cp-2","cp-3","cp-4","cp-2","cp-5"]
+  },
+  {
+    title: "Series Title Three",
+    year: "2023",
+    category: "Street",
+    description: "A short description of this series.",
+    coverClass: "cp-3",
+    photos: ["cp-3","cp-4","cp-5","cp-3","cp-6"]
+  },
+  {
+    title: "Series Title Four",
+    year: "2023",
+    category: "Travel",
+    description: "A short description of this series.",
+    coverClass: "cp-4",
+    photos: ["cp-4","cp-1","cp-6","cp-4","cp-2"]
+  },
+  {
+    title: "Series Title Five",
+    year: "2022",
+    category: "Portrait",
+    description: "A short description of this series.",
+    coverClass: "cp-5",
+    photos: ["cp-5","cp-6","cp-1","cp-5","cp-3"]
+  },
+  {
+    title: "Series Title Six",
+    year: "2022",
+    category: "Documentary",
+    description: "A short description of this series.",
+    coverClass: "cp-6",
+    photos: ["cp-6","cp-2","cp-3","cp-6","cp-4","cp-5"]
+  }
+];
+
+// ─── VIEW SWITCHING ──────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + name);
+  if (el) { el.classList.add('active'); window.scrollTo(0, 0); }
+}
+
+// ─── SHOW PROJECT DETAIL ─────────────────────────────────
+function showProject(index) {
+  const p = projects[index];
+  document.getElementById('detail-title').textContent = p.title;
+  document.getElementById('detail-info').innerHTML =
+    p.year + '<br>' + p.category;
+
+  const container = document.getElementById('detail-photos');
+  container.innerHTML = '';
+
+  const photoHtml = p.photos.map((cls, i) => {
+    // every 3rd and 4th photo go side by side
+    return `<div class="detail-photo">
+      <div class="cover-placeholder ${cls}" style="aspect-ratio:3/2; color:rgba(255,255,255,0.18); font-size:10px; letter-spacing:0.12em; text-transform:uppercase;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        Photo ${i+1}
+      </div>
+    </div>`;
+  });
+
+  // mix: first photo full-width, then some pairs, then full-width
+  let html = photoHtml[0];
+  let i = 1;
+  while (i < photoHtml.length) {
+    if (i + 1 < photoHtml.length) {
+      // pair
+      const p1 = p.photos[i];
+      const p2 = p.photos[i+1];
+      html += `<div class="row-2">
+        <div class="detail-photo"><div class="cover-placeholder ${p1}" style="aspect-ratio:2/3; color:rgba(255,255,255,0.18); font-size:10px; letter-spacing:0.12em; text-transform:uppercase;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Photo ${i+1}</div></div>
+        <div class="detail-photo"><div class="cover-placeholder ${p2}" style="aspect-ratio:2/3; color:rgba(255,255,255,0.18); font-size:10px; letter-spacing:0.12em; text-transform:uppercase;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Photo ${i+2}</div></div>
+      </div>`;
+      i += 2;
+    } else {
+      html += photoHtml[i]; i++;
+    }
+  }
+
+  container.innerHTML = html;
+  showView('project');
+}
+
+// ─── DARK / LIGHT TOGGLE ─────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('skinBtn').textContent = isDark ? 'Dark' : 'Light';
+}
+</script>
+</body>
+</html>
