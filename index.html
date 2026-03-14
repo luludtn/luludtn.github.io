@@ -170,9 +170,9 @@ body {
 [data-theme="dark"] .cover-placeholder { background: #1a1a1a; color: #444; }
 
 /* ════════════════════════════════
-   SERIES DETAIL PAGE
-   Left: photo grid | Right: title + text
-   Exactly like YUKSEK's layout
+   SERIES DETAIL — COAST TO COAST STYLE
+   Top: full-width 3-col grid (fixed height crops)
+   Bottom: title left + description
 ════════════════════════════════ */
 #view-project { min-height: 100vh; }
 
@@ -189,75 +189,70 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 0 1.5rem var(--gap);
 }
 .detail-back::before { content: '←'; }
 .detail-back:hover { color: var(--fg); }
 
-/* Two-column layout */
-.detail-inner {
+/* 3-col photo grid — photos cropped to fixed height like YUKSEK */
+.detail-photo-grid {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  min-height: calc(100vh - 60px);
-  align-items: start;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--gap);
+  padding: 0 var(--gap) var(--gap);
 }
 
-/* LEFT: photo grid — 2 columns of full photos, no cropping */
-.detail-photos-col {
-  padding: 0 0 4rem 0;
-}
-.photo-small-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--gap);
-  padding: var(--gap);
-}
-.photo-small-item {
-  cursor: pointer;
+.detail-photo-cell {
   overflow: hidden;
+  cursor: pointer;
   position: relative;
 }
-.photo-small-item img {
+
+.detail-photo-cell img {
   width: 100%;
-  height: auto; /* always fully shown, never cropped */
+  height: 230px;      /* fixed height — crops to show a portion, like YUKSEK */
+  object-fit: cover;
   display: block;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
 }
-.photo-small-item:hover img { opacity: 0.82; }
+.detail-photo-cell:hover img {
+  opacity: 0.85;
+  transform: scale(1.03);
+}
 
 .no-photos {
-  padding: 4rem 2rem;
+  padding: 4rem var(--gap);
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-/* RIGHT: sticky title + description */
-.detail-info-col {
-  position: sticky;
-  top: 0;
-  padding: 2rem 2.5rem 3rem;
-  border-left: 1px solid var(--border);
-  min-height: 100vh;
+/* Bottom info — title + description */
+.detail-bottom {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  padding: 3rem var(--gap) 5rem;
+  border-top: 1px solid var(--border);
+  gap: 3rem;
 }
-.detail-series-title {
-  font-size: clamp(2rem, 3.5vw, 3.2rem);
+.detail-bottom-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
   font-weight: 700;
   line-height: 1.0;
   letter-spacing: -0.03em;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
-.detail-series-desc {
+.detail-bottom-desc {
   font-size: 14px;
   line-height: 1.75;
   color: var(--muted);
   font-weight: 300;
+  max-width: 60ch;
 }
 
 /* ════════════════════════════════
    FULLSCREEN LIGHTBOX
-   Click photo → opens full screen
 ════════════════════════════════ */
 #lightbox {
   display: none;
@@ -363,18 +358,9 @@ body {
 .about-row a:hover { opacity: 0.45; }
 
 /* ── MOBILE ── */
-@media (max-width: 1024px) {
-  .detail-inner { grid-template-columns: 1fr; }
-  .detail-info-col {
-    position: static;
-    min-height: auto;
-    border-left: none;
-    border-top: 1px solid var(--border);
-    padding: 2rem;
-  }
-}
 @media (max-width: 900px) {
   #portfolio-grid { columns: 2; }
+  .detail-photo-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
@@ -392,11 +378,9 @@ body {
   .skin-icon { width: 24px; height: 24px; }
   #main { margin-left: 0; padding-top: 52px; }
   #portfolio-grid { columns: 1; }
-  .photo-small-grid { grid-template-columns: 1fr; }
+  .detail-photo-grid { grid-template-columns: 1fr; }
+  .detail-bottom { grid-template-columns: 1fr; gap: 1rem; }
   #view-about { padding: 1.5rem; }
-}
-@media (max-width: 480px) {
-  .photo-small-grid { grid-template-columns: 1fr; }
 }
 
 </style>
@@ -427,16 +411,17 @@ body {
   <!-- SERIES DETAIL -->
   <div class="view" id="view-project">
     <button class="detail-back" onclick="showView('portfolio')">All work</button>
-    <div class="detail-inner">
-      <!-- LEFT: photos -->
-      <div class="detail-photos-col">
-        <div class="photo-small-grid" id="series-photos"></div>
+
+    <!-- TOP: 3-col photo grid with fixed height crops -->
+    <div class="detail-photo-grid" id="series-photos"></div>
+
+    <!-- BOTTOM: title + description -->
+    <div class="detail-bottom">
+      <div>
+        <h1 class="detail-bottom-title" id="detail-title"></h1>
+        <p class="detail-bottom-desc" id="detail-desc"></p>
       </div>
-      <!-- RIGHT: title + description -->
-      <div class="detail-info-col">
-        <h1 class="detail-series-title" id="detail-title"></h1>
-        <p class="detail-series-desc" id="detail-desc"></p>
-      </div>
+      <div></div>
     </div>
   </div>
 
@@ -522,11 +507,11 @@ function openSeries(i) {
   document.getElementById('detail-title').textContent = s.title;
   document.getElementById('detail-desc').textContent = s.description || '';
   currentPhotos = s.photos;
-  buildSeriesPhotos(s.photos);
+  buildSeriesGrid(s.photos);
   showView('project');
 }
 
-function buildSeriesPhotos(photos) {
+function buildSeriesGrid(photos) {
   const grid = document.getElementById('series-photos');
   grid.innerHTML = '';
   if (!photos.length) {
@@ -534,7 +519,7 @@ function buildSeriesPhotos(photos) {
     return;
   }
   grid.innerHTML = photos.map((url, idx) => `
-    <div class="photo-small-item" onclick="openLightbox(${idx})">
+    <div class="detail-photo-cell" onclick="openLightbox(${idx})">
       <img src="${url}" alt="" loading="lazy">
     </div>`
   ).join('');
