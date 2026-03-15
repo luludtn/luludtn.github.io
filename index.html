@@ -415,6 +415,7 @@ body {
           <button class="nav-item" id="nav-honey"     onclick="showListensTier('honey')">Honey</button>
           <button class="nav-item" id="nav-bee"       onclick="showListensTier('bee')">Bee</button>
           <button class="nav-item" id="nav-sunflower" onclick="showListensTier('sunflower')">Flower</button>
+          <button class="nav-item" id="nav-joker"     onclick="showListensTier('joker')">Joker</button>
           <button class="nav-item" id="nav-random"    onclick="showView('listens')">Random</button>
         </div>
       </div>
@@ -562,6 +563,28 @@ body {
       <audio id="player-audio-sunflower" preload="none"></audio>
     </div>
     <div class="album-grid" id="album-grid-sunflower"></div>
+  </div>
+
+  <!-- ══ JOKER ══ -->
+  <div class="view" id="view-listens-joker">
+    <div class="listens-header">
+      <button class="series-header-back" onclick="showView('home')">Back</button>
+      <h1 class="listens-title">Joker</h1>
+      <p class="listens-range">∞ streams — or none at all</p>
+      <p class="listens-subtitle">Some songs don't ask permission. They arrive from nowhere, from a record shop in a city you'll never visit again, from a friend who pressed play without warning. No algorithm touched them. No chart remembered their name. And yet — here they are, impossible to shake. This is for the ones that exist outside the count. The ones that are simply, stubbornly, undeniably good.</p>
+      <div class="tier-player">
+        <button class="player-btn" id="play-btn-joker" onclick="toggleShuffle('joker')">▶ Shuffle</button>
+        <button class="player-btn" id="next-btn-joker" onclick="nextTrack('joker')" style="display:none">↝ Next</button>
+      </div>
+      <div class="player-embed-wrap" id="player-wrap-joker">
+        <div class="track-row">
+          <p class="player-track-label" id="player-label-joker"></p>
+          <button class="copy-btn" id="copy-btn-joker" onclick="copyTierTrackUrl('joker')">copy</button>
+        </div>
+      </div>
+      <audio id="player-audio-joker" preload="none"></audio>
+    </div>
+    <div class="album-grid" id="album-grid-joker"></div>
   </div>
 
   <!-- ══ SEES RANDOM ══ -->
@@ -756,6 +779,10 @@ const MUSIC_TIERS = {
       start:   60
     },
     { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
+  ],
+
+  joker: [
+    { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
   ]
 
 };
@@ -794,7 +821,7 @@ function buildMusicCard(m) {
 }
 
 function buildAllMusicGrids() {
-  ['honey', 'bee', 'sunflower'].forEach(tier => {
+  ['honey', 'bee', 'sunflower', 'joker'].forEach(tier => {
     const grid  = document.getElementById('album-grid-' + tier);
     const picks = MUSIC_TIERS[tier];
     if (!grid) return;
@@ -1108,7 +1135,7 @@ function setHash(name) {
 
 function showView(name) {
   setHash(name);
-  ['honey', 'bee', 'sunflower'].forEach(tier => {
+  ['honey', 'bee', 'sunflower', 'joker'].forEach(tier => {
     if (playerState[tier]?.playing) stopShuffle(tier);
   });
   if (globalPlayerState.playing) stopGlobalPlayer();
@@ -1214,11 +1241,11 @@ function stopLetterDance() {
 //  GLOBAL PLAYER (all tiers)
 // ═══════════════════════════════════════════════════════
 const globalPlayerState = { playing: false, queue: [], index: 0, timer: null };
-const TIER_LABELS = { honey: 'Honey', bee: 'Bee', sunflower: 'Flower' };
+const TIER_LABELS = { honey: 'Honey', bee: 'Bee', sunflower: 'Flower', joker: 'Joker' };
 
 function getAllPlayableTracks() {
   const result = [];
-  ['honey', 'bee', 'sunflower'].forEach(tier => {
+  ['honey', 'bee', 'sunflower', 'joker'].forEach(tier => {
     getPlayableTracks(tier).forEach(track => result.push({ ...track, tier }));
   });
   return result;
