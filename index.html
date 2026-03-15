@@ -102,8 +102,8 @@ body {
 .portfolio-layout { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--gap); padding: var(--gap); align-items: start; }
 .col-left { display: flex; flex-direction: column; gap: var(--gap); }
 .p-card { position: relative; cursor: pointer; overflow: hidden; display: block; }
-.p-card img { width: 100%; height: auto; display: block; transition: opacity 0.4s; }
-.p-card:hover img { opacity: 0.88; }
+.p-card img { width: 100%; height: auto; display: block; filter: grayscale(100%); transition: filter 0.5s ease, opacity 0.4s; }
+.p-card:hover img { filter: grayscale(0%); opacity: 0.95; }
 .p-card-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; align-items: flex-end; padding: 1.4rem; background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%); opacity: 0; transition: opacity 0.35s; }
 .p-card:hover .p-card-overlay { opacity: 1; }
 .p-card-title { font-size: clamp(1.6rem, 3vw, 2.8rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; color: #fff; transform: translateY(8px); transition: transform 0.35s; }
@@ -118,8 +118,8 @@ body {
 .series-masonry { display: flex; flex-direction: column; gap: 3rem; padding: 3rem 2rem 7rem; }
 .series-row { display: flex; gap: 0.6rem; align-items: flex-start; }
 .series-photo { min-width: 0; cursor: pointer; overflow: hidden; }
-.series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
-.series-photo:hover img { opacity: 0.82; }
+.series-photo img { width: 100%; height: auto; display: block; filter: grayscale(100%); transition: filter 0.5s ease, opacity 0.3s; }
+.series-photo:hover img { filter: grayscale(0%); opacity: 1; }
 
 /* ════ HE LISTENS ════ */
 .listens-header { padding: 1.5rem 2rem 2rem; border-bottom: 1px solid var(--border); }
@@ -313,9 +313,10 @@ body {
 .sees-random-img-wrap { width: 100%; }
 .sees-random-img-wrap img {
   width: 100%; height: auto; display: block;
-  opacity: 0; transition: opacity 0.5s ease;
+  opacity: 0; filter: grayscale(100%); transition: opacity 0.5s ease, filter 0.5s ease;
 }
 .sees-random-img-wrap img.visible { opacity: 1; }
+.sees-random-img-wrap:hover img { filter: grayscale(0%); }
 .sees-random-label {
   font-size: 10px;
   letter-spacing: 0.14em;
