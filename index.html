@@ -829,6 +829,20 @@ const MUSIC_TIERS = {
       date:    "",
       start:   60
     },
+    {
+      artist:    "Sam Soulero & FUZZ",
+      album:     "Coração Music",
+      tag:       "House",
+      flag:      "🇦🇹",
+      cover:     "https://i.ytimg.com/vi/oHw6jtbWW5M/hqdefault.jpg",
+      url:       "https://www.youtube.com/watch?v=oHw6jtbWW5M",
+      youtubeId: "oHw6jtbWW5M",
+      preview:   "",
+      year:      "",
+      streams:   "",
+      date:      "",
+      start:     0
+    },
     { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
   ]
 
@@ -1027,11 +1041,15 @@ function loadTrack(tier) {
   clearTimeout(state.timer);
   const audio = document.getElementById('player-audio-' + tier);
   if (track.preview) {
+    stopYouTubePreview();
     audio.src = track.preview;
-    audio.currentTime = 0;
+    if (track.start) audio.currentTime = track.start;
     audio.play().catch(() => {});
+  } else if (track.youtubeId) {
+    audio.src = '';
+    playYouTubePreview(track.youtubeId, track.start || 0);
   }
-  state.timer = setTimeout(() => nextTrack(tier), 15000);
+  state.timer = setTimeout(() => nextTrack(tier), 30000);
 }
 
 function nextTrack(tier) {
@@ -1044,6 +1062,7 @@ function nextTrack(tier) {
 function stopShuffle(tier) {
   const state = playerState[tier];
   if (state) { clearTimeout(state.timer); state.playing = false; }
+  stopYouTubePreview();
   const audio = document.getElementById('player-audio-' + tier);
   if (audio) { audio.pause(); audio.src = ''; }
   document.getElementById('play-btn-' + tier).textContent = '▶ Shuffle';
@@ -1338,9 +1357,14 @@ function loadGlobalTrack() {
   const audio = document.getElementById('global-audio');
   clearTimeout(state.timer);
   if (track.preview) {
+    stopYouTubePreview();
     audio.src = track.preview;
     audio.currentTime = 0;
     audio.play().catch(() => {});
+    danceTimeout = setTimeout(startLetterDance, 5000);
+  } else if (track.youtubeId) {
+    audio.src = '';
+    playYouTubePreview(track.youtubeId, track.start || 0);
     danceTimeout = setTimeout(startLetterDance, 5000);
   }
   state.timer = setTimeout(() => globalNext(), 30000);
@@ -1360,6 +1384,7 @@ function stopGlobalPlayer() {
   stopLetterDance();
   clearTimeout(globalPlayerState.timer);
   globalPlayerState.playing = false;
+  stopYouTubePreview();
   const audio = document.getElementById('global-audio');
   audio.pause(); audio.src = '';
   const btn = document.getElementById('global-play-btn');
@@ -1407,6 +1432,47 @@ function copyTierTrackUrl(tier) {
   }).catch(() => {});
 }
 
+// ═══════════════════════════════════════════════════════
+//  YOUTUBE PREVIEW PLAYER
+// ═══════════════════════════════════════════════════════
+let ytPlayer = null, ytReady = false, ytPendingId = null, ytPendingStart = 0, ytTimer = null;
+
+(function loadYTApi() {
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+})();
+
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '1', width: '1',
+    playerVars: { autoplay: 0, controls: 0 },
+    events: {
+      onReady: function() {
+        ytReady = true;
+        if (ytPendingId) { ytPlayer.loadVideoById({ videoId: ytPendingId, startSeconds: ytPendingStart }); ytPendingId = null; }
+      }
+    }
+  });
+};
+
+function playYouTubePreview(videoId, startSec, duration) {
+  clearTimeout(ytTimer);
+  startSec = startSec || 0;
+  duration = duration || 30000;
+  if (ytReady && ytPlayer) {
+    ytPlayer.loadVideoById({ videoId: videoId, startSeconds: startSec });
+  } else {
+    ytPendingId = videoId; ytPendingStart = startSec;
+  }
+}
+
+function stopYouTubePreview() {
+  clearTimeout(ytTimer);
+  if (ytReady && ytPlayer) { try { ytPlayer.stopVideo(); } catch(e) {} }
+  ytPendingId = null;
+}
+
 function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
@@ -1423,5 +1489,6 @@ function toggleTheme() {
 })();
 
 </script>
+<div id="yt-player" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;pointer-events:none;"></div>
 </body>
 </html>
