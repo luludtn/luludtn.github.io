@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OTFTCHCK</title>
+<title>otftchck</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◎</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;700&display=swap" rel="stylesheet">
@@ -425,41 +425,34 @@ body {
   transition: opacity 0.3s;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   padding: 1rem;
   pointer-events: none;
 }
 .album-card:hover .music-hover-overlay { opacity: 1; }
 
-/* Top: flag left, genre right */
-.music-hover-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-.music-flag {
-  font-size: 1.5rem;
-  line-height: 1;
-}
 .music-genre {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--fg);
+  text-align: center;
 }
-
-/* Bottom: stream count */
-.music-hover-bottom {
-  display: flex;
-  flex-direction: column;
+.music-flag {
+  font-size: 2.8rem;
+  line-height: 1;
+  text-align: center;
 }
 .music-streams {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--fg);
+  text-align: center;
 }
 
 .album-placeholder {
@@ -622,7 +615,7 @@ body {
 <aside id="sidebar">
   <div>
     <span class="sidebar-logo" onclick="showView('home')">
-      <span class="sidebar-logo-name">OTFTCHCK</span>
+      <span class="sidebar-logo-name">otftchck</span>
       <span class="sidebar-logo-sub">is curious</span>
     </span>
 
@@ -671,7 +664,7 @@ body {
   <!-- ══ HOME ══ -->
   <div class="view active" id="view-home">
     <div class="home-tagline">
-      <em>Otftchck</em> is standing in the middle of everything, observing, listening and ultimately sharing.
+      <em>otftchck</em> is standing in the middle of everything, observing, listening and ultimately sharing.
     </div>
   </div>
 
@@ -762,7 +755,7 @@ body {
   <div class="view" id="view-about">
     <button class="about-back" onclick="showView('home')">Back</button>
     <div class="about-inner">
-      <h1 class="about-name">OTFTCHCK</h1>
+      <h1 class="about-name">otftchck</h1>
       <p class="about-bio">Write a short bio here — who you are, where you're based, and what drives your work.</p>
       <p class="about-bio"><strong>Your photography style or approach.</strong> Available for commissions and editorial work.</p>
       <div class="about-links">
@@ -843,9 +836,9 @@ const MUSIC_TIERS = {
     // Honey — 0 to 10K streams
     {
       artist:  "Nic Clay",
-      flag: "🇺🇸",
       album:   "Fly",
       tag:     "R&B",
+      flag:    "🇺🇸",
       cover:   "https://res.cloudinary.com/dzhvoacrg/image/upload/v1773577077/Nic_Clay_Fly_xgzqfw.jpg",
       url:     "https://open.spotify.com/intl-fr/track/3j2VUykCoOeB8Q7YHySdk0",
       embedId: "3j2VUykCoOeB8Q7YHySdk0",
@@ -884,15 +877,11 @@ function buildMusicCard(m) {
           ? `<img src="${m.cover}" alt="${m.artist}" loading="lazy">`
           : `<div class="album-placeholder">♫</div>`}
 
-        <!-- Hover overlay: flag · genre · streams only -->
+        <!-- Hover overlay: genre · flag · streams — all centered -->
         <div class="music-hover-overlay">
-          <div class="music-hover-top">
-            ${flag ? `<span class="music-flag">${flag}</span>` : ''}
-            ${tag  ? `<span class="music-genre">${tag}</span>`  : ''}
-          </div>
-          <div class="music-hover-bottom">
-            ${streams ? `<span class="music-streams">${streams} streams</span>` : ''}
-          </div>
+          ${tag  ? `<span class="music-genre">${tag}</span>`   : ''}
+          ${flag ? `<span class="music-flag">${flag}</span>`   : ''}
+          ${streams ? `<span class="music-streams">${streams} streams</span>` : ''}
         </div>
 
       </div>
