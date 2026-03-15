@@ -125,7 +125,48 @@ body {
 .listens-header .series-header-back { padding-left: 0; margin-bottom: 1rem; }
 .listens-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
 .listens-range { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg); font-weight: 400; margin-bottom: 0.4rem; }
-.listens-subtitle { font-size: 13px; color: var(--muted); font-weight: 300; font-style: italic; }
+.listens-subtitle { font-size: 13px; color: var(--muted); font-weight: 300; font-style: italic; margin-bottom: 1.4rem; }
+
+/* ── Shuffle player ── */
+.tier-player {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.2rem;
+}
+.player-btn {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  color: var(--fg);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.player-btn:hover, .player-btn.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.player-embed-wrap {
+  margin-top: 1.2rem;
+  max-width: 460px;
+  display: none;
+}
+.player-embed-wrap.visible { display: block; }
+.player-embed-wrap iframe { width: 100%; height: 80px; border: none; border-radius: 8px; display: block; }
+.player-track-label {
+  margin-top: 0.5rem;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .album-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; padding: 2.5rem 2rem 6rem; }
 .album-card { position: relative; cursor: pointer; overflow: hidden; display: block; }
 .album-card-img-wrap { position: relative; width: 100%; padding-bottom: 100%; overflow: hidden; background: var(--border); }
@@ -133,11 +174,9 @@ body {
 .album-card:hover .album-card-img-wrap img { opacity: 0.18; filter: grayscale(0%); }
 .music-hover-overlay { position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; padding: 1rem 1rem 2.8rem; pointer-events: none; }
 .album-card:hover .music-hover-overlay { opacity: 1; }
-/* center block: genre, flags, year */
 .music-genre { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg); text-align: center; }
 .music-flag { font-size: 2.8rem; line-height: 1; text-align: center; }
 .music-year { font-size: 10px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg); text-align: center; }
-/* streams — bottom left, italic */
 .music-streams-wrap { position: absolute; bottom: 1rem; left: 1rem; display: flex; align-items: baseline; gap: 3px; }
 .music-streams { font-size: 10px; font-weight: 400; font-style: italic; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg); }
 .music-streams-date { font-size: 8px; font-weight: 400; letter-spacing: 0.08em; color: var(--fg); opacity: 0.6; }
@@ -285,32 +324,59 @@ body {
     <div class="series-masonry" id="photos-eireland"></div>
   </div>
 
+  <!-- ══ HONEY ══ -->
   <div class="view" id="view-listens-honey">
     <div class="listens-header">
       <button class="series-header-back" onclick="showView('home')">Back</button>
       <h1 class="listens-title">Honey</h1>
       <p class="listens-range">0 — 10,000 streams</p>
       <p class="listens-subtitle">Warm, dark, and not yet known. This honey hasn't left the comb.</p>
+      <div class="tier-player">
+        <button class="player-btn" id="play-btn-honey" onclick="toggleShuffle('honey')">▶ Shuffle</button>
+        <button class="player-btn" id="next-btn-honey" onclick="nextTrack('honey')" style="display:none">↝ Next</button>
+      </div>
+      <div class="player-embed-wrap" id="player-wrap-honey">
+        <iframe id="player-frame-honey" src="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+        <p class="player-track-label" id="player-label-honey"></p>
+      </div>
     </div>
     <div class="album-grid" id="album-grid-honey"></div>
   </div>
 
+  <!-- ══ BEE ══ -->
   <div class="view" id="view-listens-bee">
     <div class="listens-header">
       <button class="series-header-back" onclick="showView('home')">Back</button>
       <h1 class="listens-title">Bee</h1>
       <p class="listens-range">10,000 — 100,000 streams</p>
       <p class="listens-subtitle">Wings open for the first time. The air is new, the distance is real.</p>
+      <div class="tier-player">
+        <button class="player-btn" id="play-btn-bee" onclick="toggleShuffle('bee')">▶ Shuffle</button>
+        <button class="player-btn" id="next-btn-bee" onclick="nextTrack('bee')" style="display:none">↝ Next</button>
+      </div>
+      <div class="player-embed-wrap" id="player-wrap-bee">
+        <iframe id="player-frame-bee" src="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+        <p class="player-track-label" id="player-label-bee"></p>
+      </div>
     </div>
     <div class="album-grid" id="album-grid-bee"></div>
   </div>
 
+  <!-- ══ FLOWER ══ -->
   <div class="view" id="view-listens-sunflower">
     <div class="listens-header">
       <button class="series-header-back" onclick="showView('home')">Back</button>
       <h1 class="listens-title">Flower</h1>
       <p class="listens-range">100,000 — 300,000 streams</p>
       <p class="listens-subtitle">They've been here enough times that the flowers lean toward them.</p>
+      <div class="tier-player">
+        <button class="player-btn" id="play-btn-sunflower" onclick="toggleShuffle('sunflower')">▶ Shuffle</button>
+        <button class="player-btn" id="next-btn-sunflower" onclick="nextTrack('sunflower')" style="display:none">↝ Next</button>
+      </div>
+      <div class="player-embed-wrap" id="player-wrap-sunflower">
+        <iframe id="player-frame-sunflower" src="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+        <p class="player-track-label" id="player-label-sunflower"></p>
+      </div>
     </div>
     <div class="album-grid" id="album-grid-sunflower"></div>
   </div>
@@ -323,7 +389,7 @@ body {
       <p class="about-bio"><strong>Your photography style or approach.</strong> Available for commissions and editorial work.</p>
       <div class="about-links">
         <div class="about-row"><span>Instagram</span><a href="https://instagram.com/yourhandle" target="_blank">@yourhandle</a></div>
-        <div class="about-row"><span>Email</span><a href="/cdn-cgi/l/email-protection#6c1503192c09010d0500420f0301"><span class="__cf_email__" data-cfemail="b9c0d6ccf9dcd4d8d0d597dad6d4">[email&#160;protected]</span></a></div>
+        <div class="about-row"><span>Email</span><a href="mailto:you@email.com">you@email.com</a></div>
         <div class="about-row"><span>Based in</span><span>Your City</span></div>
       </div>
     </div>
@@ -339,7 +405,7 @@ body {
   <div class="lb-counter" id="lb-counter"></div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 
 const SERIES_DATA = {
   tunisia: [
@@ -381,14 +447,13 @@ const SERIES_DATA = {
 };
 
 // ═══════════════════════════════════════════════════════
-//  MUSIC TIERS — add your picks here
-//  Fields: artist, album, tag, flag, cover, url, streams
+//  MUSIC TIERS
+//  Fields: artist, album, tag, flag, cover, url, year, streams, date
 // ═══════════════════════════════════════════════════════
 
 const MUSIC_TIERS = {
 
   honey: [
-    // Honey — 0 to 10K streams
     {
       artist:  "Amédée Ô Suriam",
       album:   "Tension Hot Shot",
@@ -400,29 +465,11 @@ const MUSIC_TIERS = {
       streams: "5,894",
       date:    "15.03.26"
     },
-    // ↓ Add more Honey picks here
-    {
-      artist:  "",
-      album:   "",
-      tag:     "",
-      flag:    "",
-      cover:   null,
-      url:     "#",
-      streams: ""
-    },
-    {
-      artist:  "",
-      album:   "",
-      tag:     "",
-      flag:    "",
-      cover:   null,
-      url:     "#",
-      streams: ""
-    },
+    { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
+    { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
   ],
 
   bee: [
-    // Bee — 10K to 100K streams
     {
       artist:  "Nic Clay",
       album:   "Fly",
@@ -434,29 +481,11 @@ const MUSIC_TIERS = {
       streams: "74,993",
       date:    "15.03.26"
     },
-    // ↓ Add more Bee picks here
-    {
-      artist:  "",
-      album:   "",
-      tag:     "",
-      flag:    "",
-      cover:   null,
-      url:     "#",
-      streams: ""
-    },
-    {
-      artist:  "",
-      album:   "",
-      tag:     "",
-      flag:    "",
-      cover:   null,
-      url:     "#",
-      streams: ""
-    },
+    { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
+    { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
   ],
 
   sunflower: [
-    // Flower — 100K to 500K streams
     {
       artist:  "Mc Solaar",
       album:   "Qui sème le vent récolte le tempo",
@@ -468,11 +497,10 @@ const MUSIC_TIERS = {
       streams: "250,805",
       date:    "15.03.26"
     },
-    // ↓ Add your Flower picks here
     {
       artist:  "MMM & Tshetsha Boys",
       album:   "Shangaan Shake",
-      tag:     "Shangaan electro",
+      tag:     "Shangaan Electro",
       flag:    "🇿🇦",
       cover:   "https://res.cloudinary.com/dzhvoacrg/image/upload/v1773582723/Shangaan_Shake_eknbmb.webp",
       url:     "https://open.spotify.com/intl-fr/track/3cnDUZXt0mqpsHulp03aTC?si=3f23217a8c6c4084",
@@ -480,24 +508,7 @@ const MUSIC_TIERS = {
       streams: "145,647",
       date:    "15.03.26"
     },
-    {
-      artist:  "",
-      album:   "",
-      tag:     "",
-      flag:    "",
-      cover:   null,
-      url:     "#",
-      streams: ""
-    },
-    {
-      artist:  "",
-      album:   "",
-      tag:     "",
-      flag:    "",
-      cover:   null,
-      url:     "#",
-      streams: ""
-    },
+    { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
   ]
 
 };
@@ -509,7 +520,7 @@ function buildMusicCard(m) {
   const streams = m.streams || '';
   const tag     = m.tag     || '';
   const year    = m.year    || '';
-  const date    = m.date    || '';          // e.g. "15.03.26"
+  const date    = m.date    || '';
   const isEmpty = !m.artist && !m.cover;
   const click   = isEmpty ? '' : `onclick="window.open('${m.url}','_blank')"`;
   return `
@@ -563,6 +574,75 @@ function buildMasonry(key) {
 }
 Object.keys(SERIES_DATA).forEach(buildMasonry);
 
+// ═══════════════════════════════════════════════════════
+//  SHUFFLE PLAYER
+// ═══════════════════════════════════════════════════════
+const playerState = {};
+
+function getTrackId(url) {
+  const match = url.match(/track\/([a-zA-Z0-9]+)/);
+  return match ? match[1] : null;
+}
+
+function getPlayableTracks(tier) {
+  return (MUSIC_TIERS[tier] || []).filter(m => m.url && m.url !== '#' && m.artist);
+}
+
+function toggleShuffle(tier) {
+  const state = playerState[tier];
+  if (state && state.playing) {
+    stopShuffle(tier);
+  } else {
+    startShuffle(tier);
+  }
+}
+
+function startShuffle(tier) {
+  const tracks = getPlayableTracks(tier);
+  if (!tracks.length) return;
+  const shuffled = [...tracks].sort(() => Math.random() - 0.5);
+  playerState[tier] = { playing: true, queue: shuffled, index: 0, timer: null };
+  document.getElementById('play-btn-' + tier).textContent = '◼ Stop';
+  document.getElementById('play-btn-' + tier).classList.add('active');
+  document.getElementById('next-btn-' + tier).style.display = 'inline-flex';
+  document.getElementById('player-wrap-' + tier).classList.add('visible');
+  loadTrack(tier);
+}
+
+function loadTrack(tier) {
+  const state = playerState[tier];
+  if (!state || !state.playing) return;
+  const track = state.queue[state.index];
+  const id    = getTrackId(track.url);
+  if (!id) { nextTrack(tier); return; }
+  document.getElementById('player-frame-' + tier).src =
+    'https://open.spotify.com/embed/track/' + id + '?utm_source=generator&theme=0';
+  document.getElementById('player-label-' + tier).textContent =
+    track.artist + ' — ' + track.album;
+  clearTimeout(state.timer);
+  state.timer = setTimeout(() => nextTrack(tier), 33000);
+}
+
+function nextTrack(tier) {
+  const state = playerState[tier];
+  if (!state) return;
+  state.index = (state.index + 1) % state.queue.length;
+  loadTrack(tier);
+}
+
+function stopShuffle(tier) {
+  const state = playerState[tier];
+  if (state) { clearTimeout(state.timer); state.playing = false; }
+  document.getElementById('player-frame-' + tier).src = '';
+  document.getElementById('play-btn-' + tier).textContent = '▶ Shuffle';
+  document.getElementById('play-btn-' + tier).classList.remove('active');
+  document.getElementById('next-btn-' + tier).style.display = 'none';
+  document.getElementById('player-wrap-' + tier).classList.remove('visible');
+  document.getElementById('player-label-' + tier).textContent = '';
+}
+
+// ═══════════════════════════════════════════════════════
+
 function showListensTier(tier) {
   showView('listens-' + tier);
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -611,6 +691,9 @@ function openSeries(key) {
 }
 
 function showView(name) {
+  ['honey', 'bee', 'sunflower'].forEach(tier => {
+    if (playerState[tier] && playerState[tier].playing) stopShuffle(tier);
+  });
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   window.scrollTo(0, 0);
