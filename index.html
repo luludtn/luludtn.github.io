@@ -778,48 +778,39 @@ buildAllMusicGrids();
 
 const SERIES_VISUAL = {};
 
-// Editorial layout templates: [photo count, flex weights per slot, id, weight]
-// flex weights: 1=equal, 2=double, 5+3=~60/40 split, etc.
-const LAYOUT_TPLS = [
-  { n: 1, f: [1],       id: 'full',   w: 6  }, // single full-width
-  { n: 2, f: [1, 1],    id: 'half',   w: 14 }, // two equal
-  { n: 2, f: [5, 3],    id: 'al',     w: 9  }, // 62/38 — left dominant
-  { n: 2, f: [3, 5],    id: 'ar',     w: 9  }, // 38/62 — right dominant
-  { n: 3, f: [1, 1, 1], id: 'thirds', w: 18 }, // three equal
-  { n: 3, f: [2, 1, 1], id: 'bss',    w: 10 }, // 50/25/25 left big
-  { n: 3, f: [1, 1, 2], id: 'ssb',    w: 10 }, // 25/25/50 right big
-  { n: 3, f: [1, 2, 1], id: 'sbs',    w: 10 }, // 25/50/25 center big
+// Deterministic 3-photo row templates — cycles in fixed order
+// flex weights: 1=equal third, 2=double width
+const ROW_CYCLE = [
+  [1, 1, 1], // equal thirds
+  [2, 1, 1], // left big
+  [1, 1, 1], // equal thirds
+  [1, 1, 2], // right big
+  [1, 1, 1], // equal thirds
+  [1, 2, 1], // center big
 ];
 
 function buildLayoutRows(photos) {
   const rows = [];
-  let idx = 0, prevId = '';
+  let idx = 0, rowNum = 0;
 
   while (idx < photos.length) {
     const rem = photos.length - idx;
+    const n = Math.min(3, rem);
+    const flexes = n === 3 ? ROW_CYCLE[rowNum % ROW_CYCLE.length] : Array(n).fill(1);
+    rowNum++;
 
-    // Build eligible template list (must fit remaining count, no immediate repeat)
-    let eligible = LAYOUT_TPLS.filter(t => t.n <= rem && t.id !== prevId);
-    if (!eligible.length) eligible = LAYOUT_TPLS.filter(t => t.n <= rem);
+    const chunk = photos.slice(idx, idx + n);
+    idx += n;
 
-    // Weighted random pick
-    const W = eligible.reduce((s, t) => s + t.w, 0);
-    let r = Math.random() * W, tpl = eligible[0];
-    for (const t of eligible) { r -= t.w; if (r <= 0) { tpl = t; break; } }
-    prevId = tpl.id;
-
-    const chunk = photos.slice(idx, idx + tpl.n);
-    idx += tpl.n;
-
-    // Nudge landscape into the widest slot ~65% of the time — not a hard rule
-    if (chunk.length > 1) {
-      const wideSlot = tpl.f.indexOf(Math.max(...tpl.f));
+    // Always place landscape in the widest slot (deterministic)
+    if (n > 1) {
+      const wideSlot = flexes.indexOf(Math.max(...flexes));
       const landSlot = chunk.findIndex(p => p.width > p.height);
-      if (landSlot !== -1 && landSlot !== wideSlot && Math.random() < 0.65)
+      if (landSlot !== -1 && landSlot !== wideSlot)
         [chunk[wideSlot], chunk[landSlot]] = [chunk[landSlot], chunk[wideSlot]];
     }
 
-    rows.push({ tpl, photos: chunk });
+    rows.push({ flexes, photos: chunk });
   }
   return rows;
 }
@@ -835,7 +826,7 @@ function buildMasonry(key) {
   const visual = rows.flatMap(r => r.photos);
   SERIES_VISUAL[key] = visual;
   grid.innerHTML = rows.map(row => {
-    const items = row.tpl.f.map((flex, fi) => {
+    const items = row.flexes.map((flex, fi) => {
       const p = row.photos[fi];
       const vi = visual.indexOf(p);
       return `<div class="series-photo" style="flex:${flex}" onclick="openLightbox('${key}',${vi})"><img src="${p.url}" alt="" loading="lazy"></div>`;
@@ -855,7 +846,7 @@ function fetchCloudinaryTag(tag, key) {
     .then(data => {
       SERIES_DATA[key] = data.resources
         .map(r => ({ url: `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`, width: r.width, height: r.height }))
-        .sort(() => Math.random() - 0.5);
+        ; // no shuffle — fixed order every load
       buildMasonry(key);
     })
     .catch(() => {
