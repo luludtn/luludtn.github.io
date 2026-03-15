@@ -778,6 +778,23 @@ buildAllMusicGrids();
 
 const SERIES_VISUAL = {};
 
+// Seeded shuffle — same mixed order every refresh, breaks up B&W/color grouping
+function hashStr(s) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h;
+}
+function seededShuffle(arr, seed) {
+  let s = seed >>> 0;
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    const j = s % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // Deterministic 3-photo row templates — cycles in fixed order
 // flex weights: 1=equal third, 2=double width
 const ROW_CYCLE = [
@@ -845,8 +862,10 @@ function fetchCloudinaryTag(tag, key) {
     .then(r => r.json())
     .then(data => {
       SERIES_DATA[key] = data.resources
-        .map(r => ({ url: `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`, width: r.width, height: r.height }))
-        ; // no shuffle — fixed order every load
+        .map(r => ({ url: `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`, width: r.width, height: r.height, id: r.public_id }));
+      // Deterministic shuffle: same mixed order every refresh (seed = content fingerprint)
+      const seed = hashStr(SERIES_DATA[key].map(p => p.id).join(''));
+      SERIES_DATA[key] = seededShuffle(SERIES_DATA[key], seed);
       buildMasonry(key);
     })
     .catch(() => {
