@@ -1351,7 +1351,6 @@ function loadGlobalTrack() {
   ).join('');
 
   document.getElementById('global-player-label').textContent = track.artist + ' — ' + track.album;
-  document.getElementById('global-copy-btn').textContent = 'copy';
   document.getElementById('global-track-row').style.display = 'flex';
   // Play preview audio
   const audio = document.getElementById('global-audio');
@@ -1413,11 +1412,7 @@ function discoverCurrentTrack() {
 function copyGlobalTrackUrl() {
   const track = globalPlayerState.queue[globalPlayerState.index];
   if (!track?.artist) return;
-  navigator.clipboard.writeText(track.artist + ' — ' + track.album).then(() => {
-    const btn = document.getElementById('global-copy-btn');
-    btn.textContent = 'copied ✓';
-    setTimeout(() => btn.textContent = 'copy', 2000);
-  }).catch(() => {});
+  navigator.clipboard.writeText(track.artist + ' — ' + track.album).catch(() => {});
 }
 
 function copyTierTrackUrl(tier) {
