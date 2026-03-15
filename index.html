@@ -755,7 +755,7 @@ const MUSIC_TIERS = {
       year:    "2025",
       streams: "174,968",
       date:    "15.03.26",
-      start:   0
+      start:   95
     },
     { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
   ],
@@ -857,7 +857,7 @@ const MUSIC_TIERS = {
       year:      "",
       streams:   "",
       date:      "",
-      start:     0
+      start:     184
     },
     { artist: "", album: "", tag: "", flag: "", cover: null, url: "#", streams: "" },
   ]
@@ -1059,7 +1059,7 @@ function loadTrack(tier) {
   if (track.preview) {
     stopYouTubePreview();
     audio.src = track.preview;
-    if (track.start) audio.currentTime = track.start;
+    audio.currentTime = 0;
     audio.play().catch(() => {});
   } else if (track.youtubeId) {
     audio.src = '';
