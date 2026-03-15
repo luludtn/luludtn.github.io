@@ -358,8 +358,12 @@ body {
 ════════════════════════════════ */
 #view-listens { min-height: 100vh; }
 .listens-header {
-  padding: 2.5rem 2rem 2rem;
+  padding: 1.5rem 2rem 2rem;
   border-bottom: 1px solid var(--border);
+}
+.listens-header .series-header-back {
+  padding-left: 0;
+  margin-bottom: 1rem;
 }
 .listens-title {
   font-size: clamp(2.5rem, 5vw, 4.5rem);
@@ -692,7 +696,9 @@ body {
           He listens <span class="nav-arrow">›</span>
         </div>
         <div class="nav-section-items">
-          <button class="nav-item" id="nav-listens" onclick="showView('listens')">All picks</button>
+          <button class="nav-item" id="nav-honey"     onclick="showListensTier('honey')">🍯 10,000 streams</button>
+          <button class="nav-item" id="nav-bee"       onclick="showListensTier('bee')">🐝 100,000 streams</button>
+          <button class="nav-item" id="nav-sunflower" onclick="showListensTier('sunflower')">🌻 300,000 streams</button>
         </div>
       </div>
 
@@ -769,13 +775,34 @@ body {
     <div class="series-masonry" id="photos-eireland"></div>
   </div>
 
-  <!-- ══ HE LISTENS ══ -->
-  <div class="view" id="view-listens">
+  <!-- ══ HE LISTENS: Honey tier ══ -->
+  <div class="view" id="view-listens-honey">
     <div class="listens-header">
-      <h1 class="listens-title">He listens</h1>
-      <p class="listens-subtitle">Tracks & albums worth your time — click to open on Spotify, SoundCloud, YouTube or wherever.</p>
+      <button class="series-header-back" onclick="showView('home')">Back</button>
+      <h1 class="listens-title">🍯 10,000 streams</h1>
+      <p class="listens-subtitle">Songs that touched under 10k ears — find them before everyone else does.</p>
     </div>
-    <div class="album-grid" id="album-grid"></div>
+    <div class="album-grid" id="album-grid-honey"></div>
+  </div>
+
+  <!-- ══ HE LISTENS: Bee tier ══ -->
+  <div class="view" id="view-listens-bee">
+    <div class="listens-header">
+      <button class="series-header-back" onclick="showView('home')">Back</button>
+      <h1 class="listens-title">🐝 100,000 streams</h1>
+      <p class="listens-subtitle">Buzzing — these are finding their crowd.</p>
+    </div>
+    <div class="album-grid" id="album-grid-bee"></div>
+  </div>
+
+  <!-- ══ HE LISTENS: Sunflower tier ══ -->
+  <div class="view" id="view-listens-sunflower">
+    <div class="listens-header">
+      <button class="series-header-back" onclick="showView('home')">Back</button>
+      <h1 class="listens-title">🌻 300,000 streams</h1>
+      <p class="listens-subtitle">Blooming — these ones have broken through.</p>
+    </div>
+    <div class="album-grid" id="album-grid-sunflower"></div>
   </div>
 
   <!-- ══ ABOUT ══ -->
@@ -849,62 +876,60 @@ const SERIES_DATA = {
 };
 
 // ═══════════════════════════════════════════════════════
-//  MUSIC PICKS
-//  Add yours here: { artist, album, tag, cover, url }
-// ═══════════════════════════════════════════════════════
-const MUSIC = [
-  // ↓ Your real pick — with Spotify embed + stream count
-  {
-    artist:  "Nic Clay",
-    album:   "Dancefloor",
-    tag:     "R&B",
-    cover:   null,
-    url:     "https://open.spotify.com/intl-fr/track/3j2VUykCoOeB8Q7YHySdk0",
-    embedId: "3j2VUykCoOeB8Q7YHySdk0",   // Spotify track ID
-    streams: "8,304"                        // update this manually anytime
-  },
-  // ↓ Add more picks below — remove embedId/streams if not needed
-  { artist: "Artist Name", album: "Album Title", tag: "Hip-hop", cover: null, url: "https://open.spotify.com" },
-  { artist: "Artist Name", album: "Album Title", tag: "Jazz",    cover: null, url: "https://soundcloud.com"  },
-  { artist: "Artist Name", album: "Album Title", tag: "Electronic", cover: null, url: "https://youtube.com" },
-];
-
+//  MUSIC — organised by stream tier
+//  Nic Clay is already in 🍯 honey — add your picks below
+//  Each entry: { artist, album, tag, cover, url, embedId, streams }
+//  embedId  = Spotify track ID (from the URL) — shows inline player on hover
+//  streams  = shown as 💎 badge — update manually anytime
+//  cover    = image URL (Cloudinary or any URL) — leave null for ♫ placeholder
 // ═══════════════════════════════════════════════════════
 
-// Build photo grids
-function buildMasonry(key) {
-  const photos = SERIES_DATA[key];
-  const grid = document.getElementById('photos-' + key);
-  if (!photos?.length) {
-    grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Coming soon</p>`;
-    return;
-  }
-  grid.innerHTML = photos.map((url, idx) => `
-    <div class="series-photo" onclick="openLightbox('${key}', ${idx})">
-      <img src="${url}" alt="" loading="lazy">
-    </div>`).join('');
-}
-Object.keys(SERIES_DATA).forEach(buildMasonry);
+const MUSIC_TIERS = {
 
-// Build music grid
-function buildMusicGrid() {
-  document.getElementById('album-grid').innerHTML = MUSIC.map(m => {
-    const hasEmbed = !!m.embedId;
-    const hasStreams = !!m.streams;
+  honey: [
+    // 🍯 Under 10,000 streams
+    {
+      artist:  "Nic Clay",
+      album:   "Dancefloor",
+      tag:     "R&B",
+      cover:   null,
+      url:     "https://open.spotify.com/intl-fr/track/3j2VUykCoOeB8Q7YHySdk0",
+      embedId: "3j2VUykCoOeB8Q7YHySdk0",
+      streams: "8,304"
+    },
+    // ↓ Add more 🍯 picks here
+  ],
 
-    return `
+  bee: [
+    // 🐝 Under 100,000 streams
+    // ↓ Add your 🐝 picks here
+    { artist: "Artist Name", album: "Album Title", tag: "Genre", cover: null, url: "https://open.spotify.com" },
+  ],
+
+  sunflower: [
+    // 🌻 300,000+ streams
+    // ↓ Add your 🌻 picks here
+    { artist: "Artist Name", album: "Album Title", tag: "Genre", cover: null, url: "https://open.spotify.com" },
+  ]
+
+};
+
+// ═══════════════════════════════════════════════════════
+
+function buildMusicCard(m) {
+  const hasEmbed   = !!m.embedId;
+  const hasStreams  = !!m.streams;
+  return `
     <div class="album-card ${hasEmbed ? 'has-embed' : ''}" onclick="window.open('${m.url}','_blank')">
       <div class="album-card-img-wrap">
         ${m.cover ? `<img src="${m.cover}" alt="${m.artist}" loading="lazy">` : `<div class="album-placeholder">♫</div>`}
 
-        <!-- Stream badge — always visible if streams set -->
         ${hasStreams ? `
         <div class="stream-badge">
           <span class="stream-gem">💎</span>
           <span class="stream-count">${m.streams} streams</span>
         </div>` : ''}
 
-        <!-- Info overlay on hover (no embed) -->
         ${!hasEmbed ? `
         <div class="album-card-overlay">
           <span class="album-card-artist">${m.artist}</span>
@@ -912,7 +937,6 @@ function buildMusicGrid() {
           <span class="album-card-tag">${m.tag}</span>
         </div>` : ''}
 
-        <!-- Spotify embed on hover -->
         ${hasEmbed ? `
         <div class="album-embed-overlay">
           <div class="album-embed-info">
@@ -930,9 +954,30 @@ function buildMusicGrid() {
         </div>` : ''}
       </div>
     </div>`;
-  }).join('');
 }
-buildMusicGrid();
+
+function buildAllMusicGrids() {
+  ['honey', 'bee', 'sunflower'].forEach(tier => {
+    const grid = document.getElementById('album-grid-' + tier);
+    const picks = MUSIC_TIERS[tier];
+    if (!grid) return;
+    if (!picks || !picks.length) {
+      grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Coming soon</p>`;
+      return;
+    }
+    grid.innerHTML = picks.map(buildMusicCard).join('');
+  });
+}
+buildAllMusicGrids();
+
+function showListensTier(tier) {
+  showView('listens-' + tier);
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('nav-' + tier);
+  if (el) el.classList.add('active');
+  document.getElementById('section-listens').classList.add('open');
+}
+
 
 // Lightbox
 let currentPhotos = [], currentLbIndex = 0;
@@ -982,8 +1027,10 @@ function showView(name) {
   if (name === 'about') {
     document.getElementById('nav-about').classList.add('active');
   }
-  if (name === 'listens') {
-    document.getElementById('nav-listens').classList.add('active');
+  if (name.startsWith('listens-')) {
+    const tier = name.replace('listens-', '');
+    const el = document.getElementById('nav-' + tier);
+    if (el) el.classList.add('active');
     document.getElementById('section-listens').classList.add('open');
   }
 }
