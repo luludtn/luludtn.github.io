@@ -404,7 +404,7 @@ body {
         <div class="nav-section-items">
           <button class="nav-item" id="nav-tunisia"   onclick="openSeries('tunisia')">Un bout d'été en Tunisie</button>
           <button class="nav-item" id="nav-barcelona" onclick="openSeries('barcelona')">Barcelona Bella</button>
-          <button class="nav-item" id="nav-eireland"  onclick="openSeries('eireland')">Eireland</button>
+          <button class="nav-item" id="nav-Eire"  onclick="openSeries('Eire')">Eire</button>
           <button class="nav-item" id="nav-random-sees" onclick="showSeesRandom()">Random</button>
         </div>
       </div>
@@ -447,9 +447,9 @@ body {
         <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773573662/000021930016_n3i9bk.jpg" alt="Barcelona Bella">
         <div class="p-card-overlay"><h2 class="p-card-title">Barcelona<br>Bella</h2></div>
       </div>
-      <div class="p-card" onclick="openSeries('eireland')">
-        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773574211/IMG_1846_k7bwnx.jpg" alt="Eireland">
-        <div class="p-card-overlay"><h2 class="p-card-title">Eireland</h2></div>
+      <div class="p-card" onclick="openSeries('Eire')">
+        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773574211/IMG_1846_k7bwnx.jpg" alt="Eire">
+        <div class="p-card-overlay"><h2 class="p-card-title">Eire</h2></div>
       </div>
     </div>
   </div>
@@ -472,13 +472,13 @@ body {
     <div class="series-masonry" id="photos-barcelona"></div>
   </div>
 
-  <div class="view" id="view-series-eireland">
+  <div class="view" id="view-series-Eire">
     <div class="series-header">
       <button class="series-header-back" onclick="showView('portfolio')">All work</button>
-      <h1 class="series-main-title">Eireland</h1>
-      <p class="series-main-desc">Add a description for Eireland here.</p>
+      <h1 class="series-main-title">Eire</h1>
+      <p class="series-main-desc">Add a description for Eire here.</p>
     </div>
-    <div class="series-masonry" id="photos-eireland"></div>
+    <div class="series-masonry" id="photos-Eire"></div>
   </div>
 
   <!-- ══ LISTENS MAIN ══ -->
@@ -609,7 +609,7 @@ body {
 const SERIES_DATA = {
   tunisia:   [],
   barcelona: [],
-  eireland: []
+  Eire: []
 };
 
 // ═══════════════════════════════════════════════════════
@@ -885,7 +885,7 @@ function fetchCloudinaryTag(tag, key) {
 }
 fetchCloudinaryTag('Tunisia', 'tunisia');
 fetchCloudinaryTag('Barcelona', 'barcelona');
-fetchCloudinaryTag('Ireland', 'eireland');
+fetchCloudinaryTag('Ireland', 'Eire');
 
 // ═══════════════════════════════════════════════════════
 //  SHUFFLE PLAYER
@@ -1001,7 +1001,7 @@ function openSeries(key) {
 // ═══════════════════════════════════════════════════════
 //  SEES RANDOM PLAYER
 // ═══════════════════════════════════════════════════════
-const SERIES_LABELS = { tunisia: 'Un bout d\'été en Tunisie', barcelona: 'Barcelona Bella', eireland: 'Eireland' };
+const SERIES_LABELS = { tunisia: 'Un bout d\'été en Tunisie', barcelona: 'Barcelona Bella', Eire: 'Eire' };
 const seesRandomState = { playing: false, queue: [], index: 0, timer: null };
 
 function showSeesRandom() {
