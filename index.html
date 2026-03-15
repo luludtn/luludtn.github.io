@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lucas Dantan</title>
+<title>Lucas Dantan — Un bout d'été en Tunisie</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
@@ -16,10 +16,10 @@ a { text-decoration: none; color: inherit; }
 :root {
   --bg:        #ffffff;
   --fg:        #0a0a0a;
-  --muted:     #aaa;
+  --muted:     #999;
   --border:    #e8e8e8;
   --sidebar-w: 240px;
-  --gap:       10px;
+  --gap:       8px;
   --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 [data-theme="dark"] {
@@ -33,10 +33,13 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.4s, color 0.4s;
+  overflow-x: hidden;
 }
 
-/* ── SIDEBAR ── */
+/* ════════════════════════════════
+   SIDEBAR
+════════════════════════════════ */
 #sidebar {
   position: fixed;
   top: 0; left: 0; bottom: 0;
@@ -46,9 +49,9 @@ body {
   flex-direction: column;
   justify-content: space-between;
   padding: 2rem;
-  z-index: 200;
+  z-index: 300;
   background: var(--bg);
-  transition: background 0.3s, border-color 0.3s;
+  transition: background 0.4s, border-color 0.4s;
 }
 .sidebar-logo {
   font-size: 13px;
@@ -94,7 +97,7 @@ body {
   background: var(--fg);
   border: 1px solid var(--border);
   flex-shrink: 0;
-  transition: background 0.3s, border-color 0.3s;
+  transition: background 0.4s, border-color 0.4s;
 }
 .skin-label {
   font-size: 11px;
@@ -105,73 +108,196 @@ body {
 }
 .sidebar-bottom:hover .skin-label { color: var(--fg); }
 
-/* ── MAIN ── */
-#main { margin-left: var(--sidebar-w); min-height: 100vh; }
+/* ════════════════════════════════
+   MAIN
+════════════════════════════════ */
+#main { margin-left: var(--sidebar-w); }
 .view { display: none; }
 .view.active { display: block; }
 
 /* ════════════════════════════════
-   LANDING PAGE — single series
-   Title + description at top
-   then masonry grid
+   LANDING PAGE
 ════════════════════════════════ */
-#view-portfolio { min-height: 100vh; }
-
-.landing-header {
-  padding: 2.5rem var(--gap) 2rem;
+#view-landing {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem 3rem 3rem;
+  position: relative;
+  overflow: hidden;
 }
-.landing-title-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: start;
-  padding: 0 var(--gap);
+
+/* Background image — one of the photos, large and subtle */
+.landing-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.landing-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.18;
+  filter: grayscale(30%);
+  transition: opacity 0.6s;
+}
+[data-theme="dark"] .landing-bg img { opacity: 0.12; }
+
+.landing-top {
+  position: relative;
+  z-index: 1;
+}
+.landing-series-label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
 }
 .landing-title {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-size: clamp(3rem, 7vw, 7rem);
   font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  max-width: 14ch;
+}
+
+.landing-bottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
 }
 .landing-desc {
-  font-size: 14px;
-  line-height: 1.75;
+  max-width: 44ch;
+  font-size: 13px;
+  line-height: 1.7;
   color: var(--muted);
   font-weight: 300;
-  padding-top: 0.4rem;
 }
 
-/* 3-col masonry — full photos, no crop */
-.landing-masonry {
-  columns: 3;
-  column-gap: var(--gap);
-  padding: 2rem var(--gap) 6rem;
-}
-.landing-photo-item {
-  break-inside: avoid;
-  margin-bottom: var(--gap);
-  overflow: hidden;
+/* The "enter" button */
+.landing-enter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
   cursor: pointer;
-  display: block;
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  color: var(--fg);
+  flex-shrink: 0;
+  margin-left: 3rem;
+  transition: opacity 0.2s;
 }
-.landing-photo-item img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: opacity 0.3s;
+.landing-enter:hover { opacity: 0.6; }
+.landing-enter-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1.5px solid var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s, border-color 0.25s;
 }
-.landing-photo-item:hover img { opacity: 0.85; }
-
-.no-photos {
-  padding: 4rem var(--gap);
-  font-size: 12px;
-  letter-spacing: 0.1em;
+.landing-enter:hover .landing-enter-circle {
+  background: var(--fg);
+}
+.landing-enter:hover .landing-enter-circle svg {
+  stroke: var(--bg);
+}
+.landing-enter-circle svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--fg);
+  fill: none;
+  stroke-width: 1.5;
+  transition: stroke 0.25s;
+}
+.landing-enter-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 /* ════════════════════════════════
-   FULLSCREEN LIGHTBOX
+   SERIES VIEW — full masonry
+════════════════════════════════ */
+#view-series {
+  min-height: 100vh;
+}
+
+.series-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+  padding: 2.5rem var(--gap) 2rem;
+}
+.series-header-back {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 0 1rem var(--gap);
+  width: fit-content;
+}
+.series-header-back::before { content: '←'; }
+.series-header-back:hover { color: var(--fg); }
+
+.series-main-title {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  padding-left: var(--gap);
+}
+.series-main-desc {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+  font-weight: 300;
+  padding-top: 0.5rem;
+  padding-right: var(--gap);
+}
+
+/* 3-col masonry — photos fully shown */
+.series-masonry {
+  columns: 3;
+  column-gap: var(--gap);
+  padding: 1.5rem var(--gap) 6rem;
+}
+.series-photo {
+  break-inside: avoid;
+  margin-bottom: var(--gap);
+  cursor: pointer;
+  display: block;
+  overflow: hidden;
+}
+.series-photo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: opacity 0.3s;
+}
+.series-photo:hover img { opacity: 0.82; }
+
+/* ════════════════════════════════
+   LIGHTBOX
 ════════════════════════════════ */
 #lightbox {
   display: none;
@@ -210,13 +336,13 @@ body {
   top: 50%; transform: translateY(-50%);
   color: rgba(255,255,255,0.3);
   font-size: 11px;
-  letter-spacing: 0.15em;
   cursor: pointer;
   background: none;
   border: none;
   font-family: var(--font-sans);
   padding: 2rem;
   transition: color 0.2s;
+  letter-spacing: 0.1em;
 }
 .lb-arrow:hover { color: #fff; }
 .lb-prev { left: 0; }
@@ -233,7 +359,7 @@ body {
 /* ════════════════════════════════
    ABOUT
 ════════════════════════════════ */
-#view-about { padding: 3rem; }
+#view-about { padding: 3rem; min-height: 100vh; }
 .about-back {
   font-size: 11px;
   letter-spacing: 0.12em;
@@ -278,8 +404,8 @@ body {
 
 /* ── MOBILE ── */
 @media (max-width: 900px) {
-  .landing-masonry { columns: 2; }
-  .landing-title-row { grid-template-columns: 1fr; gap: 1rem; }
+  .series-masonry { columns: 2; }
+  .series-header { grid-template-columns: 1fr; gap: 1rem; }
 }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
@@ -296,8 +422,12 @@ body {
   .skin-label { display: none; }
   .skin-icon { width: 24px; height: 24px; }
   #main { margin-left: 0; padding-top: 52px; }
-  .landing-masonry { columns: 1; }
+  #view-landing { padding: 2rem 1.5rem; height: calc(100vh - 52px); }
+  .landing-title { font-size: clamp(2.5rem, 10vw, 4rem); }
+  .series-masonry { columns: 1; }
   #view-about { padding: 1.5rem; }
+  .landing-bottom { flex-direction: column; align-items: flex-start; gap: 2rem; }
+  .landing-enter { margin-left: 0; flex-direction: row; gap: 1rem; }
 }
 
 </style>
@@ -306,10 +436,10 @@ body {
 
 <aside id="sidebar">
   <div>
-    <span class="sidebar-logo" onclick="showView('portfolio')">Lucas Dantan<br>Photography</span>
+    <span class="sidebar-logo" onclick="showView('landing')">Lucas Dantan<br>Photography</span>
     <nav class="sidebar-nav">
-      <span onclick="showView('portfolio')" id="nav-portfolio" class="active">Portfolio</span>
-      <span onclick="showView('about')"     id="nav-about">Infos</span>
+      <span onclick="showView('landing')" id="nav-landing" class="active">Portfolio</span>
+      <span onclick="showView('about')"   id="nav-about">Infos</span>
     </nav>
   </div>
   <div class="sidebar-bottom" onclick="toggleTheme()">
@@ -320,20 +450,41 @@ body {
 
 <div id="main">
 
-  <!-- LANDING — single series -->
-  <div class="view active" id="view-portfolio">
-    <div class="landing-header">
-      <div class="landing-title-row">
-        <h1 class="landing-title" id="landing-title"></h1>
-        <p class="landing-desc" id="landing-desc"></p>
-      </div>
+  <!-- ══ LANDING ══ -->
+  <div class="view active" id="view-landing">
+    <div class="landing-bg">
+      <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2719_gclk2x.jpg" alt="">
     </div>
-    <div class="landing-masonry" id="landing-photos"></div>
+
+    <div class="landing-top">
+      <p class="landing-series-label">Series — 2025</p>
+      <h1 class="landing-title">Un bout d'été en Tunisie</h1>
+    </div>
+
+    <div class="landing-bottom">
+      <p class="landing-desc">Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. Until the opportunity came — I fell in love with black and white, with these faces, these scenes, these moments.</p>
+      <button class="landing-enter" onclick="showView('series')">
+        <div class="landing-enter-circle">
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+        <span class="landing-enter-label">Discover</span>
+      </button>
+    </div>
   </div>
 
-  <!-- ABOUT -->
+  <!-- ══ SERIES ══ -->
+  <div class="view" id="view-series">
+    <div class="series-header">
+      <button class="series-header-back" onclick="showView('landing')">Back</button>
+      <h1 class="series-main-title">Un bout d'été en Tunisie 🐚</h1>
+      <p class="series-main-desc">Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. I've always heard about it, got told a million stories from there, could imagine it in some shapes into my head. But it's always been very fictional to me, until the opportunity came. I started photography recently, and fell in love with black and white. One could find it wrong to go to such a colorful place and remove colors. I love it and will love it forever. Now, please discover what I've discovered, look at these faces, these scenes, these moments with these characters. — Un bout d'été en Tunisie, Juillet 2025</p>
+    </div>
+    <div class="series-masonry" id="series-photos"></div>
+  </div>
+
+  <!-- ══ ABOUT ══ -->
   <div class="view" id="view-about">
-    <button class="about-back" onclick="showView('portfolio')">Back</button>
+    <button class="about-back" onclick="showView('landing')">Back</button>
     <div class="about-inner">
       <h1 class="about-name">Lucas Dantan</h1>
       <p class="about-bio">Write a short bio here — who you are, where you're based, and what drives your work.</p>
@@ -351,65 +502,58 @@ body {
 <!-- LIGHTBOX -->
 <div id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">Close ✕</button>
-  <button class="lb-arrow lb-prev" onclick="lbMove(-1)">← Prev</button>
+  <button class="lb-arrow lb-prev" onclick="lbMove(-1)">←</button>
   <img id="lb-img" src="" alt="">
-  <button class="lb-arrow lb-next" onclick="lbMove(1)">Next →</button>
+  <button class="lb-arrow lb-next" onclick="lbMove(1)">→</button>
   <div class="lb-counter" id="lb-counter"></div>
 </div>
 
 <script>
 
 // ═══════════════════════════════════════════════════════
-//  YOUR SERIES — 1 series, 75 photos
-//  Replace each null with your Cloudinary URL like:
-//  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v.../photo.jpg"
+//  ALL PHOTOS — add more URLs here as you upload them
 // ═══════════════════════════════════════════════════════
 
-const SERIES = {
-  title: "Un bout d'été en Tunisie 🐚",
-  description: "Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. I've always heard about it, got told a million stories from there, could imagine it in some shapes into my head. But it's always been a very fictional to me, until the opportunity came. I started photography recently, and fell in love with black and white. One could find it wrong to go to such a colorful place and remove colors. I love it and will love it forever. Now, please discover what I've discovered, look at these faces, these scenes, these moments with these characters. — Un bout d'été en Tunise, Juillet 2025",
-  photos: [
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498276/IMG_2738_m0q4vc.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498274/IMG_2739_xh4pa5.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498273/IMG_2743_pilcgr.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498269/IMG_2761_otdgf7.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2792_gdnpuo.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2812_pwyvof.jpg",
-    // ↓ Add your remaining 69 photos below, one URL per line
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null, null, null, null, null,
-    null
-  ]
-};
+const PHOTOS = [
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498296/IMG_2654_hpwjpc.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2719_gclk2x.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498290/IMG_2659_prvga5.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498278/IMG_2733_gl8rkg.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498283/IMG_2711_ki4rxz.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498273/IMG_2765_unjlfa.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498282/IMG_2714_ezrgyo.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498272/IMG_2745_scyl19.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498282/IMG_2713_zgxofw.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498268/IMG_2763_zn5xnu.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2721_dqfbgz.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498268/IMG_2762_aizlfx.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498279/IMG_2728_mozeij.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498266/IMG_2773_svojir.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2782_sol2ha.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2777_mnnsn9.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2776_t90ye0.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498264/IMG_2784_ljoevc.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2792_gdnpuo.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2794_o4dptr.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2791_rruvg2.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2798_gqk76o.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2799_of1tjb.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2797_vdhqyp.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498261/IMG_2808_iqvfxr.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498260/IMG_2807_b2ezfg.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2813_ribulw.jpg",
+  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2803_efhmxx.jpg",
+  // ↓ Add more photos here as you upload them to Cloudinary
+];
 
 // ═══════════════════════════════════════════════════════
 
 let currentLbIndex = 0;
-// Only real photos (non-null) shown
-const realPhotos = SERIES.photos.filter(p => p !== null);
 
-function buildPage() {
-  document.getElementById('landing-title').textContent = SERIES.title;
-  document.getElementById('landing-desc').textContent = SERIES.description;
-
-  const grid = document.getElementById('landing-photos');
-  if (!realPhotos.length) {
-    grid.innerHTML = `<p class="no-photos">No photos added yet — replace the nulls with your Cloudinary URLs</p>`;
-    return;
-  }
-  grid.innerHTML = realPhotos.map((url, idx) => `
-    <div class="landing-photo-item" onclick="openLightbox(${idx})">
+function buildSeries() {
+  const grid = document.getElementById('series-photos');
+  grid.innerHTML = PHOTOS.map((url, idx) => `
+    <div class="series-photo" onclick="openLightbox(${idx})">
       <img src="${url}" alt="" loading="lazy">
     </div>`
   ).join('');
@@ -422,16 +566,16 @@ function openLightbox(index) {
   document.body.style.overflow = 'hidden';
 }
 function updateLightbox() {
-  document.getElementById('lb-img').src = realPhotos[currentLbIndex];
+  document.getElementById('lb-img').src = PHOTOS[currentLbIndex];
   document.getElementById('lb-counter').textContent =
-    (currentLbIndex + 1) + ' / ' + realPhotos.length;
+    (currentLbIndex + 1) + ' / ' + PHOTOS.length;
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
 function lbMove(dir) {
-  currentLbIndex = (currentLbIndex + dir + realPhotos.length) % realPhotos.length;
+  currentLbIndex = (currentLbIndex + dir + PHOTOS.length) % PHOTOS.length;
   updateLightbox();
 }
 document.addEventListener('keydown', e => {
@@ -449,7 +593,8 @@ function showView(name) {
   document.getElementById('view-' + name).classList.add('active');
   window.scrollTo(0, 0);
   document.querySelectorAll('.sidebar-nav span').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('nav-' + name);
+  const navMap = { landing: 'nav-landing', series: 'nav-landing', about: 'nav-about' };
+  const el = document.getElementById(navMap[name]);
   if (el) el.classList.add('active');
 }
 
@@ -458,7 +603,7 @@ function toggleTheme() {
   document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
 }
 
-buildPage();
+buildSeries();
 </script>
 </body>
 </html>
