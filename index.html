@@ -934,15 +934,6 @@ function buildMusicGrid() {
 }
 buildMusicGrid();
 
-// Dropdown toggle
-function toggleSection(name) {
-  const sec = document.getElementById('section-' + name);
-  const isOpen = sec.classList.contains('open');
-  // close all
-  document.querySelectorAll('.nav-section').forEach(s => s.classList.remove('open'));
-  if (!isOpen) sec.classList.add('open');
-}
-
 // Lightbox
 let currentPhotos = [], currentLbIndex = 0;
 
@@ -980,7 +971,6 @@ function openSeries(key) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   const el = document.getElementById('nav-' + key);
   if (el) el.classList.add('active');
-  // keep "He sees" open
   document.getElementById('section-sees').classList.add('open');
 }
 
@@ -989,7 +979,27 @@ function showView(name) {
   document.getElementById('view-' + name).classList.add('active');
   window.scrollTo(0, 0);
   document.querySelectorAll('.nav-item, .nav-flat').forEach(el => el.classList.remove('active'));
-  if (name === 'about')   document.getElementById('nav-about').classList.add('active');
+  if (name === 'about') {
+    document.getElementById('nav-about').classList.add('active');
+  }
   if (name === 'listens') {
     document.getElementById('nav-listens').classList.add('active');
-    document.getElementById('section-listens').classList.add('o
+    document.getElementById('section-listens').classList.add('open');
+  }
+}
+
+function toggleSection(name) {
+  const sec = document.getElementById('section-' + name);
+  const isOpen = sec.classList.contains('open');
+  document.querySelectorAll('.nav-section').forEach(s => s.classList.remove('open'));
+  if (!isOpen) sec.classList.add('open');
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+}
+
+</script>
+</body>
+</html>
