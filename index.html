@@ -55,11 +55,10 @@ body {
   transition: background 0.4s, border-color 0.4s;
 }
 
-/* Logo block — name bold large, subtitle small below, left-aligned like YUKSEK */
 .sidebar-logo {
   cursor: pointer;
   display: block;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
   line-height: 1;
 }
 .sidebar-logo-name {
@@ -80,12 +79,65 @@ body {
   margin-top: 2px;
 }
 
+/* Nav sections */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 1.8rem;
+  flex: 1;
 }
-.sidebar-nav span {
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.nav-section-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.nav-item {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 3px 0;
+  display: block;
+}
+.nav-item:hover { color: var(--fg); }
+.nav-item.active {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Top-level section headers (He sees / He listens) */
+.nav-section-header {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg);
+  margin-bottom: 0.4rem;
+  display: block;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.nav-section-header:hover { opacity: 0.5; }
+
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.nav-infos {
   font-size: 13px;
   font-weight: 400;
   letter-spacing: 0.08em;
@@ -94,22 +146,22 @@ body {
   cursor: pointer;
   transition: color 0.2s;
   padding: 4px 0;
-  display: block;
 }
-.sidebar-nav span:hover { color: var(--fg); }
-.sidebar-nav span.active {
+.nav-infos:hover { color: var(--fg); }
+.nav-infos.active {
   color: var(--fg);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.sidebar-bottom {
+
+.skin-toggle {
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
 }
 .skin-icon {
-  width: 30px; height: 30px;
+  width: 28px; height: 28px;
   border-radius: 50%;
   background: var(--fg);
   border: 1px solid var(--border);
@@ -123,7 +175,7 @@ body {
   color: var(--muted);
   transition: color 0.2s;
 }
-.sidebar-bottom:hover .skin-label { color: var(--fg); }
+.skin-toggle:hover .skin-label { color: var(--fg); }
 
 /* ════════════════════════════════
    MAIN
@@ -133,7 +185,7 @@ body {
 .view.active { display: block; }
 
 /* ════════════════════════════════
-   PORTFOLIO HOME
+   HE SEES — portfolio home
 ════════════════════════════════ */
 #view-portfolio { min-height: 100vh; }
 
@@ -144,15 +196,10 @@ body {
   padding: var(--gap);
   align-items: start;
 }
-
 .col-left {
   display: flex;
   flex-direction: column;
   gap: var(--gap);
-}
-.col-left .p-card img {
-  width: 100%;
-  height: auto;
 }
 
 .p-card {
@@ -168,7 +215,6 @@ body {
   transition: opacity 0.4s;
 }
 .p-card:hover img { opacity: 0.88; }
-
 .p-card-overlay {
   position: absolute;
   inset: 0;
@@ -195,8 +241,6 @@ body {
 /* ════════════════════════════════
    SERIES VIEW
 ════════════════════════════════ */
-#view-series { min-height: 100vh; }
-
 .series-header {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -238,7 +282,6 @@ body {
   padding-top: 0.5rem;
   padding-right: var(--gap);
 }
-
 .series-masonry {
   columns: 3;
   column-gap: var(--gap);
@@ -248,7 +291,6 @@ body {
   break-inside: avoid;
   margin-bottom: var(--gap);
   cursor: pointer;
-  display: block;
   overflow: hidden;
 }
 .series-photo img {
@@ -259,11 +301,120 @@ body {
 }
 .series-photo:hover img { opacity: 0.82; }
 
-.coming-soon {
-  padding: 6rem var(--gap);
-  font-size: 12px;
-  letter-spacing: 0.15em;
+/* ════════════════════════════════
+   HE LISTENS
+════════════════════════════════ */
+#view-listens { min-height: 100vh; }
+
+.listens-header {
+  padding: 2.5rem 2rem 2rem;
+  border-bottom: 1px solid var(--border);
+}
+.listens-title {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.6rem;
+}
+.listens-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+/* Album grid — 4 cols, each card square-ish */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+  padding: 1.5rem var(--gap) 6rem;
+}
+
+.album-card {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+}
+/* Square aspect ratio */
+.album-card-img-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  overflow: hidden;
+  background: var(--border);
+}
+.album-card-img-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.4s, transform 0.4s;
+}
+.album-card:hover .album-card-img-wrap img {
+  opacity: 0.75;
+  transform: scale(1.03);
+}
+
+/* Overlay on hover */
+.album-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1rem;
+  pointer-events: none;
+}
+.album-card:hover .album-card-overlay { opacity: 1; }
+
+.album-card-artist {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  transform: translateY(6px);
+  transition: transform 0.35s;
+}
+.album-card-name {
+  font-size: 11px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.3;
+  margin-top: 2px;
+  transform: translateY(6px);
+  transition: transform 0.35s 0.03s;
+}
+.album-card-tag {
+  font-size: 9px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
+  transform: translateY(6px);
+  transition: transform 0.35s 0.06s;
+}
+.album-card:hover .album-card-artist,
+.album-card:hover .album-card-name,
+.album-card:hover .album-card-tag { transform: none; }
+
+/* Placeholder for albums without cover */
+.album-placeholder {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
   color: var(--muted);
 }
 
@@ -313,7 +464,6 @@ body {
   font-family: var(--font-sans);
   padding: 2rem;
   transition: color 0.2s;
-  letter-spacing: 0.1em;
 }
 .lb-arrow:hover { color: #fff; }
 .lb-prev { left: 0; }
@@ -374,10 +524,14 @@ body {
 .about-row a:hover { opacity: 0.45; }
 
 /* ── MOBILE ── */
+@media (max-width: 1100px) {
+  .album-grid { grid-template-columns: repeat(3, 1fr); }
+}
 @media (max-width: 900px) {
   .portfolio-layout { grid-template-columns: 1fr 1fr; }
   .series-masonry { columns: 2; }
   .series-header { grid-template-columns: 1fr; gap: 1rem; }
+  .album-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
@@ -387,19 +541,27 @@ body {
     padding: 0 1rem;
     border-right: none; border-bottom: 1px solid var(--border);
     bottom: auto;
+    gap: 1.5rem;
   }
   .sidebar-logo { margin-bottom: 0; }
   .sidebar-logo-name { font-size: 12px; }
   .sidebar-logo-sub { display: none; }
-  .sidebar-nav { flex-direction: row; gap: 1.2rem; }
-  .sidebar-nav span { font-size: 11px; }
+  .sidebar-nav { flex-direction: row; gap: 0; }
+  .nav-section { display: contents; }
+  .nav-section-label { display: none; }
+  .nav-section-header { font-size: 11px; margin-bottom: 0; }
+  .nav-section-items { flex-direction: row; gap: 0.8rem; }
+  .nav-item { font-size: 11px; padding: 0; }
+  .nav-infos { font-size: 11px; }
   .skin-label { display: none; }
-  .skin-icon { width: 24px; height: 24px; }
+  .skin-icon { width: 22px; height: 22px; }
   #main { margin-left: 0; padding-top: 52px; }
   .portfolio-layout { grid-template-columns: 1fr; }
   .col-left { display: block; }
   .series-masonry { columns: 1; }
+  .album-grid { grid-template-columns: repeat(2, 1fr); }
   #view-about { padding: 1.5rem; }
+  .listens-header { padding: 1.5rem; }
 }
 
 </style>
@@ -407,19 +569,41 @@ body {
 <body>
 
 <aside id="sidebar">
-  <div>
+  <div style="display:flex;flex-direction:column;gap:0;flex:1;overflow:hidden;">
     <span class="sidebar-logo" onclick="showView('portfolio')">
       <span class="sidebar-logo-name">OTFTCHCK</span>
       <span class="sidebar-logo-sub">is curious</span>
     </span>
+
     <nav class="sidebar-nav">
-      <span onclick="showView('portfolio')" id="nav-portfolio" class="active">Portfolio</span>
-      <span onclick="showView('about')"     id="nav-about">Infos</span>
+
+      <!-- He sees -->
+      <div class="nav-section">
+        <span class="nav-section-header" onclick="showView('portfolio')">He sees</span>
+        <div class="nav-section-items">
+          <span class="nav-item active" id="nav-tunisia"   onclick="openSeries('tunisia')">Un bout d'été en Tunisie</span>
+          <span class="nav-item"        id="nav-barcelona" onclick="openSeries('barcelona')">Barcelona Bella</span>
+          <span class="nav-item"        id="nav-eireland"  onclick="openSeries('eireland')">Eireland</span>
+        </div>
+      </div>
+
+      <!-- He listens -->
+      <div class="nav-section">
+        <span class="nav-section-header" onclick="showView('listens')">He listens</span>
+        <div class="nav-section-items">
+          <span class="nav-item" id="nav-listens" onclick="showView('listens')">All picks</span>
+        </div>
+      </div>
+
     </nav>
   </div>
-  <div class="sidebar-bottom" onclick="toggleTheme()">
-    <div class="skin-icon"></div>
-    <span class="skin-label">Change skin</span>
+
+  <div class="sidebar-bottom">
+    <span class="nav-infos" id="nav-about" onclick="showView('about')">Infos</span>
+    <div class="skin-toggle" onclick="toggleTheme()">
+      <div class="skin-icon"></div>
+      <span class="skin-label">Change skin</span>
+    </div>
   </div>
 </aside>
 
@@ -428,33 +612,20 @@ body {
   <!-- ══ PORTFOLIO HOME ══ -->
   <div class="view active" id="view-portfolio">
     <div class="portfolio-layout">
-
-      <!-- COL 1: Tunisia -->
       <div class="col-left">
         <div class="p-card" onclick="openSeries('tunisia')">
           <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498272/IMG_2745_scyl19.jpg" alt="Un bout d'été en Tunisie">
-          <div class="p-card-overlay">
-            <h2 class="p-card-title">Un bout d'été<br>en Tunisie</h2>
-          </div>
+          <div class="p-card-overlay"><h2 class="p-card-title">Un bout d'été<br>en Tunisie</h2></div>
         </div>
       </div>
-
-      <!-- COL 2: Barcelona -->
       <div class="p-card" onclick="openSeries('barcelona')">
         <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773573662/000021930016_n3i9bk.jpg" alt="Barcelona Bella">
-        <div class="p-card-overlay">
-          <h2 class="p-card-title">Barcelona<br>Bella</h2>
-        </div>
+        <div class="p-card-overlay"><h2 class="p-card-title">Barcelona<br>Bella</h2></div>
       </div>
-
-      <!-- COL 3: Eireland -->
       <div class="p-card" onclick="openSeries('eireland')">
         <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773574211/IMG_1846_k7bwnx.jpg" alt="Eireland">
-        <div class="p-card-overlay">
-          <h2 class="p-card-title">Eireland</h2>
-        </div>
+        <div class="p-card-overlay"><h2 class="p-card-title">Eireland</h2></div>
       </div>
-
     </div>
   </div>
 
@@ -488,9 +659,18 @@ body {
     <div class="series-masonry" id="photos-eireland"></div>
   </div>
 
+  <!-- ══ HE LISTENS ══ -->
+  <div class="view" id="view-listens">
+    <div class="listens-header">
+      <h1 class="listens-title">He listens</h1>
+      <p class="listens-subtitle">Tracks & albums worth your time — click to open on Spotify, SoundCloud, YouTube or wherever.</p>
+    </div>
+    <div class="album-grid" id="album-grid"></div>
+  </div>
+
   <!-- ══ ABOUT ══ -->
   <div class="view" id="view-about">
-    <button class="about-back" onclick="showView('portfolio')">All work</button>
+    <button class="about-back" onclick="showView('portfolio')">Back</button>
     <div class="about-inner">
       <h1 class="about-name">OTFTCHCK</h1>
       <p class="about-bio">Write a short bio here — who you are, where you're based, and what drives your work.</p>
@@ -515,6 +695,10 @@ body {
 </div>
 
 <script>
+
+// ═══════════════════════════════════════════════════════
+//  PHOTO SERIES
+// ═══════════════════════════════════════════════════════
 
 const SERIES_DATA = {
   tunisia: [
@@ -555,14 +739,54 @@ const SERIES_DATA = {
   ]
 };
 
-let currentPhotos = [];
-let currentLbIndex = 0;
+// ═══════════════════════════════════════════════════════
+//  MUSIC PICKS
+//  Each entry: { artist, album, tag, cover, url }
+//  cover = URL to album art image (upload to Cloudinary or use any image URL)
+//  url   = link to Spotify / SoundCloud / YouTube / etc.
+//  tag   = genre or vibe label
+// ═══════════════════════════════════════════════════════
 
+const MUSIC = [
+  // ↓ Replace these examples with your actual picks
+  {
+    artist: "Artist Name",
+    album:  "Album Title",
+    tag:    "Hip-hop",
+    cover:  null,
+    url:    "https://open.spotify.com"
+  },
+  {
+    artist: "Artist Name",
+    album:  "Album Title",
+    tag:    "Jazz",
+    cover:  null,
+    url:    "https://soundcloud.com"
+  },
+  {
+    artist: "Artist Name",
+    album:  "Album Title",
+    tag:    "Electronic",
+    cover:  null,
+    url:    "https://youtube.com"
+  },
+  {
+    artist: "Artist Name",
+    album:  "Album Title",
+    tag:    "R&B",
+    cover:  null,
+    url:    "https://open.spotify.com"
+  },
+];
+
+// ═══════════════════════════════════════════════════════
+
+// Build photo masonry grids
 function buildMasonry(seriesKey) {
   const photos = SERIES_DATA[seriesKey];
   const grid = document.getElementById('photos-' + seriesKey);
   if (!photos || !photos.length) {
-    grid.innerHTML = `<p class="coming-soon">Coming soon</p>`;
+    grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted)">Coming soon</p>`;
     return;
   }
   grid.innerHTML = photos.map((url, idx) => `
@@ -571,13 +795,33 @@ function buildMasonry(seriesKey) {
     </div>`
   ).join('');
 }
-
 Object.keys(SERIES_DATA).forEach(buildMasonry);
 
-function openSeries(key) {
-  currentPhotos = SERIES_DATA[key];
-  showView('series-' + key);
+// Build music grid
+function buildMusicGrid() {
+  const grid = document.getElementById('album-grid');
+  grid.innerHTML = MUSIC.map(m => {
+    const imgContent = m.cover
+      ? `<img src="${m.cover}" alt="${m.artist} — ${m.album}" loading="lazy">`
+      : `<div class="album-placeholder">♫</div>`;
+    return `
+      <a class="album-card" href="${m.url}" target="_blank" rel="noopener">
+        <div class="album-card-img-wrap">
+          ${imgContent}
+          <div class="album-card-overlay">
+            <span class="album-card-artist">${m.artist}</span>
+            <span class="album-card-name">${m.album}</span>
+            <span class="album-card-tag">${m.tag}</span>
+          </div>
+        </div>
+      </a>`;
+  }).join('');
 }
+buildMusicGrid();
+
+// Photo lightbox
+let currentPhotos = [];
+let currentLbIndex = 0;
 
 function openLightbox(seriesKey, index) {
   currentPhotos = SERIES_DATA[seriesKey];
@@ -609,13 +853,25 @@ document.getElementById('lightbox').addEventListener('click', e => {
   if (e.target.id === 'lightbox') closeLightbox();
 });
 
+function openSeries(key) {
+  showView('series-' + key);
+  // highlight correct nav item
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('nav-' + key);
+  if (el) el.classList.add('active');
+}
+
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   window.scrollTo(0, 0);
-  document.querySelectorAll('.sidebar-nav span').forEach(el => el.classList.remove('active'));
-  const navEl = name === 'about' ? 'nav-about' : 'nav-portfolio';
-  document.getElementById(navEl).classList.add('active');
+  // update nav highlights
+  document.querySelectorAll('.nav-item, .nav-infos').forEach(el => el.classList.remove('active'));
+  if (name === 'about')   document.getElementById('nav-about').classList.add('active');
+  if (name === 'listens') document.getElementById('nav-listens').classList.add('active');
+  if (name === 'portfolio') {
+    // no specific item active, all series visible
+  }
 }
 
 function toggleTheme() {
