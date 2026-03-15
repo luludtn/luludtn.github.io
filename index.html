@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OTFTCHCK — Photography</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◎</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
@@ -53,16 +54,32 @@ body {
   background: var(--bg);
   transition: background 0.4s, border-color 0.4s;
 }
+
+/* Logo block — name bold large, subtitle small below, left-aligned like YUKSEK */
 .sidebar-logo {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  line-height: 1.4;
   cursor: pointer;
   display: block;
   margin-bottom: 3rem;
+  line-height: 1;
 }
+.sidebar-logo-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: block;
+  line-height: 1.2;
+}
+.sidebar-logo-sub {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--muted);
+  display: block;
+  margin-top: 2px;
+}
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -116,18 +133,11 @@ body {
 .view.active { display: block; }
 
 /* ════════════════════════════════
-   PORTFOLIO HOME — YUKSEK style
-   3-col grid, title+photo overlap,
-   title fades in on hover
+   PORTFOLIO HOME
 ════════════════════════════════ */
-#view-portfolio {
-  min-height: 100vh;
-}
+#view-portfolio { min-height: 100vh; }
 
-/* Exact YUKSEK layout:
-   left col = photo + title below it
-   right two cols = photos stacked */
-.portfolio-grid {
+.portfolio-layout {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: var(--gap);
@@ -135,7 +145,16 @@ body {
   align-items: start;
 }
 
-/* Each card */
+.col-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.col-left .p-card img {
+  width: 100%;
+  height: auto;
+}
+
 .p-card {
   position: relative;
   cursor: pointer;
@@ -150,7 +169,6 @@ body {
 }
 .p-card:hover img { opacity: 0.88; }
 
-/* Title overlay — hidden, fades in on hover */
 .p-card-overlay {
   position: absolute;
   inset: 0;
@@ -173,41 +191,6 @@ body {
   transition: transform 0.35s;
 }
 .p-card:hover .p-card-title { transform: none; }
-
-/* YUKSEK-style layout:
-   series 0 → col 1, spans rows 1-2 (tall left column)
-   series 1 → col 2, row 1
-   series 2 → col 3, row 1
-   Then row 2 is filled by the tall col-1 card + 2 more photos in col 2-3 */
-
-/* We replicate the Beirut layout:
-   - Big photo top-left
-   - Title below it (not overlaid) also top-left
-   - Two photos stack on right */
-.portfolio-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: var(--gap);
-  padding: var(--gap);
-  align-items: start;
-}
-
-/* Left column — photo on top, big title below */
-.col-left {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap);
-}
-.col-left .p-card img {
-  width: 100%;
-  height: auto;
-}
-
-
-/* Right two columns — photos stacked */
-.col-right {
-  display: contents;
-}
 
 /* ════════════════════════════════
    SERIES VIEW
@@ -405,7 +388,9 @@ body {
     border-right: none; border-bottom: 1px solid var(--border);
     bottom: auto;
   }
-  .sidebar-logo { margin-bottom: 0; font-size: 11px; }
+  .sidebar-logo { margin-bottom: 0; }
+  .sidebar-logo-name { font-size: 12px; }
+  .sidebar-logo-sub { display: none; }
   .sidebar-nav { flex-direction: row; gap: 1.2rem; }
   .sidebar-nav span { font-size: 11px; }
   .skin-label { display: none; }
@@ -423,7 +408,10 @@ body {
 
 <aside id="sidebar">
   <div>
-    <span class="sidebar-logo" onclick="showView('portfolio')">OTFTCHCK<br>is curious</span>
+    <span class="sidebar-logo" onclick="showView('portfolio')">
+      <span class="sidebar-logo-name">OTFTCHCK</span>
+      <span class="sidebar-logo-sub">is curious</span>
+    </span>
     <nav class="sidebar-nav">
       <span onclick="showView('portfolio')" id="nav-portfolio" class="active">Portfolio</span>
       <span onclick="showView('about')"     id="nav-about">Infos</span>
@@ -439,12 +427,6 @@ body {
 
   <!-- ══ PORTFOLIO HOME ══ -->
   <div class="view active" id="view-portfolio">
-    <!--
-      YUKSEK Beirut layout:
-      Col 1: big photo + big title text below
-      Col 2: photo top + photo bottom
-      Col 3: photo top + photo bottom
-    -->
     <div class="portfolio-layout">
 
       <!-- COL 1: Tunisia -->
@@ -455,7 +437,6 @@ body {
             <h2 class="p-card-title">Un bout d'été<br>en Tunisie</h2>
           </div>
         </div>
-
       </div>
 
       <!-- COL 2: Barcelona -->
@@ -535,10 +516,6 @@ body {
 
 <script>
 
-// ═══════════════════════════════════════════════════════
-//  SERIES DATA
-// ═══════════════════════════════════════════════════════
-
 const SERIES_DATA = {
   tunisia: [
     "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498296/IMG_2654_hpwjpc.jpg",
@@ -572,15 +549,11 @@ const SERIES_DATA = {
   ],
   barcelona: [
     "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773573662/000021930016_n3i9bk.jpg",
-    // ↓ Add more Barcelona photos here
   ],
   eireland: [
     "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773574211/IMG_1846_k7bwnx.jpg",
-    // ↓ Add more Eireland photos here
   ]
 };
-
-// ═══════════════════════════════════════════════════════
 
 let currentPhotos = [];
 let currentLbIndex = 0;
@@ -599,7 +572,6 @@ function buildMasonry(seriesKey) {
   ).join('');
 }
 
-// Build all series grids on load
 Object.keys(SERIES_DATA).forEach(buildMasonry);
 
 function openSeries(key) {
