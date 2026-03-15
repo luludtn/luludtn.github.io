@@ -115,8 +115,10 @@ body {
 .series-header-back:hover { color: var(--fg); }
 .series-main-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; padding-left: var(--gap); }
 .series-main-desc { font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 300; padding-top: 0.5rem; padding-right: var(--gap); }
-.series-masonry { columns: 3; column-gap: var(--gap); padding: 1.5rem var(--gap) 6rem; }
-.series-photo { break-inside: avoid; margin-bottom: var(--gap); cursor: pointer; overflow: hidden; }
+.series-masonry { display: flex; flex-direction: column; gap: var(--gap); padding: 1.5rem var(--gap) 6rem; }
+.series-row { display: flex; gap: var(--gap); align-items: flex-start; }
+.series-row.has-landscape { align-items: center; }
+.series-photo { flex: 1; min-width: 0; cursor: pointer; overflow: hidden; }
 .series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
 .series-photo:hover img { opacity: 0.82; }
 
@@ -366,7 +368,7 @@ body {
 .about-row a:hover { opacity: 0.45; }
 
 @media (max-width: 1100px) { .album-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 900px) { .portfolio-layout { grid-template-columns: 1fr 1fr; } .series-masonry { columns: 2; } .series-header { grid-template-columns: 1fr; gap: 1rem; } .album-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; padding: 1.5rem 1rem 4rem; } }
+@media (max-width: 900px) { .portfolio-layout { grid-template-columns: 1fr 1fr; } .series-header { grid-template-columns: 1fr; gap: 1rem; } .album-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; padding: 1.5rem 1rem 4rem; } }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
   #sidebar { width: 100%; height: auto; position: fixed; top: 0; left: 0; right: 0; bottom: auto; flex-direction: column; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
@@ -381,7 +383,9 @@ body {
   .skin-icon { width: 22px; height: 22px; }
   #main { margin-left: 0; padding-top: 200px; }
   .portfolio-layout { grid-template-columns: 1fr; }
-  .series-masonry { columns: 1; }
+  .series-masonry { gap: 4px; padding: 1rem 4px 4rem; }
+  .series-row { flex-direction: column; }
+  .series-row.has-landscape { align-items: stretch; }
   #view-home { height: auto; padding-top: 4rem; }
   #view-about { padding: 1.5rem; }
 }
@@ -773,17 +777,64 @@ function buildAllMusicGrids() {
 }
 buildAllMusicGrids();
 
+const SERIES_VISUAL = {};
+
+function buildLayoutRows(photos) {
+  // separate into landscapes (w > h) and portraits (w <= h)
+  const lands = photos.filter(p => p.width > p.height);
+  const ports  = photos.filter(p => p.width <= p.height);
+  const rows = [];
+  let li = 0, pi = 0;
+  while (li < lands.length || pi < ports.length) {
+    const lLeft = lands.length - li;
+    const pLeft = ports.length - pi;
+    if (lLeft === 0) {
+      // only portraits remain — fill in rows of up to 3
+      const n = Math.min(3, pLeft);
+      rows.push({ hasLandscape: false, photos: ports.slice(pi, pi + n) });
+      pi += n;
+    } else if (lLeft >= 2 && pLeft === 1) {
+      // [L][P][L] — saves portraits when running low
+      rows.push({ hasLandscape: true, photos: [lands[li++], ports[pi++], lands[li++]] });
+    } else if (pLeft >= 2) {
+      // [P][L][P] — primary landscape pattern
+      rows.push({ hasLandscape: true, photos: [ports[pi++], lands[li++], ports[pi++]] });
+    } else if (lLeft >= 2 && pLeft >= 1) {
+      // [L][P][L]
+      rows.push({ hasLandscape: true, photos: [lands[li++], ports[pi++], lands[li++]] });
+    } else {
+      // edge-case leftovers: just output as-is
+      const remaining = [];
+      while (li < lands.length) remaining.push(lands[li++]);
+      while (pi < ports.length) remaining.push(ports[pi++]);
+      for (let i = 0; i < remaining.length; i += 3) {
+        const chunk = remaining.slice(i, i + 3);
+        rows.push({ hasLandscape: chunk.some(p => p.width > p.height), photos: chunk });
+      }
+      break;
+    }
+  }
+  return rows;
+}
+
 function buildMasonry(key) {
-  const photos = SERIES_DATA[key];
-  const grid   = document.getElementById('photos-' + key);
-  if (!photos?.length) {
+  const photosData = SERIES_DATA[key];
+  const grid = document.getElementById('photos-' + key);
+  if (!photosData?.length) {
     grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Coming soon</p>`;
     return;
   }
-  grid.innerHTML = photos.map((url, idx) => `
-    <div class="series-photo" onclick="openLightbox('${key}', ${idx})">
-      <img src="${url}" alt="" loading="lazy">
-    </div>`).join('');
+  const rows = buildLayoutRows(photosData);
+  const visual = rows.flatMap(r => r.photos);
+  SERIES_VISUAL[key] = visual;
+  grid.innerHTML = rows.map(row => {
+    const cls = 'series-row' + (row.hasLandscape ? ' has-landscape' : '');
+    const items = row.photos.map(p => {
+      const vi = visual.indexOf(p);
+      return `<div class="series-photo" onclick="openLightbox('${key}',${vi})"><img src="${p.url}" alt="" loading="lazy"></div>`;
+    }).join('');
+    return `<div class="${cls}">${items}</div>`;
+  }).join('');
 }
 Object.keys(SERIES_DATA).forEach(buildMasonry);
 
@@ -796,7 +847,7 @@ function fetchCloudinaryTag(tag, key) {
     .then(r => r.json())
     .then(data => {
       SERIES_DATA[key] = data.resources
-        .map(r => `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`)
+        .map(r => ({ url: `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`, width: r.width, height: r.height }))
         .sort(() => Math.random() - 0.5);
       buildMasonry(key);
     })
@@ -882,7 +933,8 @@ function showListensTier(tier) {
 let currentPhotos = [], currentLbIndex = 0;
 
 function openLightbox(key, index) {
-  currentPhotos = SERIES_DATA[key];
+  const visual = SERIES_VISUAL[key] || SERIES_DATA[key];
+  currentPhotos = visual.map(p => p.url || p);
   currentLbIndex = index;
   updateLightbox();
   document.getElementById('lightbox').classList.add('open');
@@ -938,7 +990,7 @@ function toggleSeesRandom() {
 function startSeesRandom() {
   const all = [];
   Object.keys(SERIES_DATA).forEach(key =>
-    SERIES_DATA[key].forEach(url => all.push({ url, series: key }))
+    SERIES_DATA[key].forEach(p => all.push({ url: p.url || p, series: key }))
   );
   if (!all.length) return;
   seesRandomState.playing = true;
