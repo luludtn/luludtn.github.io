@@ -118,8 +118,8 @@ body {
 .series-masonry { display: flex; flex-direction: column; gap: 3rem; padding: 3rem 2rem 7rem; }
 .series-row { display: flex; gap: 0.6rem; align-items: flex-start; }
 .series-photo { min-width: 0; cursor: pointer; overflow: hidden; }
-.series-photo img { width: 100%; height: auto; display: block; filter: grayscale(100%); transition: filter 0.5s ease, opacity 0.3s; }
-.series-photo:hover img { filter: grayscale(0%); opacity: 1; }
+.series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
+.series-photo:hover img { opacity: 0.88; }
 
 /* ════ HE LISTENS ════ */
 .listens-header { padding: 1.5rem 2rem 2rem; border-bottom: 1px solid var(--border); }
