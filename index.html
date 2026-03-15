@@ -795,39 +795,43 @@ function seededShuffle(arr, seed) {
   return a;
 }
 
-// Deterministic 3-photo row templates — cycles in fixed order
-// flex weights: 1=equal third, 2=double width
-const ROW_CYCLE = [
-  [1, 1, 1], // equal thirds
-  [2, 1, 1], // left big
-  [1, 1, 1], // equal thirds
-  [1, 1, 2], // right big
-  [1, 1, 1], // equal thirds
-  [1, 2, 1], // center big
+// Portrait-only rows cycle varied widths for rhythm
+const PORT_CYCLE = [
+  [1, 1, 1],
+  [2, 1, 1],
+  [1, 1, 1],
+  [1, 1, 2],
+  [1, 1, 1],
+  [1, 2, 1],
 ];
+// Landscape rows: equal columns, landscape position cycles right→center→left
+const LAND_POS = [2, 1, 0];
 
 function buildLayoutRows(photos) {
   const rows = [];
-  let idx = 0, rowNum = 0;
+  let idx = 0, portRow = 0, landRow = 0;
 
   while (idx < photos.length) {
     const rem = photos.length - idx;
     const n = Math.min(3, rem);
-    const flexes = n === 3 ? ROW_CYCLE[rowNum % ROW_CYCLE.length] : Array(n).fill(1);
-    rowNum++;
-
     const chunk = photos.slice(idx, idx + n);
     idx += n;
 
-    // Always place landscape in the widest slot (deterministic)
-    if (n > 1) {
-      const wideSlot = flexes.indexOf(Math.max(...flexes));
-      const landSlot = chunk.findIndex(p => p.width > p.height);
-      if (landSlot !== -1 && landSlot !== wideSlot)
-        [chunk[wideSlot], chunk[landSlot]] = [chunk[landSlot], chunk[wideSlot]];
-    }
+    const landSlot = n === 3 ? chunk.findIndex(p => p.width > p.height) : -1;
 
-    rows.push({ flexes, photos: chunk });
+    if (landSlot !== -1) {
+      // Landscape row — equal columns, cycle landscape position (right / center / left)
+      const targetPos = LAND_POS[landRow % LAND_POS.length];
+      landRow++;
+      if (landSlot !== targetPos)
+        [chunk[targetPos], chunk[landSlot]] = [chunk[landSlot], chunk[targetPos]];
+      rows.push({ flexes: [1, 1, 1], photos: chunk });
+    } else {
+      // Portrait-only row — vary flex widths for dynamic rhythm
+      const flexes = n === 3 ? PORT_CYCLE[portRow % PORT_CYCLE.length] : Array(n).fill(1);
+      portRow++;
+      rows.push({ flexes, photos: chunk });
+    }
   }
   return rows;
 }
