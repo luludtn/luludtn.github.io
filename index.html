@@ -795,43 +795,50 @@ function seededShuffle(arr, seed) {
   return a;
 }
 
-// Portrait-only rows cycle varied widths for rhythm
-const PORT_CYCLE = [
-  [1, 1, 1],
-  [2, 1, 1],
-  [1, 1, 1],
-  [1, 1, 2],
-  [1, 1, 1],
-  [1, 2, 1],
-];
-// Landscape rows: equal columns, landscape position cycles right→center→left
+// Landscape position cycles: right → center → left → repeat
 const LAND_POS = [2, 1, 0];
 
-function buildLayoutRows(photos) {
-  const rows = [];
-  let idx = 0, portRow = 0, landRow = 0;
+// Rearrange so no chunk of 3 contains more than 1 landscape.
+// Swaps excess landscapes with the nearest later portrait (minimal disruption).
+function spaceLandscapes(photos) {
+  const arr = [...photos];
+  for (let i = 0; i + 2 < arr.length; i += 3) {
+    const landIdxs = [0, 1, 2].filter(j => arr[i + j].width > arr[i + j].height);
+    for (let k = 1; k < landIdxs.length; k++) {
+      // Find the first portrait after this chunk to swap with
+      for (let j = i + 3; j < arr.length; j++) {
+        if (arr[j].width <= arr[j].height) {
+          [arr[i + landIdxs[k]], arr[j]] = [arr[j], arr[i + landIdxs[k]]];
+          break;
+        }
+      }
+    }
+  }
+  return arr;
+}
 
-  while (idx < photos.length) {
-    const rem = photos.length - idx;
-    const n = Math.min(3, rem);
-    const chunk = photos.slice(idx, idx + n);
+function buildLayoutRows(photos) {
+  const spaced = spaceLandscapes(photos);
+  const rows = [];
+  let idx = 0, landRow = 0;
+
+  while (idx < spaced.length) {
+    const n = Math.min(3, spaced.length - idx);
+    const chunk = spaced.slice(idx, idx + n);
     idx += n;
 
-    const landSlot = n === 3 ? chunk.findIndex(p => p.width > p.height) : -1;
+    const landSlot = chunk.findIndex(p => p.width > p.height);
 
-    if (landSlot !== -1) {
-      // Landscape row — equal columns, cycle landscape position (right / center / left)
-      const targetPos = LAND_POS[landRow % LAND_POS.length];
+    if (n === 3 && landSlot !== -1) {
+      // Exactly 1 landscape guaranteed — move to cycling position
+      const target = LAND_POS[landRow % LAND_POS.length];
       landRow++;
-      if (landSlot !== targetPos)
-        [chunk[targetPos], chunk[landSlot]] = [chunk[landSlot], chunk[targetPos]];
-      rows.push({ flexes: [1, 1, 1], photos: chunk });
-    } else {
-      // Portrait-only row — vary flex widths for dynamic rhythm
-      const flexes = n === 3 ? PORT_CYCLE[portRow % PORT_CYCLE.length] : Array(n).fill(1);
-      portRow++;
-      rows.push({ flexes, photos: chunk });
+      if (landSlot !== target)
+        [chunk[target], chunk[landSlot]] = [chunk[landSlot], chunk[target]];
     }
+
+    // All rows use equal columns — portraits are always equally the largest photos
+    rows.push({ flexes: Array(n).fill(1), photos: chunk });
   }
   return rows;
 }
