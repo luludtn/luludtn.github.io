@@ -696,9 +696,9 @@ body {
           He listens <span class="nav-arrow">›</span>
         </div>
         <div class="nav-section-items">
-          <button class="nav-item" id="nav-honey"     onclick="showListensTier('honey')">🍯 10,000 streams</button>
-          <button class="nav-item" id="nav-bee"       onclick="showListensTier('bee')">🐝 100,000 streams</button>
-          <button class="nav-item" id="nav-sunflower" onclick="showListensTier('sunflower')">🌻 300,000 streams</button>
+          <button class="nav-item" id="nav-honey"     onclick="showListensTier('honey')">Honey</button>
+          <button class="nav-item" id="nav-bee"       onclick="showListensTier('bee')">Bee</button>
+          <button class="nav-item" id="nav-sunflower" onclick="showListensTier('sunflower')">Flower</button>
         </div>
       </div>
 
@@ -779,8 +779,8 @@ body {
   <div class="view" id="view-listens-honey">
     <div class="listens-header">
       <button class="series-header-back" onclick="showView('home')">Back</button>
-      <h1 class="listens-title">🍯 0-10K </h1>
-      <p class="listens-subtitle">"Still in the hive" Warm, dark, and not yet known. This honey hasn't left the comb. </p>
+      <h1 class="listens-title">Honey</h1>
+      <p class="listens-subtitle">Warm, dark, and not yet known. This honey hasn't left the comb.</p>
     </div>
     <div class="album-grid" id="album-grid-honey"></div>
   </div>
@@ -789,8 +789,8 @@ body {
   <div class="view" id="view-listens-bee">
     <div class="listens-header">
       <button class="series-header-back" onclick="showView('home')">Back</button>
-      <h1 class="listens-title">🐝 100,000 streams</h1>
-      <p class="listens-subtitle">Buzzing — these are finding their crowd.</p>
+      <h1 class="listens-title">Bee</h1>
+      <p class="listens-subtitle">Wings open for the first time. The air is new, the distance is real.</p>
     </div>
     <div class="album-grid" id="album-grid-bee"></div>
   </div>
@@ -799,8 +799,8 @@ body {
   <div class="view" id="view-listens-sunflower">
     <div class="listens-header">
       <button class="series-header-back" onclick="showView('home')">Back</button>
-      <h1 class="listens-title">🌻 300,000 streams</h1>
-      <p class="listens-subtitle">Blooming — these ones have broken through.</p>
+      <h1 class="listens-title">Flower</h1>
+      <p class="listens-subtitle">They've been here enough times that the flowers lean toward them.</p>
     </div>
     <div class="album-grid" id="album-grid-sunflower"></div>
   </div>
@@ -887,7 +887,7 @@ const SERIES_DATA = {
 const MUSIC_TIERS = {
 
   honey: [
-    // 🍯 Under 10,000 streams
+    // Honey — 0 to 10K streams
     {
       artist:  "Nic Clay",
       album:   "Dancefloor",
@@ -897,18 +897,18 @@ const MUSIC_TIERS = {
       embedId: "3j2VUykCoOeB8Q7YHySdk0",
       streams: "8,304"
     },
-    // ↓ Add more 🍯 picks here
+    // ↓ Add more Honey picks here
   ],
 
   bee: [
-    // 🐝 Under 100,000 streams
-    // ↓ Add your 🐝 picks here
+    // Bee — 10K to 100K streams
+    // ↓ Add your Bee picks here
     { artist: "Artist Name", album: "Album Title", tag: "Genre", cover: null, url: "https://open.spotify.com" },
   ],
 
   sunflower: [
-    // 🌻 300,000+ streams
-    // ↓ Add your 🌻 picks here
+    // Flower — 100K to 500K streams
+    // ↓ Add your Flower picks here
     { artist: "Artist Name", album: "Album Title", tag: "Genre", cover: null, url: "https://open.spotify.com" },
   ]
 
