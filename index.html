@@ -604,39 +604,8 @@ body {
 <script>
 
 const SERIES_DATA = {
-  tunisia: [
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498296/IMG_2654_hpwjpc.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2719_gclk2x.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498290/IMG_2659_prvga5.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498278/IMG_2733_gl8rkg.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498283/IMG_2711_ki4rxz.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498273/IMG_2765_unjlfa.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498282/IMG_2714_ezrgyo.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498272/IMG_2745_scyl19.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498282/IMG_2713_zgxofw.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498268/IMG_2763_zn5xnu.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2721_dqfbgz.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498268/IMG_2762_aizlfx.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498279/IMG_2728_mozeij.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498266/IMG_2773_svojir.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2782_sol2ha.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2777_mnnsn9.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2776_t90ye0.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498264/IMG_2784_ljoevc.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2792_gdnpuo.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2794_o4dptr.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2791_rruvg2.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2798_gqk76o.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2799_of1tjb.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2797_vdhqyp.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498261/IMG_2808_iqvfxr.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498260/IMG_2807_b2ezfg.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2813_ribulw.jpg",
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2803_efhmxx.jpg",
-  ],
-  barcelona: [
-    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773573662/000021930016_n3i9bk.jpg",
-  ],
+  tunisia:   [],
+  barcelona: [],
   eireland: [
     "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773574211/IMG_1846_k7bwnx.jpg",
   ]
@@ -819,6 +788,26 @@ function buildMasonry(key) {
     </div>`).join('');
 }
 Object.keys(SERIES_DATA).forEach(buildMasonry);
+
+// ── Cloudinary dynamic fetch ──
+const CLD = 'dzhvoacrg';
+function fetchCloudinaryTag(tag, key) {
+  const grid = document.getElementById('photos-' + key);
+  if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Loading…</p>`;
+  fetch(`https://res.cloudinary.com/${CLD}/image/list/${tag}.json`)
+    .then(r => r.json())
+    .then(data => {
+      SERIES_DATA[key] = data.resources
+        .map(r => `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`)
+        .sort(() => Math.random() - 0.5);
+      buildMasonry(key);
+    })
+    .catch(() => {
+      if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Could not load photos</p>`;
+    });
+}
+fetchCloudinaryTag('Tunisia', 'tunisia');
+fetchCloudinaryTag('Barcelona', 'barcelona');
 
 // ═══════════════════════════════════════════════════════
 //  SHUFFLE PLAYER
