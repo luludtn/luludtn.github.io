@@ -205,12 +205,11 @@ body {
 
 /* ════ LISTENS MAIN PAGE ════ */
 #view-listens.active {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 3rem 2rem;
 }
 .listens-player-center {
   display: flex;
@@ -227,7 +226,6 @@ body {
   color: var(--fg);
   text-align: center;
   user-select: none;
-  min-height: 0.88em;
 }
 .global-section-label .letter {
   display: inline-block;
@@ -1069,8 +1067,8 @@ function discoverCurrentTrack() {
 
 function copyGlobalTrackUrl() {
   const track = globalPlayerState.queue[globalPlayerState.index];
-  if (!track?.url) return;
-  navigator.clipboard.writeText(track.url).then(() => {
+  if (!track?.artist) return;
+  navigator.clipboard.writeText(track.artist + ' — ' + track.album).then(() => {
     const btn = document.getElementById('global-copy-btn');
     btn.textContent = 'copied ✓';
     setTimeout(() => btn.textContent = 'copy', 2000);
@@ -1081,8 +1079,8 @@ function copyTierTrackUrl(tier) {
   const state = playerState[tier];
   if (!state) return;
   const track = state.queue[state.index];
-  if (!track?.url) return;
-  navigator.clipboard.writeText(track.url).then(() => {
+  if (!track?.artist) return;
+  navigator.clipboard.writeText(track.artist + ' — ' + track.album).then(() => {
     const btn = document.getElementById('copy-btn-' + tier);
     btn.textContent = 'copied ✓';
     setTimeout(() => btn.textContent = 'copy', 2000);
