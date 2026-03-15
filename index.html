@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OTFTCHCK — Photography</title>
+<title>OTFTCHCK</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◎</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@ a { text-decoration: none; color: inherit; }
   --fg:        #0a0a0a;
   --muted:     #999;
   --border:    #e8e8e8;
-  --sidebar-w: 240px;
+  --sidebar-w: 280px;
   --gap:       8px;
   --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -39,7 +39,7 @@ body {
 }
 
 /* ════════════════════════════════
-   SIDEBAR
+   SIDEBAR — fixed left, YUKSEK style
 ════════════════════════════════ */
 #sidebar {
   position: fixed;
@@ -49,17 +49,19 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 2rem;
+  padding: 2rem 2rem 2rem;
   z-index: 300;
   background: var(--bg);
   transition: background 0.4s, border-color 0.4s;
+  overflow-y: auto;
 }
 
+/* Logo */
 .sidebar-logo {
   cursor: pointer;
   display: block;
   margin-bottom: 2.5rem;
-  line-height: 1;
+  flex-shrink: 0;
 }
 .sidebar-logo-name {
   font-size: 15px;
@@ -73,43 +75,73 @@ body {
   font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.04em;
-  text-transform: lowercase;
   color: var(--muted);
   display: block;
   margin-top: 2px;
 }
 
-/* Nav sections */
+/* Nav wrapper */
 .sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 1.8rem;
   flex: 1;
-}
-.nav-section-label {
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.5rem;
-  display: block;
-}
-.nav-section-items {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
 }
+
+/* ── Section header (He sees / He listens) ── */
+.nav-section-header {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg);
+  cursor: pointer;
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  margin-top: 0.6rem;
+  transition: opacity 0.2s;
+}
+.nav-section-header:hover { opacity: 0.5; }
+.nav-section-header.active {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Arrow indicator */
+.nav-arrow {
+  font-size: 9px;
+  transition: transform 0.25s;
+  color: var(--muted);
+}
+.nav-section.open .nav-arrow { transform: rotate(90deg); }
+
+/* ── Dropdown items ── */
+.nav-section-items {
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 0;
+  margin-top: 0.1rem;
+}
+.nav-section.open .nav-section-items { display: flex; }
+
 .nav-item {
   font-size: 13px;
   font-weight: 400;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
   color: var(--muted);
   cursor: pointer;
-  transition: color 0.2s;
-  padding: 3px 0;
+  padding: 4px 0 4px 0;
   display: block;
+  transition: color 0.2s;
+  border: none;
+  background: none;
+  font-family: var(--font-sans);
+  text-align: left;
+  width: 100%;
 }
 .nav-item:hover { color: var(--fg); }
 .nav-item.active {
@@ -118,42 +150,31 @@ body {
   text-underline-offset: 3px;
 }
 
-/* Top-level section headers (He sees / He listens) */
-.nav-section-header {
+/* Top-level flat items (Infos) */
+.nav-flat {
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fg);
-  margin-bottom: 0.4rem;
-  display: block;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.nav-section-header:hover { opacity: 0.5; }
-
-.sidebar-bottom {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.nav-infos {
-  font-size: 13px;
-  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
   cursor: pointer;
+  padding: 5px 0;
+  display: block;
   transition: color 0.2s;
-  padding: 4px 0;
+  margin-top: 0.6rem;
 }
-.nav-infos:hover { color: var(--fg); }
-.nav-infos.active {
+.nav-flat:hover { color: var(--fg); }
+.nav-flat.active {
   color: var(--fg);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
+/* Bottom */
+.sidebar-bottom {
+  padding-top: 1.5rem;
+  flex-shrink: 0;
+}
 .skin-toggle {
   display: flex;
   align-items: center;
@@ -178,14 +199,38 @@ body {
 .skin-toggle:hover .skin-label { color: var(--fg); }
 
 /* ════════════════════════════════
-   MAIN
+   MAIN CONTENT
 ════════════════════════════════ */
-#main { margin-left: var(--sidebar-w); }
+#main { margin-left: var(--sidebar-w); min-height: 100vh; }
 .view { display: none; }
 .view.active { display: block; }
 
 /* ════════════════════════════════
-   HE SEES — portfolio home
+   HOME — blank with tagline
+════════════════════════════════ */
+#view-home {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+.home-tagline {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--fg);
+  max-width: 44ch;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+.home-tagline em {
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* ════════════════════════════════
+   HE SEES — portfolio grid
 ════════════════════════════════ */
 #view-portfolio { min-height: 100vh; }
 
@@ -305,7 +350,6 @@ body {
    HE LISTENS
 ════════════════════════════════ */
 #view-listens { min-height: 100vh; }
-
 .listens-header {
   padding: 2.5rem 2rem 2rem;
   border-bottom: 1px solid var(--border);
@@ -322,15 +366,12 @@ body {
   color: var(--muted);
   font-weight: 300;
 }
-
-/* Album grid — 4 cols, each card square-ish */
 .album-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--gap);
   padding: 1.5rem var(--gap) 6rem;
 }
-
 .album-card {
   position: relative;
   cursor: pointer;
@@ -338,7 +379,6 @@ body {
   display: block;
   text-decoration: none;
 }
-/* Square aspect ratio */
 .album-card-img-wrap {
   position: relative;
   width: 100%;
@@ -354,12 +394,7 @@ body {
   object-fit: cover;
   transition: opacity 0.4s, transform 0.4s;
 }
-.album-card:hover .album-card-img-wrap img {
-  opacity: 0.75;
-  transform: scale(1.03);
-}
-
-/* Overlay on hover */
+.album-card:hover .album-card-img-wrap img { opacity: 0.75; transform: scale(1.03); }
 .album-card-overlay {
   position: absolute;
   inset: 0;
@@ -373,12 +408,10 @@ body {
   pointer-events: none;
 }
 .album-card:hover .album-card-overlay { opacity: 1; }
-
 .album-card-artist {
   font-size: 13px;
   font-weight: 700;
   color: #fff;
-  line-height: 1.2;
   transform: translateY(6px);
   transition: transform 0.35s;
 }
@@ -386,7 +419,6 @@ body {
   font-size: 11px;
   font-weight: 300;
   color: rgba(255,255,255,0.8);
-  line-height: 1.3;
   margin-top: 2px;
   transform: translateY(6px);
   transition: transform 0.35s 0.03s;
@@ -403,8 +435,6 @@ body {
 .album-card:hover .album-card-artist,
 .album-card:hover .album-card-name,
 .album-card:hover .album-card-tag { transform: none; }
-
-/* Placeholder for albums without cover */
 .album-placeholder {
   width: 100%;
   height: 100%;
@@ -524,9 +554,7 @@ body {
 .about-row a:hover { opacity: 0.45; }
 
 /* ── MOBILE ── */
-@media (max-width: 1100px) {
-  .album-grid { grid-template-columns: repeat(3, 1fr); }
-}
+@media (max-width: 1100px) { .album-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 900px) {
   .portfolio-layout { grid-template-columns: 1fr 1fr; }
   .series-masonry { columns: 2; }
@@ -536,32 +564,28 @@ body {
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
   #sidebar {
-    width: 100%; height: 52px;
-    flex-direction: row; align-items: center;
-    padding: 0 1rem;
-    border-right: none; border-bottom: 1px solid var(--border);
-    bottom: auto;
-    gap: 1.5rem;
+    width: 100%; height: auto;
+    position: fixed; top: 0; left: 0; right: 0; bottom: auto;
+    flex-direction: column;
+    padding: 1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    overflow: visible;
   }
-  .sidebar-logo { margin-bottom: 0; }
-  .sidebar-logo-name { font-size: 12px; }
+  .sidebar-logo { margin-bottom: 0.5rem; }
   .sidebar-logo-sub { display: none; }
-  .sidebar-nav { flex-direction: row; gap: 0; }
-  .nav-section { display: contents; }
-  .nav-section-label { display: none; }
-  .nav-section-header { font-size: 11px; margin-bottom: 0; }
-  .nav-section-items { flex-direction: row; gap: 0.8rem; }
-  .nav-item { font-size: 11px; padding: 0; }
-  .nav-infos { font-size: 11px; }
+  .sidebar-logo-name { font-size: 12px; }
+  .sidebar-nav { gap: 0; }
+  .nav-section-header { font-size: 11px; margin-top: 0.3rem; }
+  .nav-flat { font-size: 11px; margin-top: 0.3rem; }
+  .nav-item { font-size: 11px; }
   .skin-label { display: none; }
   .skin-icon { width: 22px; height: 22px; }
-  #main { margin-left: 0; padding-top: 52px; }
+  #main { margin-left: 0; padding-top: 200px; }
   .portfolio-layout { grid-template-columns: 1fr; }
-  .col-left { display: block; }
   .series-masonry { columns: 1; }
-  .album-grid { grid-template-columns: repeat(2, 1fr); }
+  #view-home { height: auto; padding-top: 4rem; }
   #view-about { padding: 1.5rem; }
-  .listens-header { padding: 1.5rem; }
 }
 
 </style>
@@ -569,37 +593,43 @@ body {
 <body>
 
 <aside id="sidebar">
-  <div style="display:flex;flex-direction:column;gap:0;flex:1;overflow:hidden;">
-    <span class="sidebar-logo" onclick="showView('portfolio')">
+  <div>
+    <span class="sidebar-logo" onclick="showView('home')">
       <span class="sidebar-logo-name">OTFTCHCK</span>
       <span class="sidebar-logo-sub">is curious</span>
     </span>
 
     <nav class="sidebar-nav">
 
-      <!-- He sees -->
-      <div class="nav-section">
-        <span class="nav-section-header" onclick="showView('portfolio')">He sees</span>
+      <!-- He sees dropdown -->
+      <div class="nav-section" id="section-sees">
+        <div class="nav-section-header" onclick="toggleSection('sees')">
+          He sees <span class="nav-arrow">›</span>
+        </div>
         <div class="nav-section-items">
-          <span class="nav-item active" id="nav-tunisia"   onclick="openSeries('tunisia')">Un bout d'été en Tunisie</span>
-          <span class="nav-item"        id="nav-barcelona" onclick="openSeries('barcelona')">Barcelona Bella</span>
-          <span class="nav-item"        id="nav-eireland"  onclick="openSeries('eireland')">Eireland</span>
+          <button class="nav-item" id="nav-tunisia"   onclick="openSeries('tunisia')">Un bout d'été en Tunisie</button>
+          <button class="nav-item" id="nav-barcelona" onclick="openSeries('barcelona')">Barcelona Bella</button>
+          <button class="nav-item" id="nav-eireland"  onclick="openSeries('eireland')">Eireland</button>
         </div>
       </div>
 
-      <!-- He listens -->
-      <div class="nav-section">
-        <span class="nav-section-header" onclick="showView('listens')">He listens</span>
+      <!-- He listens dropdown -->
+      <div class="nav-section" id="section-listens">
+        <div class="nav-section-header" onclick="toggleSection('listens')">
+          He listens <span class="nav-arrow">›</span>
+        </div>
         <div class="nav-section-items">
-          <span class="nav-item" id="nav-listens" onclick="showView('listens')">All picks</span>
+          <button class="nav-item" id="nav-listens" onclick="showView('listens')">All picks</button>
         </div>
       </div>
+
+      <!-- Infos flat -->
+      <span class="nav-flat" id="nav-about" onclick="showView('about')">Infos</span>
 
     </nav>
   </div>
 
   <div class="sidebar-bottom">
-    <span class="nav-infos" id="nav-about" onclick="showView('about')">Infos</span>
     <div class="skin-toggle" onclick="toggleTheme()">
       <div class="skin-icon"></div>
       <span class="skin-label">Change skin</span>
@@ -609,8 +639,15 @@ body {
 
 <div id="main">
 
-  <!-- ══ PORTFOLIO HOME ══ -->
-  <div class="view active" id="view-portfolio">
+  <!-- ══ HOME ══ -->
+  <div class="view active" id="view-home">
+    <div class="home-tagline">
+      <em>Otftchck</em> is standing in the middle of everything, observing, listening and ultimately sharing.
+    </div>
+  </div>
+
+  <!-- ══ PORTFOLIO (He sees overview) ══ -->
+  <div class="view" id="view-portfolio">
     <div class="portfolio-layout">
       <div class="col-left">
         <div class="p-card" onclick="openSeries('tunisia')">
@@ -670,7 +707,7 @@ body {
 
   <!-- ══ ABOUT ══ -->
   <div class="view" id="view-about">
-    <button class="about-back" onclick="showView('portfolio')">Back</button>
+    <button class="about-back" onclick="showView('home')">Back</button>
     <div class="about-inner">
       <h1 class="about-name">OTFTCHCK</h1>
       <p class="about-bio">Write a short bio here — who you are, where you're based, and what drives your work.</p>
@@ -699,7 +736,6 @@ body {
 // ═══════════════════════════════════════════════════════
 //  PHOTO SERIES
 // ═══════════════════════════════════════════════════════
-
 const SERIES_DATA = {
   tunisia: [
     "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498296/IMG_2654_hpwjpc.jpg",
@@ -741,90 +777,62 @@ const SERIES_DATA = {
 
 // ═══════════════════════════════════════════════════════
 //  MUSIC PICKS
-//  Each entry: { artist, album, tag, cover, url }
-//  cover = URL to album art image (upload to Cloudinary or use any image URL)
-//  url   = link to Spotify / SoundCloud / YouTube / etc.
-//  tag   = genre or vibe label
+//  Add yours here: { artist, album, tag, cover, url }
 // ═══════════════════════════════════════════════════════
-
 const MUSIC = [
-  // ↓ Replace these examples with your actual picks
-  {
-    artist: "Artist Name",
-    album:  "Album Title",
-    tag:    "Hip-hop",
-    cover:  null,
-    url:    "https://open.spotify.com"
-  },
-  {
-    artist: "Artist Name",
-    album:  "Album Title",
-    tag:    "Jazz",
-    cover:  null,
-    url:    "https://soundcloud.com"
-  },
-  {
-    artist: "Artist Name",
-    album:  "Album Title",
-    tag:    "Electronic",
-    cover:  null,
-    url:    "https://youtube.com"
-  },
-  {
-    artist: "Artist Name",
-    album:  "Album Title",
-    tag:    "R&B",
-    cover:  null,
-    url:    "https://open.spotify.com"
-  },
+  { artist: "Artist Name", album: "Album Title", tag: "Hip-hop", cover: null, url: "https://open.spotify.com" },
+  { artist: "Artist Name", album: "Album Title", tag: "Jazz",    cover: null, url: "https://soundcloud.com"  },
+  { artist: "Artist Name", album: "Album Title", tag: "Electronic", cover: null, url: "https://youtube.com" },
+  { artist: "Artist Name", album: "Album Title", tag: "R&B",     cover: null, url: "https://open.spotify.com" },
 ];
 
 // ═══════════════════════════════════════════════════════
 
-// Build photo masonry grids
-function buildMasonry(seriesKey) {
-  const photos = SERIES_DATA[seriesKey];
-  const grid = document.getElementById('photos-' + seriesKey);
-  if (!photos || !photos.length) {
-    grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted)">Coming soon</p>`;
+// Build photo grids
+function buildMasonry(key) {
+  const photos = SERIES_DATA[key];
+  const grid = document.getElementById('photos-' + key);
+  if (!photos?.length) {
+    grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Coming soon</p>`;
     return;
   }
   grid.innerHTML = photos.map((url, idx) => `
-    <div class="series-photo" onclick="openLightbox('${seriesKey}', ${idx})">
+    <div class="series-photo" onclick="openLightbox('${key}', ${idx})">
       <img src="${url}" alt="" loading="lazy">
-    </div>`
-  ).join('');
+    </div>`).join('');
 }
 Object.keys(SERIES_DATA).forEach(buildMasonry);
 
 // Build music grid
 function buildMusicGrid() {
-  const grid = document.getElementById('album-grid');
-  grid.innerHTML = MUSIC.map(m => {
-    const imgContent = m.cover
-      ? `<img src="${m.cover}" alt="${m.artist} — ${m.album}" loading="lazy">`
-      : `<div class="album-placeholder">♫</div>`;
-    return `
-      <a class="album-card" href="${m.url}" target="_blank" rel="noopener">
-        <div class="album-card-img-wrap">
-          ${imgContent}
-          <div class="album-card-overlay">
-            <span class="album-card-artist">${m.artist}</span>
-            <span class="album-card-name">${m.album}</span>
-            <span class="album-card-tag">${m.tag}</span>
-          </div>
+  document.getElementById('album-grid').innerHTML = MUSIC.map(m => `
+    <a class="album-card" href="${m.url}" target="_blank" rel="noopener">
+      <div class="album-card-img-wrap">
+        ${m.cover ? `<img src="${m.cover}" alt="${m.artist}" loading="lazy">` : `<div class="album-placeholder">♫</div>`}
+        <div class="album-card-overlay">
+          <span class="album-card-artist">${m.artist}</span>
+          <span class="album-card-name">${m.album}</span>
+          <span class="album-card-tag">${m.tag}</span>
         </div>
-      </a>`;
-  }).join('');
+      </div>
+    </a>`).join('');
 }
 buildMusicGrid();
 
-// Photo lightbox
-let currentPhotos = [];
-let currentLbIndex = 0;
+// Dropdown toggle
+function toggleSection(name) {
+  const sec = document.getElementById('section-' + name);
+  const isOpen = sec.classList.contains('open');
+  // close all
+  document.querySelectorAll('.nav-section').forEach(s => s.classList.remove('open'));
+  if (!isOpen) sec.classList.add('open');
+}
 
-function openLightbox(seriesKey, index) {
-  currentPhotos = SERIES_DATA[seriesKey];
+// Lightbox
+let currentPhotos = [], currentLbIndex = 0;
+
+function openLightbox(key, index) {
+  currentPhotos = SERIES_DATA[key];
   currentLbIndex = index;
   updateLightbox();
   document.getElementById('lightbox').classList.add('open');
@@ -832,8 +840,7 @@ function openLightbox(seriesKey, index) {
 }
 function updateLightbox() {
   document.getElementById('lb-img').src = currentPhotos[currentLbIndex];
-  document.getElementById('lb-counter').textContent =
-    (currentLbIndex + 1) + ' / ' + currentPhotos.length;
+  document.getElementById('lb-counter').textContent = (currentLbIndex + 1) + ' / ' + currentPhotos.length;
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
@@ -855,22 +862,22 @@ document.getElementById('lightbox').addEventListener('click', e => {
 
 function openSeries(key) {
   showView('series-' + key);
-  // highlight correct nav item
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   const el = document.getElementById('nav-' + key);
   if (el) el.classList.add('active');
+  // keep "He sees" open
+  document.getElementById('section-sees').classList.add('open');
 }
 
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   window.scrollTo(0, 0);
-  // update nav highlights
-  document.querySelectorAll('.nav-item, .nav-infos').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item, .nav-flat').forEach(el => el.classList.remove('active'));
   if (name === 'about')   document.getElementById('nav-about').classList.add('active');
-  if (name === 'listens') document.getElementById('nav-listens').classList.add('active');
-  if (name === 'portfolio') {
-    // no specific item active, all series visible
+  if (name === 'listens') {
+    document.getElementById('nav-listens').classList.add('active');
+    document.getElementById('section-listens').classList.add('open');
   }
 }
 
