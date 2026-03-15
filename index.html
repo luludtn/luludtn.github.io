@@ -111,107 +111,29 @@ body {
 .view.active { display: block; }
 
 /* ════════════════════════════════
-   PORTFOLIO HOME
-   3-col masonry, title on hover
+   LANDING PAGE — single series
+   Title + description at top
+   then masonry grid
 ════════════════════════════════ */
-#portfolio-grid {
-  columns: 3;
-  column-gap: var(--gap);
-  padding: var(--gap);
-}
-.portfolio-card {
-  break-inside: avoid;
-  margin-bottom: var(--gap);
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
-.portfolio-card img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: opacity 0.4s;
-}
-.portfolio-card-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0);
-  transition: background 0.4s;
-  display: flex;
-  align-items: flex-end;
-  padding: 14px;
-}
-.portfolio-card:hover .portfolio-card-overlay { background: rgba(0,0,0,0.38); }
-.portfolio-card-title {
-  font-size: clamp(1rem, 1.8vw, 1.5rem);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  color: #fff;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.35s, transform 0.35s;
-}
-.portfolio-card:hover .portfolio-card-title { opacity: 1; transform: none; }
-.cover-placeholder {
-  width: 100%;
-  aspect-ratio: 3/4;
-  background: #ece9e3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #bbb;
-}
-[data-theme="dark"] .cover-placeholder { background: #1a1a1a; color: #444; }
+#view-portfolio { min-height: 100vh; }
 
-/* ════════════════════════════════
-   SERIES DETAIL — exact YUKSEK layout
-   Title + description at TOP
-   Then 3-col masonry, photos FULLY shown
-════════════════════════════════ */
-#view-project { min-height: 100vh; }
-
-/* Top header: title left, description right */
-.detail-header {
-  padding: 2.5rem var(--gap) 2rem calc(var(--gap) + 0px);
+.landing-header {
+  padding: 2.5rem var(--gap) 2rem;
 }
-.detail-back {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-family: var(--font-sans);
-  transition: color 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 0 1.5rem 0;
-}
-.detail-back::before { content: '←'; }
-.detail-back:hover { color: var(--fg); }
-
-.detail-title-row {
+.landing-title-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 3rem;
   align-items: start;
   padding: 0 var(--gap);
 }
-.detail-main-title {
+.landing-title {
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.03em;
 }
-.detail-main-desc {
+.landing-desc {
   font-size: 14px;
   line-height: 1.75;
   color: var(--muted);
@@ -219,26 +141,26 @@ body {
   padding-top: 0.4rem;
 }
 
-/* 3-column masonry — photos shown FULLY, no crop */
-.detail-masonry {
+/* 3-col masonry — full photos, no crop */
+.landing-masonry {
   columns: 3;
   column-gap: var(--gap);
   padding: 2rem var(--gap) 6rem;
 }
-.detail-masonry-item {
+.landing-photo-item {
   break-inside: avoid;
   margin-bottom: var(--gap);
   overflow: hidden;
   cursor: pointer;
   display: block;
 }
-.detail-masonry-item img {
+.landing-photo-item img {
   width: 100%;
-  height: auto;        /* FULL photo — no cropping */
+  height: auto;
   display: block;
   transition: opacity 0.3s;
 }
-.detail-masonry-item:hover img { opacity: 0.85; }
+.landing-photo-item:hover img { opacity: 0.85; }
 
 .no-photos {
   padding: 4rem var(--gap);
@@ -356,8 +278,8 @@ body {
 
 /* ── MOBILE ── */
 @media (max-width: 900px) {
-  #portfolio-grid, .detail-masonry { columns: 2; }
-  .detail-title-row { grid-template-columns: 1fr; gap: 1rem; }
+  .landing-masonry { columns: 2; }
+  .landing-title-row { grid-template-columns: 1fr; gap: 1rem; }
 }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
@@ -374,7 +296,7 @@ body {
   .skin-label { display: none; }
   .skin-icon { width: 24px; height: 24px; }
   #main { margin-left: 0; padding-top: 52px; }
-  #portfolio-grid, .detail-masonry { columns: 1; }
+  .landing-masonry { columns: 1; }
   #view-about { padding: 1.5rem; }
 }
 
@@ -398,27 +320,20 @@ body {
 
 <div id="main">
 
-  <!-- PORTFOLIO HOME -->
+  <!-- LANDING — single series -->
   <div class="view active" id="view-portfolio">
-    <div id="portfolio-grid"></div>
-  </div>
-
-  <!-- SERIES DETAIL -->
-  <div class="view" id="view-project">
-    <div class="detail-header">
-      <button class="detail-back" onclick="showView('portfolio')">All work</button>
-      <div class="detail-title-row">
-        <h1 class="detail-main-title" id="detail-title"></h1>
-        <p class="detail-main-desc" id="detail-desc"></p>
+    <div class="landing-header">
+      <div class="landing-title-row">
+        <h1 class="landing-title" id="landing-title"></h1>
+        <p class="landing-desc" id="landing-desc"></p>
       </div>
     </div>
-    <!-- 3-col masonry, full photos -->
-    <div class="detail-masonry" id="series-photos"></div>
+    <div class="landing-masonry" id="landing-photos"></div>
   </div>
 
   <!-- ABOUT -->
   <div class="view" id="view-about">
-    <button class="about-back" onclick="showView('portfolio')">All work</button>
+    <button class="about-back" onclick="showView('portfolio')">Back</button>
     <div class="about-inner">
       <h1 class="about-name">Lucas Dantan</h1>
       <p class="about-bio">Write a short bio here — who you are, where you're based, and what drives your work.</p>
@@ -444,73 +359,57 @@ body {
 
 <script>
 
-// ═══════════════════════════════════════════
-//  YOUR SERIES — edit titles, descriptions,
-//  cover photos and photo URLs here
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+//  YOUR SERIES — 1 series, 75 photos
+//  Replace each null with your Cloudinary URL like:
+//  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v.../photo.jpg"
+// ═══════════════════════════════════════════════════════
 
-const SERIES = [
-  {
-    title: "Un bout d'été en Tunisie 🐚",
-    description: "Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. I've always heard about it, got told a million stories from there, could imagine it in some shapes into my head. But it's always been a very fictional to me, until the opportunity came. I started photography recently, and fell in love with black and white. One could find it wrong to go to such a colorful place and remove colors. I love it and will love it forever. Now, please discover what I've discovered, look at these faces, these scenes, these moments with these characters. - Un bout d'été en Tunise, Juillet 2025",
-    cover: "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2719_gclk2x.jpg",
-    photos: [
-      "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498276/IMG_2738_m0q4vc.jpg",
-      "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498274/IMG_2739_xh4pa5.jpg",
-      "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498273/IMG_2743_pilcgr.jpg",
-      "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498269/IMG_2761_otdgf7.jpg",
-      "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2792_gdnpuo.jpg",
-      "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2812_pwyvof.jpg"
-    ]
-  },
-  { title: "Series Title Two",   description: "Description for series two.", cover: null, photos: [] },
-  { title: "Series Title Three", description: "Description for series three.", cover: null, photos: [] },
-  { title: "Series Title Four",  description: "Description for series four.", cover: null, photos: [] },
-  { title: "Series Title Five",  description: "Description for series five.", cover: null, photos: [] },
-  { title: "Series Title Six",   description: "Description for series six.", cover: null, photos: [] }
-];
+const SERIES = {
+  title: "Un bout d'été en Tunisie 🐚",
+  description: "Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. I've always heard about it, got told a million stories from there, could imagine it in some shapes into my head. But it's always been a very fictional to me, until the opportunity came. I started photography recently, and fell in love with black and white. One could find it wrong to go to such a colorful place and remove colors. I love it and will love it forever. Now, please discover what I've discovered, look at these faces, these scenes, these moments with these characters. — Un bout d'été en Tunise, Juillet 2025",
+  photos: [
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498276/IMG_2738_m0q4vc.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498274/IMG_2739_xh4pa5.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498273/IMG_2743_pilcgr.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498269/IMG_2761_otdgf7.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2792_gdnpuo.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2812_pwyvof.jpg",
+    // ↓ Add your remaining 69 photos below, one URL per line
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null, null, null, null, null,
+    null
+  ]
+};
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 
-const PH_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
-
-function buildPortfolioGrid() {
-  const grid = document.getElementById('portfolio-grid');
-  grid.innerHTML = SERIES.map((s, i) => {
-    const imgHtml = s.cover
-      ? `<img src="${s.cover}" alt="${s.title}" loading="lazy">`
-      : `<div class="cover-placeholder">${PH_ICON}<span>Add cover photo</span></div>`;
-    return `
-      <div class="portfolio-card" onclick="openSeries(${i})">
-        ${imgHtml}
-        <div class="portfolio-card-overlay">
-          <h2 class="portfolio-card-title">${s.title}</h2>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-let currentPhotos = [];
 let currentLbIndex = 0;
+// Only real photos (non-null) shown
+const realPhotos = SERIES.photos.filter(p => p !== null);
 
-function openSeries(i) {
-  const s = SERIES[i];
-  document.getElementById('detail-title').textContent = s.title;
-  document.getElementById('detail-desc').textContent = s.description || '';
-  currentPhotos = s.photos;
-  buildMasonry(s.photos);
-  showView('project');
-}
+function buildPage() {
+  document.getElementById('landing-title').textContent = SERIES.title;
+  document.getElementById('landing-desc').textContent = SERIES.description;
 
-function buildMasonry(photos) {
-  const grid = document.getElementById('series-photos');
-  grid.innerHTML = '';
-  if (!photos.length) {
-    grid.innerHTML = `<p class="no-photos">No photos added yet</p>`;
+  const grid = document.getElementById('landing-photos');
+  if (!realPhotos.length) {
+    grid.innerHTML = `<p class="no-photos">No photos added yet — replace the nulls with your Cloudinary URLs</p>`;
     return;
   }
-  grid.innerHTML = photos.map((url, idx) => `
-    <div class="detail-masonry-item" onclick="openLightbox(${idx})">
+  grid.innerHTML = realPhotos.map((url, idx) => `
+    <div class="landing-photo-item" onclick="openLightbox(${idx})">
       <img src="${url}" alt="" loading="lazy">
     </div>`
   ).join('');
@@ -523,16 +422,16 @@ function openLightbox(index) {
   document.body.style.overflow = 'hidden';
 }
 function updateLightbox() {
-  document.getElementById('lb-img').src = currentPhotos[currentLbIndex];
+  document.getElementById('lb-img').src = realPhotos[currentLbIndex];
   document.getElementById('lb-counter').textContent =
-    (currentLbIndex + 1) + ' / ' + currentPhotos.length;
+    (currentLbIndex + 1) + ' / ' + realPhotos.length;
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
 function lbMove(dir) {
-  currentLbIndex = (currentLbIndex + dir + currentPhotos.length) % currentPhotos.length;
+  currentLbIndex = (currentLbIndex + dir + realPhotos.length) % realPhotos.length;
   updateLightbox();
 }
 document.addEventListener('keydown', e => {
@@ -559,7 +458,7 @@ function toggleTheme() {
   document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
 }
 
-buildPortfolioGrid();
+buildPage();
 </script>
 </body>
 </html>
