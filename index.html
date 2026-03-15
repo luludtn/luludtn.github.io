@@ -118,15 +118,22 @@ body {
 }
 .nav-section.open .nav-arrow { transform: rotate(90deg); }
 
-/* ── Dropdown items ── */
+/* ── Dropdown items — smooth slide like YUKSEK ── */
 .nav-section-items {
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 0;
   padding-left: 0;
-  margin-top: 0.1rem;
+  margin-top: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+              margin-top 0.2s ease;
 }
-.nav-section.open .nav-section-items { display: flex; }
+.nav-section.open .nav-section-items {
+  max-height: 400px;
+  margin-top: 0.25rem;
+}
 
 .nav-item {
   font-size: 13px;
@@ -208,7 +215,7 @@ body {
 /* ════════════════════════════════
    HOME — blank with tagline
 ════════════════════════════════ */
-#view-home {
+#view-home.active {
   height: 100vh;
   display: flex;
   align-items: center;
@@ -780,7 +787,7 @@ const SERIES_DATA = {
 //  Add yours here: { artist, album, tag, cover, url }
 // ═══════════════════════════════════════════════════════
 const MUSIC = [
-  { artist: "Artist Name", album: "Album Title", tag: "Hip-hop", cover: null, url: "https://open.spotify.com" },
+  { artist: "Nic", album: "Fly", tag: "Hip-hop", cover: "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773577077/Nic_Clay_Fly_xgzqfw.jpg", url: "https://open.spotify.com/intl-fr/track/3j2VUykCoOeB8Q7YHySdk0?si=9a464cd72bfb49bb" },
   { artist: "Artist Name", album: "Album Title", tag: "Jazz",    cover: null, url: "https://soundcloud.com"  },
   { artist: "Artist Name", album: "Album Title", tag: "Electronic", cover: null, url: "https://youtube.com" },
   { artist: "Artist Name", album: "Album Title", tag: "R&B",     cover: null, url: "https://open.spotify.com" },
