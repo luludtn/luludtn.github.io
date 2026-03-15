@@ -295,6 +295,48 @@ body {
 .global-discover-btn:hover { color: var(--fg); }
 #global-player-wrap { max-width: 380px; width: 80vw; }
 
+/* ════ SEES RANDOM ════ */
+#view-random-sees.active {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sees-random-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  width: min(55vh, 90%);
+}
+.sees-random-img-wrap { width: 100%; }
+.sees-random-img-wrap img {
+  width: 100%; height: auto; display: block;
+  opacity: 0; transition: opacity 0.5s ease;
+}
+.sees-random-img-wrap img.visible { opacity: 1; }
+.sees-random-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 0.2rem;
+}
+.sees-random-play-btn {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: 1px solid var(--border); background: none;
+  font-size: 16px; cursor: pointer; color: var(--fg);
+  font-family: var(--font-sans);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  padding-left: 3px;
+}
+.sees-random-play-btn:hover, .sees-random-play-btn.active {
+  background: var(--fg); color: var(--bg); border-color: var(--fg);
+}
+.sees-random-play-btn.active { padding-left: 0; }
+
 /* ════ LIGHTBOX ════ */
 #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 500; align-items: center; justify-content: center; }
 #lightbox.open { display: flex; }
@@ -360,6 +402,7 @@ body {
           <button class="nav-item" id="nav-tunisia"   onclick="openSeries('tunisia')">Un bout d'été en Tunisie</button>
           <button class="nav-item" id="nav-barcelona" onclick="openSeries('barcelona')">Barcelona Bella</button>
           <button class="nav-item" id="nav-eireland"  onclick="openSeries('eireland')">Eireland</button>
+          <button class="nav-item" id="nav-random-sees" onclick="showSeesRandom()">Random</button>
         </div>
       </div>
       <div class="nav-section" id="section-listens">
@@ -368,9 +411,9 @@ body {
           <button class="nav-item" id="nav-honey"     onclick="showListensTier('honey')">Honey</button>
           <button class="nav-item" id="nav-bee"       onclick="showListensTier('bee')">Bee</button>
           <button class="nav-item" id="nav-sunflower" onclick="showListensTier('sunflower')">Flower</button>
+          <button class="nav-item" id="nav-random"    onclick="showView('listens')">Random</button>
         </div>
       </div>
-      <span class="nav-flat" id="nav-about" onclick="showView('about')">Infos</span>
     </nav>
   </div>
   <div class="sidebar-bottom">
@@ -517,6 +560,21 @@ body {
       <audio id="player-audio-sunflower" preload="none"></audio>
     </div>
     <div class="album-grid" id="album-grid-sunflower"></div>
+  </div>
+
+  <!-- ══ SEES RANDOM ══ -->
+  <div class="view" id="view-random-sees">
+    <div class="sees-random-center">
+      <div class="sees-random-img-wrap" id="sees-random-img-wrap" style="display:none">
+        <img id="sees-random-img" src="" alt="">
+        <p class="sees-random-label" id="sees-random-label"></p>
+      </div>
+      <button class="sees-random-play-btn" id="sees-random-play-btn" onclick="toggleSeesRandom()">▶</button>
+      <div class="global-controls" id="sees-random-controls" style="display:none">
+        <button class="global-ctrl-btn" onclick="seesRandomPrev()">← prev</button>
+        <button class="global-ctrl-btn" onclick="seesRandomNext()">next →</button>
+      </div>
+    </div>
   </div>
 
   <div class="view" id="view-about">
@@ -872,16 +930,93 @@ function openSeries(key) {
   document.getElementById('section-sees').classList.add('open');
 }
 
+// ═══════════════════════════════════════════════════════
+//  SEES RANDOM PLAYER
+// ═══════════════════════════════════════════════════════
+const SERIES_LABELS = { tunisia: 'Un bout d\'été en Tunisie', barcelona: 'Barcelona Bella', eireland: 'Eireland' };
+const seesRandomState = { playing: false, queue: [], index: 0, timer: null };
+
+function showSeesRandom() {
+  showView('random-sees');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('nav-random-sees').classList.add('active');
+  document.getElementById('section-sees').classList.add('open');
+}
+
+function toggleSeesRandom() {
+  if (seesRandomState.playing) stopSeesRandom(); else startSeesRandom();
+}
+
+function startSeesRandom() {
+  const all = [];
+  Object.keys(SERIES_DATA).forEach(key =>
+    SERIES_DATA[key].forEach(url => all.push({ url, series: key }))
+  );
+  if (!all.length) return;
+  seesRandomState.playing = true;
+  seesRandomState.queue   = [...all].sort(() => Math.random() - 0.5);
+  seesRandomState.index   = 0;
+  const btn = document.getElementById('sees-random-play-btn');
+  btn.textContent = '◼'; btn.classList.add('active');
+  document.getElementById('sees-random-controls').style.display = 'flex';
+  document.getElementById('sees-random-img-wrap').style.display = 'block';
+  loadSeesRandomPhoto();
+}
+
+function loadSeesRandomPhoto() {
+  if (!seesRandomState.playing) return;
+  const photo = seesRandomState.queue[seesRandomState.index];
+  const img   = document.getElementById('sees-random-img');
+  img.classList.remove('visible');
+  img.onload = () => img.classList.add('visible');
+  img.src    = photo.url;
+  document.getElementById('sees-random-label').textContent = SERIES_LABELS[photo.series] || photo.series;
+  clearTimeout(seesRandomState.timer);
+  seesRandomState.timer = setTimeout(() => seesRandomNext(), 8000);
+}
+
+function seesRandomNext() {
+  seesRandomState.index = (seesRandomState.index + 1) % seesRandomState.queue.length;
+  loadSeesRandomPhoto();
+}
+
+function seesRandomPrev() {
+  seesRandomState.index = (seesRandomState.index - 1 + seesRandomState.queue.length) % seesRandomState.queue.length;
+  loadSeesRandomPhoto();
+}
+
+function stopSeesRandom() {
+  clearTimeout(seesRandomState.timer);
+  seesRandomState.playing = false;
+  document.getElementById('sees-random-img').src = '';
+  document.getElementById('sees-random-img').classList.remove('visible');
+  document.getElementById('sees-random-play-btn').textContent = '▶';
+  document.getElementById('sees-random-play-btn').classList.remove('active');
+  document.getElementById('sees-random-controls').style.display = 'none';
+  document.getElementById('sees-random-img-wrap').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+
 function showView(name) {
   ['honey', 'bee', 'sunflower'].forEach(tier => {
     if (playerState[tier]?.playing) stopShuffle(tier);
   });
   if (globalPlayerState.playing) stopGlobalPlayer();
+  if (seesRandomState.playing) stopSeesRandom();
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   window.scrollTo(0, 0);
   document.querySelectorAll('.nav-item, .nav-flat').forEach(el => el.classList.remove('active'));
   if (name === 'about') document.getElementById('nav-about').classList.add('active');
+  if (name === 'listens') {
+    document.getElementById('nav-random').classList.add('active');
+    document.getElementById('section-listens').classList.add('open');
+  }
+  if (name === 'random-sees') {
+    document.getElementById('nav-random-sees').classList.add('active');
+    document.getElementById('section-sees').classList.add('open');
+  }
   if (name.startsWith('listens-')) {
     const tier = name.replace('listens-', '');
     const el = document.getElementById('nav-' + tier);
@@ -901,6 +1036,7 @@ function toggleSection(name) {
       document.getElementById('view-listens').classList.add('active');
       window.scrollTo(0, 0);
       document.querySelectorAll('.nav-item, .nav-flat').forEach(el => el.classList.remove('active'));
+      document.getElementById('nav-random').classList.add('active');
     }
   }
 }
