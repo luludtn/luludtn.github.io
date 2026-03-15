@@ -115,10 +115,9 @@ body {
 .series-header-back:hover { color: var(--fg); }
 .series-main-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; padding-left: var(--gap); }
 .series-main-desc { font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 300; padding-top: 0.5rem; padding-right: var(--gap); }
-.series-masonry { display: flex; flex-direction: column; gap: var(--gap); padding: 1.5rem var(--gap) 6rem; }
-.series-row { display: flex; gap: var(--gap); align-items: flex-start; }
-.series-row.has-landscape { /* alignment set inline per row */ }
-.series-photo { flex: 1; min-width: 0; cursor: pointer; overflow: hidden; }
+.series-masonry { display: flex; flex-direction: column; gap: 3rem; padding: 3rem 2rem 7rem; }
+.series-row { display: flex; gap: 0.6rem; align-items: flex-start; }
+.series-photo { min-width: 0; cursor: pointer; overflow: hidden; }
 .series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
 .series-photo:hover img { opacity: 0.82; }
 
@@ -383,9 +382,9 @@ body {
   .skin-icon { width: 22px; height: 22px; }
   #main { margin-left: 0; padding-top: 200px; }
   .portfolio-layout { grid-template-columns: 1fr; }
-  .series-masonry { gap: 4px; padding: 1rem 4px 4rem; }
-  .series-row { flex-direction: column; }
-  .series-row.has-landscape { align-items: stretch; }
+  .series-masonry { gap: 1.5rem; padding: 1.5rem 1rem 4rem; }
+  .series-row { flex-direction: column; gap: 1rem; }
+  .series-photo { flex: none !important; width: 100% !important; }
   #view-home { height: auto; padding-top: 4rem; }
   #view-about { padding: 1.5rem; }
 }
@@ -779,56 +778,49 @@ buildAllMusicGrids();
 
 const SERIES_VISUAL = {};
 
+// Editorial layout templates: [photo count, flex weights per slot, id, weight]
+// flex weights: 1=equal, 2=double, 5+3=~60/40 split, etc.
+const LAYOUT_TPLS = [
+  { n: 1, f: [1],       id: 'full',   w: 6  }, // single full-width
+  { n: 2, f: [1, 1],    id: 'half',   w: 14 }, // two equal
+  { n: 2, f: [5, 3],    id: 'al',     w: 9  }, // 62/38 — left dominant
+  { n: 2, f: [3, 5],    id: 'ar',     w: 9  }, // 38/62 — right dominant
+  { n: 3, f: [1, 1, 1], id: 'thirds', w: 18 }, // three equal
+  { n: 3, f: [2, 1, 1], id: 'bss',    w: 10 }, // 50/25/25 left big
+  { n: 3, f: [1, 1, 2], id: 'ssb',    w: 10 }, // 25/25/50 right big
+  { n: 3, f: [1, 2, 1], id: 'sbs',    w: 10 }, // 25/50/25 center big
+];
+
 function buildLayoutRows(photos) {
-  const lands = photos.filter(p => p.width > p.height);
-  const ports  = photos.filter(p => p.width <= p.height);
   const rows = [];
-  let li = 0, pi = 0;
+  let idx = 0, prevId = '';
 
-  function portraitRow() {
-    const pLeft = ports.length - pi;
-    if (!pLeft) return;
-    // Vary row width: mostly 3, sometimes 2 for rhythm
-    const n = pLeft === 1 ? 1 : pLeft === 2 ? 2 : (Math.random() < 0.28 ? 2 : 3);
-    rows.push({ hasLandscape: false, align: 'flex-start', photos: ports.slice(pi, pi + n) });
-    pi += n;
-  }
+  while (idx < photos.length) {
+    const rem = photos.length - idx;
 
-  function landscapeRow() {
-    const lLeft = lands.length - li;
-    const pLeft = ports.length - pi;
-    // Randomly pin landscape to top (flex-start) or bottom (flex-end) of the white space
-    const align = Math.random() < 0.5 ? 'flex-start' : 'flex-end';
-    if (pLeft >= 2) {
-      rows.push({ hasLandscape: true, align, photos: [ports[pi++], lands[li++], ports[pi++]] });
-    } else if (lLeft >= 2 && pLeft >= 1) {
-      rows.push({ hasLandscape: true, align, photos: [lands[li++], ports[pi++], lands[li++]] });
-    } else {
-      // Edge case: no portrait partner available — show landscape alone, full-width
-      rows.push({ hasLandscape: false, align: 'flex-start', photos: [lands[li++]] });
-    }
-  }
+    // Build eligible template list (must fit remaining count, no immediate repeat)
+    let eligible = LAYOUT_TPLS.filter(t => t.n <= rem && t.id !== prevId);
+    if (!eligible.length) eligible = LAYOUT_TPLS.filter(t => t.n <= rem);
 
-  while (li < lands.length || pi < ports.length) {
-    const lLeft = lands.length - li;
-    const pLeft = ports.length - pi;
+    // Weighted random pick
+    const W = eligible.reduce((s, t) => s + t.w, 0);
+    let r = Math.random() * W, tpl = eligible[0];
+    for (const t of eligible) { r -= t.w; if (r <= 0) { tpl = t; break; } }
+    prevId = tpl.id;
 
-    if (lLeft === 0) {
-      portraitRow();
-      continue;
+    const chunk = photos.slice(idx, idx + tpl.n);
+    idx += tpl.n;
+
+    // Nudge landscape into the widest slot ~65% of the time — not a hard rule
+    if (chunk.length > 1) {
+      const wideSlot = tpl.f.indexOf(Math.max(...tpl.f));
+      const landSlot = chunk.findIndex(p => p.width > p.height);
+      if (landSlot !== -1 && landSlot !== wideSlot && Math.random() < 0.65)
+        [chunk[wideSlot], chunk[landSlot]] = [chunk[landSlot], chunk[wideSlot]];
     }
 
-    // Portrait surplus: how many extra portraits exist beyond what landscape rows strictly need
-    const surplus = pLeft - lLeft * 2;
-
-    if (surplus > 2 && Math.random() < 0.5) {
-      // Enough spare portraits — slip in a portrait-only row for variety
-      portraitRow();
-    } else {
-      landscapeRow();
-    }
+    rows.push({ tpl, photos: chunk });
   }
-
   return rows;
 }
 
@@ -843,13 +835,12 @@ function buildMasonry(key) {
   const visual = rows.flatMap(r => r.photos);
   SERIES_VISUAL[key] = visual;
   grid.innerHTML = rows.map(row => {
-    const cls = 'series-row' + (row.hasLandscape ? ' has-landscape' : '');
-    const style = row.hasLandscape ? ` style="align-items:${row.align}"` : '';
-    const items = row.photos.map(p => {
+    const items = row.tpl.f.map((flex, fi) => {
+      const p = row.photos[fi];
       const vi = visual.indexOf(p);
-      return `<div class="series-photo" onclick="openLightbox('${key}',${vi})"><img src="${p.url}" alt="" loading="lazy"></div>`;
+      return `<div class="series-photo" style="flex:${flex}" onclick="openLightbox('${key}',${vi})"><img src="${p.url}" alt="" loading="lazy"></div>`;
     }).join('');
-    return `<div class="${cls}"${style}>${items}</div>`;
+    return `<div class="series-row">${items}</div>`;
   }).join('');
 }
 Object.keys(SERIES_DATA).forEach(buildMasonry);
