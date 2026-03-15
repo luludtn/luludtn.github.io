@@ -117,7 +117,7 @@ body {
 .series-main-desc { font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 300; padding-top: 0.5rem; padding-right: var(--gap); }
 .series-masonry { display: flex; flex-direction: column; gap: var(--gap); padding: 1.5rem var(--gap) 6rem; }
 .series-row { display: flex; gap: var(--gap); align-items: flex-start; }
-.series-row.has-landscape { align-items: center; }
+.series-row.has-landscape { /* alignment set inline per row */ }
 .series-photo { flex: 1; min-width: 0; cursor: pointer; overflow: hidden; }
 .series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
 .series-photo:hover img { opacity: 0.82; }
@@ -780,40 +780,55 @@ buildAllMusicGrids();
 const SERIES_VISUAL = {};
 
 function buildLayoutRows(photos) {
-  // separate into landscapes (w > h) and portraits (w <= h)
   const lands = photos.filter(p => p.width > p.height);
   const ports  = photos.filter(p => p.width <= p.height);
   const rows = [];
   let li = 0, pi = 0;
+
+  function portraitRow() {
+    const pLeft = ports.length - pi;
+    if (!pLeft) return;
+    // Vary row width: mostly 3, sometimes 2 for rhythm
+    const n = pLeft === 1 ? 1 : pLeft === 2 ? 2 : (Math.random() < 0.28 ? 2 : 3);
+    rows.push({ hasLandscape: false, align: 'flex-start', photos: ports.slice(pi, pi + n) });
+    pi += n;
+  }
+
+  function landscapeRow() {
+    const lLeft = lands.length - li;
+    const pLeft = ports.length - pi;
+    // Randomly pin landscape to top (flex-start) or bottom (flex-end) of the white space
+    const align = Math.random() < 0.5 ? 'flex-start' : 'flex-end';
+    if (pLeft >= 2) {
+      rows.push({ hasLandscape: true, align, photos: [ports[pi++], lands[li++], ports[pi++]] });
+    } else if (lLeft >= 2 && pLeft >= 1) {
+      rows.push({ hasLandscape: true, align, photos: [lands[li++], ports[pi++], lands[li++]] });
+    } else {
+      // Edge case: no portrait partner available — show landscape alone, full-width
+      rows.push({ hasLandscape: false, align: 'flex-start', photos: [lands[li++]] });
+    }
+  }
+
   while (li < lands.length || pi < ports.length) {
     const lLeft = lands.length - li;
     const pLeft = ports.length - pi;
+
     if (lLeft === 0) {
-      // only portraits remain — fill in rows of up to 3
-      const n = Math.min(3, pLeft);
-      rows.push({ hasLandscape: false, photos: ports.slice(pi, pi + n) });
-      pi += n;
-    } else if (lLeft >= 2 && pLeft === 1) {
-      // [L][P][L] — saves portraits when running low
-      rows.push({ hasLandscape: true, photos: [lands[li++], ports[pi++], lands[li++]] });
-    } else if (pLeft >= 2) {
-      // [P][L][P] — primary landscape pattern
-      rows.push({ hasLandscape: true, photos: [ports[pi++], lands[li++], ports[pi++]] });
-    } else if (lLeft >= 2 && pLeft >= 1) {
-      // [L][P][L]
-      rows.push({ hasLandscape: true, photos: [lands[li++], ports[pi++], lands[li++]] });
+      portraitRow();
+      continue;
+    }
+
+    // Portrait surplus: how many extra portraits exist beyond what landscape rows strictly need
+    const surplus = pLeft - lLeft * 2;
+
+    if (surplus > 2 && Math.random() < 0.5) {
+      // Enough spare portraits — slip in a portrait-only row for variety
+      portraitRow();
     } else {
-      // edge-case leftovers: just output as-is
-      const remaining = [];
-      while (li < lands.length) remaining.push(lands[li++]);
-      while (pi < ports.length) remaining.push(ports[pi++]);
-      for (let i = 0; i < remaining.length; i += 3) {
-        const chunk = remaining.slice(i, i + 3);
-        rows.push({ hasLandscape: chunk.some(p => p.width > p.height), photos: chunk });
-      }
-      break;
+      landscapeRow();
     }
   }
+
   return rows;
 }
 
@@ -829,11 +844,12 @@ function buildMasonry(key) {
   SERIES_VISUAL[key] = visual;
   grid.innerHTML = rows.map(row => {
     const cls = 'series-row' + (row.hasLandscape ? ' has-landscape' : '');
+    const style = row.hasLandscape ? ` style="align-items:${row.align}"` : '';
     const items = row.photos.map(p => {
       const vi = visual.indexOf(p);
       return `<div class="series-photo" onclick="openLightbox('${key}',${vi})"><img src="${p.url}" alt="" loading="lazy"></div>`;
     }).join('');
-    return `<div class="${cls}">${items}</div>`;
+    return `<div class="${cls}"${style}>${items}</div>`;
   }).join('');
 }
 Object.keys(SERIES_DATA).forEach(buildMasonry);
