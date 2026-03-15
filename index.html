@@ -131,11 +131,16 @@ body {
 .album-card-img-wrap { position: relative; width: 100%; padding-bottom: 100%; overflow: hidden; background: var(--border); }
 .album-card-img-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s, filter 0.4s; filter: grayscale(100%); }
 .album-card:hover .album-card-img-wrap img { opacity: 0.18; filter: grayscale(0%); }
-.music-hover-overlay { position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; padding: 1rem; pointer-events: none; }
+.music-hover-overlay { position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; padding: 1rem 1rem 2.8rem; pointer-events: none; }
 .album-card:hover .music-hover-overlay { opacity: 1; }
+/* center block: genre, flags, year */
 .music-genre { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg); text-align: center; }
 .music-flag { font-size: 2.8rem; line-height: 1; text-align: center; }
-.music-streams { font-size: 10px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg); text-align: center; }
+.music-year { font-size: 10px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg); text-align: center; }
+/* streams — bottom left, italic */
+.music-streams-wrap { position: absolute; bottom: 1rem; left: 1rem; display: flex; align-items: baseline; gap: 3px; }
+.music-streams { font-size: 10px; font-weight: 400; font-style: italic; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg); }
+.music-streams-date { font-size: 8px; font-weight: 400; letter-spacing: 0.08em; color: var(--fg); opacity: 0.6; }
 .album-placeholder { width: 100%; height: 100%; position: absolute; inset: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--muted); }
 .album-placeholder--empty { background: transparent; border: 1.5px dashed var(--border); }
 .album-card--empty { cursor: default; pointer-events: none; opacity: 0.4; }
@@ -391,7 +396,9 @@ const MUSIC_TIERS = {
       flag:    "🇲🇶",
       cover:   "https://res.cloudinary.com/dzhvoacrg/image/upload/v1773580505/amedee_o_suriam_npqirm.jpg",
       url:     "https://open.spotify.com/intl-fr/track/2q5FzLFS2fDeoAjblNnZ4T?si=0bd25f513e264c0b",
-      streams: "5,894"
+      year:    "2023",
+      streams: "5,894",
+      date:    "15.03.26"
     },
     // ↓ Add more Honey picks here
     {
@@ -423,7 +430,9 @@ const MUSIC_TIERS = {
       flag:    "🇺🇸",
       cover:   "https://res.cloudinary.com/dzhvoacrg/image/upload/v1773577077/Nic_Clay_Fly_xgzqfw.jpg",
       url:     "https://open.spotify.com/intl-fr/track/3j2VUykCoOeB8Q7YHySdk0",
-      streams: "74,993"
+      year:    "2022",
+      streams: "74,993",
+      date:    "15.03.26"
     },
     // ↓ Add more Bee picks here
     {
@@ -448,7 +457,6 @@ const MUSIC_TIERS = {
 
   sunflower: [
     // Flower — 100K to 500K streams
-    // ↓ Add your Flower picks here
     {
       artist:  "Mc Solaar",
       album:   "Qui sème le vent récolte le tempo",
@@ -456,7 +464,19 @@ const MUSIC_TIERS = {
       flag:    "🇹🇩/🇫🇷",
       cover:   "https://res.cloudinary.com/dzhvoacrg/image/upload/v1773581826/Mc_Solaar_zwwbg9.jpg",
       url:     "https://open.spotify.com/intl-fr/track/44IouzBSiqKJoJbP7gkCzI?si=162402cf575943fd",
-      streams: "250,805"
+      year:    "1991",
+      streams: "250,805",
+      date:    "15.03.26"
+    },
+    // ↓ Add your Flower picks here
+    {
+      artist:  "",
+      album:   "",
+      tag:     "",
+      flag:    "",
+      cover:   null,
+      url:     "#",
+      streams: ""
     },
     {
       artist:  "",
@@ -486,6 +506,8 @@ function buildMusicCard(m) {
   const flag    = m.flag    || '';
   const streams = m.streams || '';
   const tag     = m.tag     || '';
+  const year    = m.year    || '';
+  const date    = m.date    || '';          // e.g. "15.03.26"
   const isEmpty = !m.artist && !m.cover;
   const click   = isEmpty ? '' : `onclick="window.open('${m.url}','_blank')"`;
   return `
@@ -498,9 +520,14 @@ function buildMusicCard(m) {
             : `<div class="album-placeholder">♫</div>`}
         ${!isEmpty ? `
         <div class="music-hover-overlay">
-          ${tag     ? `<span class="music-genre">${tag}</span>`               : ''}
-          ${flag    ? `<span class="music-flag">${flag}</span>`               : ''}
-          ${streams ? `<span class="music-streams">${streams} streams</span>` : ''}
+          ${tag  ? `<span class="music-genre">${tag}</span>`  : ''}
+          ${flag ? `<span class="music-flag">${flag}</span>`  : ''}
+          ${year ? `<span class="music-year">${year}</span>`  : ''}
+          ${streams ? `
+          <div class="music-streams-wrap">
+            <span class="music-streams">${streams} streams*</span>
+            <span class="music-streams-date">${date}</span>
+          </div>` : ''}
         </div>` : ''}
       </div>
     </div>`;
