@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lucas Dantan — Un bout d'été en Tunisie</title>
+<title>Lucas Dantan — Photography</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
@@ -116,122 +116,114 @@ body {
 .view.active { display: block; }
 
 /* ════════════════════════════════
-   LANDING PAGE
+   PORTFOLIO HOME — YUKSEK style
+   3-col grid, title+photo overlap,
+   title fades in on hover
 ════════════════════════════════ */
-#view-landing {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 3rem 3rem 3rem;
-  position: relative;
-  overflow: hidden;
+#view-portfolio {
+  min-height: 100vh;
 }
 
-/* Background image — one of the photos, large and subtle */
-.landing-bg {
+/* Exact YUKSEK layout:
+   left col = photo + title below it
+   right two cols = photos stacked */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--gap);
+  padding: var(--gap);
+  align-items: start;
+}
+
+/* Each card */
+.p-card {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  display: block;
+}
+.p-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: opacity 0.4s;
+}
+.p-card:hover img { opacity: 0.88; }
+
+/* Title overlay — hidden, fades in on hover */
+.p-card-overlay {
   position: absolute;
   inset: 0;
-  z-index: 0;
   pointer-events: none;
-}
-.landing-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.18;
-  filter: grayscale(30%);
-  transition: opacity 0.6s;
-}
-[data-theme="dark"] .landing-bg img { opacity: 0.12; }
-
-.landing-top {
-  position: relative;
-  z-index: 1;
-}
-.landing-series-label {
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 1.5rem;
-}
-.landing-title {
-  font-size: clamp(3rem, 7vw, 7rem);
-  font-weight: 700;
-  line-height: 0.92;
-  letter-spacing: -0.04em;
-  max-width: 14ch;
-}
-
-.landing-bottom {
-  position: relative;
-  z-index: 1;
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
+  padding: 1.4rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.35s;
 }
-.landing-desc {
-  max-width: 44ch;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--muted);
-  font-weight: 300;
+.p-card:hover .p-card-overlay { opacity: 1; }
+.p-card-title {
+  font-size: clamp(1.6rem, 3vw, 2.8rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: #fff;
+  transform: translateY(8px);
+  transition: transform 0.35s;
+}
+.p-card:hover .p-card-title { transform: none; }
+
+/* YUKSEK-style layout:
+   series 0 → col 1, spans rows 1-2 (tall left column)
+   series 1 → col 2, row 1
+   series 2 → col 3, row 1
+   Then row 2 is filled by the tall col-1 card + 2 more photos in col 2-3 */
+
+/* We replicate the Beirut layout:
+   - Big photo top-left
+   - Title below it (not overlaid) also top-left
+   - Two photos stack on right */
+.portfolio-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--gap);
+  padding: var(--gap);
+  align-items: start;
 }
 
-/* The "enter" button */
-.landing-enter {
+/* Left column — photo on top, big title below */
+.col-left {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
+  gap: var(--gap);
+}
+.col-left .p-card img {
+  width: 100%;
+  height: auto;
+}
+
+/* Big title that sits below the left photo — visible always */
+.left-title {
+  font-size: clamp(2.8rem, 5vw, 5rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  padding: 0.5rem 0;
   cursor: pointer;
-  background: none;
-  border: none;
-  font-family: var(--font-sans);
-  color: var(--fg);
-  flex-shrink: 0;
-  margin-left: 3rem;
   transition: opacity 0.2s;
 }
-.landing-enter:hover { opacity: 0.6; }
-.landing-enter-circle {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  border: 1.5px solid var(--fg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.25s, border-color 0.25s;
-}
-.landing-enter:hover .landing-enter-circle {
-  background: var(--fg);
-}
-.landing-enter:hover .landing-enter-circle svg {
-  stroke: var(--bg);
-}
-.landing-enter-circle svg {
-  width: 18px;
-  height: 18px;
-  stroke: var(--fg);
-  fill: none;
-  stroke-width: 1.5;
-  transition: stroke 0.25s;
-}
-.landing-enter-label {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
+.left-title:hover { opacity: 0.55; }
+
+/* Right two columns — photos stacked */
+.col-right {
+  display: contents;
 }
 
 /* ════════════════════════════════
-   SERIES VIEW — full masonry
+   SERIES VIEW
 ════════════════════════════════ */
-#view-series {
-  min-height: 100vh;
-}
+#view-series { min-height: 100vh; }
 
 .series-header {
   display: grid;
@@ -259,7 +251,6 @@ body {
 }
 .series-header-back::before { content: '←'; }
 .series-header-back:hover { color: var(--fg); }
-
 .series-main-title {
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 700;
@@ -276,7 +267,6 @@ body {
   padding-right: var(--gap);
 }
 
-/* 3-col masonry — photos fully shown */
 .series-masonry {
   columns: 3;
   column-gap: var(--gap);
@@ -296,6 +286,14 @@ body {
   transition: opacity 0.3s;
 }
 .series-photo:hover img { opacity: 0.82; }
+
+.coming-soon {
+  padding: 6rem var(--gap);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 
 /* ════════════════════════════════
    LIGHTBOX
@@ -405,6 +403,7 @@ body {
 
 /* ── MOBILE ── */
 @media (max-width: 900px) {
+  .portfolio-layout { grid-template-columns: 1fr 1fr; }
   .series-masonry { columns: 2; }
   .series-header { grid-template-columns: 1fr; gap: 1rem; }
 }
@@ -423,12 +422,10 @@ body {
   .skin-label { display: none; }
   .skin-icon { width: 24px; height: 24px; }
   #main { margin-left: 0; padding-top: 52px; }
-  #view-landing { padding: 2rem 1.5rem; height: calc(100vh - 52px); }
-  .landing-title { font-size: clamp(2.5rem, 10vw, 4rem); }
+  .portfolio-layout { grid-template-columns: 1fr; }
+  .col-left { display: block; }
   .series-masonry { columns: 1; }
   #view-about { padding: 1.5rem; }
-  .landing-bottom { flex-direction: column; align-items: flex-start; gap: 2rem; }
-  .landing-enter { margin-left: 0; flex-direction: row; gap: 1rem; }
 }
 
 </style>
@@ -437,10 +434,10 @@ body {
 
 <aside id="sidebar">
   <div>
-    <span class="sidebar-logo" onclick="showView('landing')">Lucas Dantan<br>Photography</span>
+    <span class="sidebar-logo" onclick="showView('portfolio')">Lucas Dantan<br>Photography</span>
     <nav class="sidebar-nav">
-      <span onclick="showView('landing')" id="nav-landing" class="active">Portfolio</span>
-      <span onclick="showView('about')"   id="nav-about">Infos</span>
+      <span onclick="showView('portfolio')" id="nav-portfolio" class="active">Portfolio</span>
+      <span onclick="showView('about')"     id="nav-about">Infos</span>
     </nav>
   </div>
   <div class="sidebar-bottom" onclick="toggleTheme()">
@@ -451,41 +448,79 @@ body {
 
 <div id="main">
 
-  <!-- ══ LANDING ══ -->
-  <div class="view active" id="view-landing">
-    <div class="landing-bg">
-      <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2719_gclk2x.jpg" alt="">
-    </div>
+  <!-- ══ PORTFOLIO HOME ══ -->
+  <div class="view active" id="view-portfolio">
+    <!--
+      YUKSEK Beirut layout:
+      Col 1: big photo + big title text below
+      Col 2: photo top + photo bottom
+      Col 3: photo top + photo bottom
+    -->
+    <div class="portfolio-layout">
 
-    <div class="landing-top">
-      <p class="landing-series-label">Series — 2025</p>
-      <h1 class="landing-title">Un bout d'été en Tunisie</h1>
-    </div>
-
-    <div class="landing-bottom">
-      <p class="landing-desc">Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. Until the opportunity came — I fell in love with black and white, with these faces, these scenes, these moments.</p>
-      <button class="landing-enter" onclick="showView('series')">
-        <div class="landing-enter-circle">
-          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      <!-- COL 1: Tunisia -->
+      <div class="col-left">
+        <div class="p-card" onclick="openSeries('tunisia')">
+          <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2719_gclk2x.jpg" alt="Un bout d'été en Tunisie">
+          <div class="p-card-overlay">
+            <h2 class="p-card-title">Un bout d'été<br>en Tunisie</h2>
+          </div>
         </div>
-        <span class="landing-enter-label">Discover</span>
-      </button>
+        <div class="left-title" onclick="openSeries('tunisia')">Un bout d'été<br>en Tunisie</div>
+      </div>
+
+      <!-- COL 2: Barcelona -->
+      <div class="p-card" onclick="openSeries('barcelona')">
+        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773573662/000021930016_n3i9bk.jpg" alt="Barcelona Bella">
+        <div class="p-card-overlay">
+          <h2 class="p-card-title">Barcelona<br>Bella</h2>
+        </div>
+      </div>
+
+      <!-- COL 3: Eireland -->
+      <div class="p-card" onclick="openSeries('eireland')">
+        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773574211/IMG_1846_k7bwnx.jpg" alt="Eireland">
+        <div class="p-card-overlay">
+          <h2 class="p-card-title">Eireland</h2>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- ══ SERIES ══ -->
-  <div class="view" id="view-series">
+  <!-- ══ SERIES: Tunisia ══ -->
+  <div class="view" id="view-series-tunisia">
     <div class="series-header">
-      <button class="series-header-back" onclick="showView('landing')">Back</button>
+      <button class="series-header-back" onclick="showView('portfolio')">All work</button>
       <h1 class="series-main-title">Un bout d'été en Tunisie 🐚</h1>
       <p class="series-main-desc">Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. I've always heard about it, got told a million stories from there, could imagine it in some shapes into my head. But it's always been very fictional to me, until the opportunity came. I started photography recently, and fell in love with black and white. One could find it wrong to go to such a colorful place and remove colors. I love it and will love it forever. Now, please discover what I've discovered, look at these faces, these scenes, these moments with these characters. — Un bout d'été en Tunisie, Juillet 2025</p>
     </div>
-    <div class="series-masonry" id="series-photos"></div>
+    <div class="series-masonry" id="photos-tunisia"></div>
+  </div>
+
+  <!-- ══ SERIES: Barcelona ══ -->
+  <div class="view" id="view-series-barcelona">
+    <div class="series-header">
+      <button class="series-header-back" onclick="showView('portfolio')">All work</button>
+      <h1 class="series-main-title">Barcelona Bella</h1>
+      <p class="series-main-desc">Add a description for Barcelona Bella here.</p>
+    </div>
+    <div class="series-masonry" id="photos-barcelona"></div>
+  </div>
+
+  <!-- ══ SERIES: Eireland ══ -->
+  <div class="view" id="view-series-eireland">
+    <div class="series-header">
+      <button class="series-header-back" onclick="showView('portfolio')">All work</button>
+      <h1 class="series-main-title">Eireland</h1>
+      <p class="series-main-desc">Add a description for Eireland here.</p>
+    </div>
+    <div class="series-masonry" id="photos-eireland"></div>
   </div>
 
   <!-- ══ ABOUT ══ -->
   <div class="view" id="view-about">
-    <button class="about-back" onclick="showView('landing')">Back</button>
+    <button class="about-back" onclick="showView('portfolio')">All work</button>
     <div class="about-inner">
       <h1 class="about-name">Lucas Dantan</h1>
       <p class="about-bio">Write a short bio here — who you are, where you're based, and what drives your work.</p>
@@ -512,71 +547,95 @@ body {
 <script>
 
 // ═══════════════════════════════════════════════════════
-//  ALL PHOTOS — add more URLs here as you upload them
+//  SERIES DATA
 // ═══════════════════════════════════════════════════════
 
-const PHOTOS = [
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498296/IMG_2654_hpwjpc.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2719_gclk2x.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498290/IMG_2659_prvga5.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498278/IMG_2733_gl8rkg.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498283/IMG_2711_ki4rxz.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498273/IMG_2765_unjlfa.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498282/IMG_2714_ezrgyo.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498272/IMG_2745_scyl19.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498282/IMG_2713_zgxofw.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498268/IMG_2763_zn5xnu.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2721_dqfbgz.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498268/IMG_2762_aizlfx.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498279/IMG_2728_mozeij.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498266/IMG_2773_svojir.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2782_sol2ha.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2777_mnnsn9.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2776_t90ye0.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498264/IMG_2784_ljoevc.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2792_gdnpuo.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2794_o4dptr.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2791_rruvg2.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2798_gqk76o.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2799_of1tjb.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2797_vdhqyp.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498261/IMG_2808_iqvfxr.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498260/IMG_2807_b2ezfg.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2813_ribulw.jpg",
-  "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2803_efhmxx.jpg",
-  // ↓ Add more photos here as you upload them to Cloudinary
-];
+const SERIES_DATA = {
+  tunisia: [
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498296/IMG_2654_hpwjpc.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2719_gclk2x.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498290/IMG_2659_prvga5.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498278/IMG_2733_gl8rkg.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498283/IMG_2711_ki4rxz.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498273/IMG_2765_unjlfa.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498282/IMG_2714_ezrgyo.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498272/IMG_2745_scyl19.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498282/IMG_2713_zgxofw.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498268/IMG_2763_zn5xnu.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498281/IMG_2721_dqfbgz.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498268/IMG_2762_aizlfx.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498279/IMG_2728_mozeij.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498266/IMG_2773_svojir.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2782_sol2ha.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2777_mnnsn9.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498265/IMG_2776_t90ye0.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498264/IMG_2784_ljoevc.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2792_gdnpuo.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2794_o4dptr.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498263/IMG_2791_rruvg2.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2798_gqk76o.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2799_of1tjb.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498262/IMG_2797_vdhqyp.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498261/IMG_2808_iqvfxr.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498260/IMG_2807_b2ezfg.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2813_ribulw.jpg",
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498259/IMG_2803_efhmxx.jpg",
+  ],
+  barcelona: [
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773573662/000021930016_n3i9bk.jpg",
+    // ↓ Add more Barcelona photos here
+  ],
+  eireland: [
+    "https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773574211/IMG_1846_k7bwnx.jpg",
+    // ↓ Add more Eireland photos here
+  ]
+};
 
 // ═══════════════════════════════════════════════════════
 
+let currentPhotos = [];
 let currentLbIndex = 0;
 
-function buildSeries() {
-  const grid = document.getElementById('series-photos');
-  grid.innerHTML = PHOTOS.map((url, idx) => `
-    <div class="series-photo" onclick="openLightbox(${idx})">
+function buildMasonry(seriesKey) {
+  const photos = SERIES_DATA[seriesKey];
+  const grid = document.getElementById('photos-' + seriesKey);
+  if (!photos || !photos.length) {
+    grid.innerHTML = `<p class="coming-soon">Coming soon</p>`;
+    return;
+  }
+  grid.innerHTML = photos.map((url, idx) => `
+    <div class="series-photo" onclick="openLightbox('${seriesKey}', ${idx})">
       <img src="${url}" alt="" loading="lazy">
     </div>`
   ).join('');
 }
 
-function openLightbox(index) {
+// Build all series grids on load
+Object.keys(SERIES_DATA).forEach(buildMasonry);
+
+function openSeries(key) {
+  currentPhotos = SERIES_DATA[key];
+  showView('series-' + key);
+}
+
+function openLightbox(seriesKey, index) {
+  currentPhotos = SERIES_DATA[seriesKey];
   currentLbIndex = index;
   updateLightbox();
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 function updateLightbox() {
-  document.getElementById('lb-img').src = PHOTOS[currentLbIndex];
+  document.getElementById('lb-img').src = currentPhotos[currentLbIndex];
   document.getElementById('lb-counter').textContent =
-    (currentLbIndex + 1) + ' / ' + PHOTOS.length;
+    (currentLbIndex + 1) + ' / ' + currentPhotos.length;
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
 function lbMove(dir) {
-  currentLbIndex = (currentLbIndex + dir + PHOTOS.length) % PHOTOS.length;
+  currentLbIndex = (currentLbIndex + dir + currentPhotos.length) % currentPhotos.length;
   updateLightbox();
 }
 document.addEventListener('keydown', e => {
@@ -594,9 +653,8 @@ function showView(name) {
   document.getElementById('view-' + name).classList.add('active');
   window.scrollTo(0, 0);
   document.querySelectorAll('.sidebar-nav span').forEach(el => el.classList.remove('active'));
-  const navMap = { landing: 'nav-landing', series: 'nav-landing', about: 'nav-about' };
-  const el = document.getElementById(navMap[name]);
-  if (el) el.classList.add('active');
+  const navEl = name === 'about' ? 'nav-about' : 'nav-portfolio';
+  document.getElementById(navEl).classList.add('active');
 }
 
 function toggleTheme() {
@@ -604,7 +662,6 @@ function toggleTheme() {
   document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
 }
 
-buildSeries();
 </script>
 </body>
 </html>
