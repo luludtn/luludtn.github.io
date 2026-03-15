@@ -126,17 +126,19 @@ body {
 .listens-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
 .listens-range { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg); font-weight: 400; margin-bottom: 0.4rem; }
 .listens-subtitle { font-size: 13px; color: var(--muted); font-weight: 300; font-style: italic; }
-.album-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap); padding: 1.5rem var(--gap) 6rem; }
+.album-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; padding: 2.5rem 2rem 6rem; }
 .album-card { position: relative; cursor: pointer; overflow: hidden; display: block; }
 .album-card-img-wrap { position: relative; width: 100%; padding-bottom: 100%; overflow: hidden; background: var(--border); }
-.album-card-img-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s; }
-.album-card:hover .album-card-img-wrap img { opacity: 0.12; }
+.album-card-img-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s, filter 0.4s; filter: grayscale(100%); }
+.album-card:hover .album-card-img-wrap img { opacity: 0.18; filter: grayscale(0%); }
 .music-hover-overlay { position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; padding: 1rem; pointer-events: none; }
 .album-card:hover .music-hover-overlay { opacity: 1; }
 .music-genre { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg); text-align: center; }
 .music-flag { font-size: 2.8rem; line-height: 1; text-align: center; }
 .music-streams { font-size: 10px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg); text-align: center; }
 .album-placeholder { width: 100%; height: 100%; position: absolute; inset: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--muted); }
+.album-placeholder--empty { background: transparent; border: 1.5px dashed var(--border); }
+.album-card--empty { cursor: default; pointer-events: none; opacity: 0.4; }
 
 /* ════ LIGHTBOX ════ */
 #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 500; align-items: center; justify-content: center; }
@@ -167,7 +169,7 @@ body {
 .about-row a:hover { opacity: 0.45; }
 
 @media (max-width: 1100px) { .album-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 900px) { .portfolio-layout { grid-template-columns: 1fr 1fr; } .series-masonry { columns: 2; } .series-header { grid-template-columns: 1fr; gap: 1rem; } .album-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) { .portfolio-layout { grid-template-columns: 1fr 1fr; } .series-masonry { columns: 2; } .series-header { grid-template-columns: 1fr; gap: 1rem; } .album-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; padding: 1.5rem 1rem 4rem; } }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
   #sidebar { width: 100%; height: auto; position: fixed; top: 0; left: 0; right: 0; bottom: auto; flex-direction: column; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
@@ -316,7 +318,7 @@ body {
       <p class="about-bio"><strong>Your photography style or approach.</strong> Available for commissions and editorial work.</p>
       <div class="about-links">
         <div class="about-row"><span>Instagram</span><a href="https://instagram.com/yourhandle" target="_blank">@yourhandle</a></div>
-        <div class="about-row"><span>Email</span><a href="mailto:you@email.com">you@email.com</a></div>
+        <div class="about-row"><span>Email</span><a href="/cdn-cgi/l/email-protection#6c1503192c09010d0500420f0301"><span class="__cf_email__" data-cfemail="b9c0d6ccf9dcd4d8d0d597dad6d4">[email&#160;protected]</span></a></div>
         <div class="about-row"><span>Based in</span><span>Your City</span></div>
       </div>
     </div>
@@ -332,7 +334,7 @@ body {
   <div class="lb-counter" id="lb-counter"></div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 const SERIES_DATA = {
   tunisia: [
@@ -392,6 +394,24 @@ const MUSIC_TIERS = {
       streams: "5,894"
     },
     // ↓ Add more Honey picks here
+    {
+      artist:  "",
+      album:   "",
+      tag:     "",
+      flag:    "",
+      cover:   null,
+      url:     "#",
+      streams: ""
+    },
+    {
+      artist:  "",
+      album:   "",
+      tag:     "",
+      flag:    "",
+      cover:   null,
+      url:     "#",
+      streams: ""
+    },
   ],
 
   bee: [
@@ -406,11 +426,56 @@ const MUSIC_TIERS = {
       streams: "74,993"
     },
     // ↓ Add more Bee picks here
+    {
+      artist:  "",
+      album:   "",
+      tag:     "",
+      flag:    "",
+      cover:   null,
+      url:     "#",
+      streams: ""
+    },
+    {
+      artist:  "",
+      album:   "",
+      tag:     "",
+      flag:    "",
+      cover:   null,
+      url:     "#",
+      streams: ""
+    },
   ],
 
   sunflower: [
     // Flower — 100K to 500K streams
     // ↓ Add your Flower picks here
+    {
+      artist:  "",
+      album:   "",
+      tag:     "",
+      flag:    "",
+      cover:   null,
+      url:     "#",
+      streams: ""
+    },
+    {
+      artist:  "",
+      album:   "",
+      tag:     "",
+      flag:    "",
+      cover:   null,
+      url:     "#",
+      streams: ""
+    },
+    {
+      artist:  "",
+      album:   "",
+      tag:     "",
+      flag:    "",
+      cover:   null,
+      url:     "#",
+      streams: ""
+    },
   ]
 
 };
@@ -421,17 +486,22 @@ function buildMusicCard(m) {
   const flag    = m.flag    || '';
   const streams = m.streams || '';
   const tag     = m.tag     || '';
+  const isEmpty = !m.artist && !m.cover;
+  const click   = isEmpty ? '' : `onclick="window.open('${m.url}','_blank')"`;
   return `
-    <div class="album-card" onclick="window.open('${m.url}','_blank')">
+    <div class="album-card${isEmpty ? ' album-card--empty' : ''}" ${click}>
       <div class="album-card-img-wrap">
-        ${m.cover
-          ? `<img src="${m.cover}" alt="${m.artist}" loading="lazy">`
-          : `<div class="album-placeholder">♫</div>`}
+        ${isEmpty
+          ? `<div class="album-placeholder album-placeholder--empty"></div>`
+          : m.cover
+            ? `<img src="${m.cover}" alt="${m.artist}" loading="lazy">`
+            : `<div class="album-placeholder">♫</div>`}
+        ${!isEmpty ? `
         <div class="music-hover-overlay">
-          ${tag     ? `<span class="music-genre">${tag}</span>`            : ''}
-          ${flag    ? `<span class="music-flag">${flag}</span>`            : ''}
+          ${tag     ? `<span class="music-genre">${tag}</span>`               : ''}
+          ${flag    ? `<span class="music-flag">${flag}</span>`               : ''}
           ${streams ? `<span class="music-streams">${streams} streams</span>` : ''}
-        </div>
+        </div>` : ''}
       </div>
     </div>`;
 }
@@ -529,14 +599,4 @@ function toggleSection(name) {
   const sec    = document.getElementById('section-' + name);
   const isOpen = sec.classList.contains('open');
   document.querySelectorAll('.nav-section').forEach(s => s.classList.remove('open'));
-  if (!isOpen) sec.classList.add('open');
-}
-
-function toggleTheme() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-}
-
-</script>
-</body>
-</html>
+  if (!isOpen) sec.classList.ad
