@@ -414,113 +414,54 @@ body {
   object-fit: cover;
   transition: opacity 0.4s, transform 0.4s;
 }
-.album-card:hover .album-card-img-wrap img { opacity: 0.75; transform: scale(1.03); }
-.album-card-overlay {
+/* ── Music card: cover only by default, info on hover ── */
+.album-card-img-wrap img { transition: opacity 0.3s; }
+.album-card:hover .album-card-img-wrap img { opacity: 0.15; }
+
+.music-hover-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 60%);
   opacity: 0;
-  transition: opacity 0.35s;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 1rem;
-  pointer-events: none;
-}
-.album-card:hover .album-card-overlay { opacity: 1; }
-
-/* Stream badge — 💎 + count, always visible on hover */
-.stream-badge {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-top: 1.2rem;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.3s, transform 0.3s;
-  pointer-events: none;
-  z-index: 10;
-}
-.album-card:hover .stream-badge {
-  opacity: 1;
-  transform: none;
-}
-.stream-gem {
-  font-size: 1.8rem;
-  line-height: 1;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
-}
-.stream-count {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #fff;
-  margin-top: 4px;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.6);
-}
-
-/* Spotify embed overlay — replaces standard overlay for embed cards */
-.album-embed-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.82);
-  opacity: 0;
-  transition: opacity 0.35s;
+  transition: opacity 0.3s;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1rem 1rem 0.6rem;
+  padding: 1rem;
   pointer-events: none;
 }
-.album-card:hover .album-embed-overlay {
-  opacity: 1;
-  pointer-events: all;
-}
-.album-embed-info {
+.album-card:hover .music-hover-overlay { opacity: 1; }
+
+/* Top: flag left, genre right */
+.music-hover-top {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: flex-start;
+  justify-content: space-between;
 }
-.spotify-embed {
-  width: 100%;
-  height: 80px;
-  border-radius: 8px;
-  flex-shrink: 0;
+.music-flag {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.music-genre {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg);
 }
 
-/* Cursor for embed cards */
-.album-card.has-embed { cursor: default; }
-.album-card-artist {
-  font-size: 13px;
-  font-weight: 700;
-  color: #fff;
-  transform: translateY(6px);
-  transition: transform 0.35s;
+/* Bottom: stream count */
+.music-hover-bottom {
+  display: flex;
+  flex-direction: column;
 }
-.album-card-name {
+.music-streams {
   font-size: 11px;
-  font-weight: 300;
-  color: rgba(255,255,255,0.8);
-  margin-top: 2px;
-  transform: translateY(6px);
-  transition: transform 0.35s 0.03s;
-}
-.album-card-tag {
-  font-size: 9px;
-  letter-spacing: 0.14em;
+  font-weight: 400;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  margin-top: 4px;
-  transform: translateY(6px);
-  transition: transform 0.35s 0.06s;
+  color: var(--fg);
 }
-.album-card:hover .album-card-artist,
-.album-card:hover .album-card-name,
-.album-card:hover .album-card-tag { transform: none; }
+
 .album-placeholder {
   width: 100%;
   height: 100%;
@@ -915,13 +856,13 @@ const MUSIC_TIERS = {
   bee: [
     // Bee — 10K to 100K streams
     // ↓ Add your Bee picks here
-    { artist: "Artist Name", album: "Album Title", tag: "Genre", cover: null, url: "https://open.spotify.com" },
+    { artist: "Artist Name", album: "Album Title", tag: "Genre", flag: "🏳️", cover: null, url: "https://open.spotify.com" },
   ],
 
   sunflower: [
     // Flower — 100K to 500K streams
     // ↓ Add your Flower picks here
-    { artist: "Artist Name", album: "Album Title", tag: "Genre", cover: null, url: "https://open.spotify.com" },
+    { artist: "Artist Name", album: "Album Title", tag: "Genre", flag: "🏳️", cover: null, url: "https://open.spotify.com" },
   ]
 
 };
@@ -929,41 +870,30 @@ const MUSIC_TIERS = {
 // ═══════════════════════════════════════════════════════
 
 function buildMusicCard(m) {
-  const hasEmbed   = !!m.embedId;
-  const hasStreams  = !!m.streams;
+  const flag    = m.flag    || '';
+  const streams = m.streams || '';
+  const tag     = m.tag     || '';
+
   return `
-    <div class="album-card ${hasEmbed ? 'has-embed' : ''}" onclick="window.open('${m.url}','_blank')">
+    <div class="album-card" onclick="window.open('${m.url}','_blank')">
       <div class="album-card-img-wrap">
-        ${m.cover ? `<img src="${m.cover}" alt="${m.artist}" loading="lazy">` : `<div class="album-placeholder">♫</div>`}
 
-        ${hasStreams ? `
-        <div class="stream-badge">
-          <span class="stream-gem">💎</span>
-          <span class="stream-count">${m.streams} streams</span>
-        </div>` : ''}
+        <!-- Cover — only thing visible by default -->
+        ${m.cover
+          ? `<img src="${m.cover}" alt="${m.artist}" loading="lazy">`
+          : `<div class="album-placeholder">♫</div>`}
 
-        ${!hasEmbed ? `
-        <div class="album-card-overlay">
-          <span class="album-card-artist">${m.artist}</span>
-          <span class="album-card-name">${m.album}</span>
-          <span class="album-card-tag">${m.tag}</span>
-        </div>` : ''}
-
-        ${hasEmbed ? `
-        <div class="album-embed-overlay">
-          <div class="album-embed-info">
-            <span class="album-card-artist">${m.artist}</span>
-            <span class="album-card-name">${m.album}</span>
-            <span class="album-card-tag">${m.tag}</span>
+        <!-- Hover overlay: flag · genre · streams only -->
+        <div class="music-hover-overlay">
+          <div class="music-hover-top">
+            ${flag ? `<span class="music-flag">${flag}</span>` : ''}
+            ${tag  ? `<span class="music-genre">${tag}</span>`  : ''}
           </div>
-          <iframe
-            class="spotify-embed"
-            src="https://open.spotify.com/embed/track/${m.embedId}?utm_source=generator&theme=0"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-            frameborder="0">
-          </iframe>
-        </div>` : ''}
+          <div class="music-hover-bottom">
+            ${streams ? `<span class="music-streams">${streams} streams</span>` : ''}
+          </div>
+        </div>
+
       </div>
     </div>`;
 }
