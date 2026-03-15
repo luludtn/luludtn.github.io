@@ -986,7 +986,12 @@ function stopSeesRandom() {
 
 // ═══════════════════════════════════════════════════════
 
+function setHash(name) {
+  history.replaceState(null, '', '#' + name);
+}
+
 function showView(name) {
+  setHash(name);
   ['honey', 'bee', 'sunflower'].forEach(tier => {
     if (playerState[tier]?.playing) stopShuffle(tier);
   });
@@ -1215,6 +1220,16 @@ function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
 }
+
+// Restore page on refresh from URL hash
+(function() {
+  const hash = location.hash.slice(1);
+  if (!hash) return;
+  if (hash.startsWith('series-')) openSeries(hash.replace('series-', ''));
+  else if (hash.startsWith('listens-')) showListensTier(hash.replace('listens-', ''));
+  else if (hash === 'random-sees') showSeesRandom();
+  else showView(hash);
+})();
 
 </script>
 </body>
