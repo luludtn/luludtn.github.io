@@ -400,7 +400,7 @@ body {
     </span>
     <nav class="sidebar-nav">
       <div class="nav-section" id="section-sees">
-        <div class="nav-section-header" onclick="toggleSection('sees')">He sees <span class="nav-arrow">›</span></div>
+        <div class="nav-section-header" onclick="showSeesOverview()">He sees <span class="nav-arrow">›</span></div>
         <div class="nav-section-items">
           <button class="nav-item" id="nav-tunisia"   onclick="openSeries('tunisia')">Un bout d'été en Tunisie</button>
           <button class="nav-item" id="nav-barcelona" onclick="openSeries('barcelona')">Barcelona Bella</button>
@@ -437,11 +437,9 @@ body {
 
   <div class="view" id="view-portfolio">
     <div class="portfolio-layout">
-      <div class="col-left">
-        <div class="p-card" onclick="openSeries('tunisia')">
-          <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498272/IMG_2745_scyl19.jpg" alt="Un bout d'été en Tunisie">
-          <div class="p-card-overlay"><h2 class="p-card-title">Un bout d'été<br>en Tunisie</h2></div>
-        </div>
+      <div class="p-card" onclick="openSeries('tunisia')">
+        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498272/IMG_2745_scyl19.jpg" alt="Un bout d'été en Tunisie">
+        <div class="p-card-overlay"><h2 class="p-card-title">Un bout d'été<br>en Tunisie</h2></div>
       </div>
       <div class="p-card" onclick="openSeries('barcelona')">
         <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773573662/000021930016_n3i9bk.jpg" alt="Barcelona Bella">
@@ -456,7 +454,7 @@ body {
 
   <div class="view" id="view-series-tunisia">
     <div class="series-header">
-      <button class="series-header-back" onclick="showView('portfolio')">All work</button>
+      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
       <h1 class="series-main-title">Un bout d'été en Tunisie </h1>
       <p class="series-main-desc">Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. I've always heard about it, got told a million stories from there, could imagine it in some shapes into my head. But it's always been very fictional to me, until the opportunity came. I started photography recently, and fell in love with black and white. One could find it wrong to go to such a colorful place and remove colors. I love it and will love it forever. Now, please discover what I've discovered, look at these faces, these scenes, these moments with these characters. — Un bout d'été en Tunisie, Juillet 2025</p>
     </div>
@@ -465,7 +463,7 @@ body {
 
   <div class="view" id="view-series-barcelona">
     <div class="series-header">
-      <button class="series-header-back" onclick="showView('portfolio')">All work</button>
+      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
       <h1 class="series-main-title">Barcelona Bella</h1>
       <p class="series-main-desc">Add a description for Barcelona Bella here.</p>
     </div>
@@ -474,7 +472,7 @@ body {
 
   <div class="view" id="view-series-Eire">
     <div class="series-header">
-      <button class="series-header-back" onclick="showView('portfolio')">All work</button>
+      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
       <h1 class="series-main-title">Eire</h1>
       <p class="series-main-desc">Add a description for Eire here.</p>
     </div>
@@ -990,6 +988,11 @@ document.getElementById('lightbox').addEventListener('click', e => {
   if (e.target.id === 'lightbox') closeLightbox();
 });
 
+function showSeesOverview() {
+  showView('portfolio');
+  document.getElementById('section-sees').classList.add('open');
+}
+
 function openSeries(key) {
   showView('series-' + key);
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -1082,6 +1085,7 @@ function showView(name) {
   window.scrollTo(0, 0);
   document.querySelectorAll('.nav-item, .nav-flat').forEach(el => el.classList.remove('active'));
   if (name === 'about') document.getElementById('nav-about').classList.add('active');
+  if (name === 'portfolio') document.getElementById('section-sees').classList.add('open');
   if (name === 'listens') {
     document.getElementById('nav-random').classList.add('active');
     document.getElementById('section-listens').classList.add('open');
