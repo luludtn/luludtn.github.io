@@ -394,15 +394,15 @@ body {
   <div class="view" id="view-portfolio">
     <div class="portfolio-layout">
       <div class="p-card" onclick="openSeries('tunisia')">
-        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773498272/IMG_2745_scyl19.jpg" alt="Un bout d'été en Tunisie">
+        <img src="" alt="Un bout d'été en Tunisie" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">Un bout d'été en Tunisie</h2></div>
       </div>
       <div class="p-card" onclick="openSeries('barcelona')">
-        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773573662/000021930016_n3i9bk.jpg" alt="Barcelona Bella">
+        <img src="" alt="Barcelona Bella" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">Barcelona Bella</h2></div>
       </div>
       <div class="p-card" onclick="openSeries('Eire')">
-        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773574211/IMG_1846_k7bwnx.jpg" alt="Eire">
+        <img src="" alt="Eire" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">Eire</h2></div>
       </div>
     </div>
@@ -1077,6 +1077,9 @@ function fetchCloudinaryTag(tag, key) {
       const seed = hashStr(SERIES_DATA[key].map(p => p.id).join(''));
       SERIES_DATA[key] = seededShuffle(SERIES_DATA[key], seed);
       buildMasonry(key);
+      // Update portfolio cover with first photo from the series
+      const coverEl = document.querySelector(`#view-portfolio .p-card[onclick*="${key}"] img`);
+      if (coverEl && SERIES_DATA[key].length) coverEl.src = SERIES_DATA[key][0].url;
     })
     .catch(() => {
       if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Could not load photos</p>`;
