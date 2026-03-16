@@ -361,6 +361,7 @@ body {
           <button class="nav-item" id="nav-tunisia"   onclick="openSeries('tunisia')">Un bout d'été en Tunisie</button>
           <button class="nav-item" id="nav-barcelona" onclick="openSeries('barcelona')">Barcelona Bella</button>
           <button class="nav-item" id="nav-Eire"  onclick="openSeries('Eire')">Eire</button>
+          <button class="nav-item" id="nav-laballe" onclick="openSeries('laballe')">La Balle</button>
         </div>
       </div>
       <div class="nav-section" id="section-listens">
@@ -405,6 +406,10 @@ body {
         <img src="" alt="Eire" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">Eire</h2></div>
       </div>
+      <div class="p-card" onclick="openSeries('laballe')">
+        <img src="" alt="La Balle" style="min-height:300px;background:var(--border)">
+        <div class="p-card-overlay"><h2 class="p-card-title">La Balle</h2></div>
+      </div>
     </div>
   </div>
 
@@ -433,6 +438,15 @@ body {
       <p class="series-main-desc">Add a description for Eire here.</p>
     </div>
     <div class="series-masonry" id="photos-Eire"></div>
+  </div>
+
+  <div class="view" id="view-series-laballe">
+    <div class="series-header">
+      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+      <h1 class="series-main-title">La Balle</h1>
+      <p class="series-main-desc">Add a description for La Balle here.</p>
+    </div>
+    <div class="series-masonry" id="photos-laballe"></div>
   </div>
 
   <!-- ══ LISTENS MAIN ══ -->
@@ -566,7 +580,8 @@ body {
 const SERIES_DATA = {
   tunisia:   [],
   barcelona: [],
-  Eire: []
+  Eire: [],
+  laballe: []
 };
 
 // ═══════════════════════════════════════════════════════
@@ -1088,6 +1103,7 @@ function fetchCloudinaryTag(tag, key) {
 fetchCloudinaryTag('Tunisia', 'tunisia');
 fetchCloudinaryTag('Barcelona', 'barcelona');
 fetchCloudinaryTag('Ireland', 'Eire');
+fetchCloudinaryTag('Football', 'laballe');
 
 // ═══════════════════════════════════════════════════════
 //  SHUFFLE PLAYER
