@@ -102,9 +102,9 @@ body {
 .portfolio-layout { columns: 3; column-gap: 8px; padding: 8px; }
 .p-card { break-inside: avoid; margin-bottom: 8px; position: relative; cursor: pointer; overflow: hidden; display: block; }
 .p-card img { width: 100%; height: auto; display: block; }
-.p-card-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; padding: 2.5rem; background: var(--bg); opacity: 0; transition: opacity 0.28s ease; }
+.p-card-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; align-items: flex-end; padding: 1.2rem; background: none; opacity: 0; transition: opacity 0.28s ease; }
 .p-card:hover .p-card-overlay { opacity: 1; }
-.p-card-title { font-size: clamp(1.6rem, 3vw, 3.2rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.04em; color: var(--fg); text-align: center; }
+.p-card-title { font-size: clamp(0.85rem, 1.2vw, 1.1rem); font-weight: 500; line-height: 1.2; letter-spacing: 0.01em; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
 
 .series-header { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; padding: 2.5rem var(--gap) 2rem; }
 .series-header-back { grid-column: 1 / -1; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.2s; display: flex; align-items: center; gap: 6px; padding: 0 0 1rem var(--gap); width: fit-content; }
