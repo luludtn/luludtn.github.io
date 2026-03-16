@@ -197,6 +197,13 @@ body {
 .music-streams-wrap { position: absolute; bottom: 1rem; left: 1rem; display: flex; align-items: baseline; gap: 3px; }
 .music-streams { font-size: 10px; font-weight: 400; font-style: italic; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg); }
 .music-streams-date { font-size: 8px; font-weight: 400; letter-spacing: 0.08em; color: var(--fg); opacity: 0.6; }
+.music-platform-links { position: absolute; bottom: 0.7rem; right: 0.7rem; display: flex; gap: 5px; pointer-events: all; }
+.music-plat-link { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.18s; flex-shrink: 0; }
+.music-plat-link:hover { transform: scale(1.18); }
+.music-plat-link svg { width: 14px; height: 14px; fill: #fff; display: block; }
+.music-plat--spotify { background: #1DB954; }
+.music-plat--deezer  { background: #FF0092; }
+.music-plat--apple   { background: #FC3C44; }
 .album-placeholder { width: 100%; height: 100%; position: absolute; inset: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--muted); }
 .album-placeholder--empty { background: transparent; border: 1.5px dashed var(--border); }
 .album-card--empty { cursor: default; pointer-events: none; opacity: 0.4; }
@@ -600,8 +607,8 @@ const MUSIC_TIERS = {
       cover:   "https://res.cloudinary.com/dzhvoacrg/image/upload/v1773580505/amedee_o_suriam_npqirm.jpg",
       url:     "https://open.spotify.com/intl-fr/track/2q5FzLFS2fDeoAjblNnZ4T?si=0bd25f513e264c0b",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/1880576747",
+      apple:   "https://music.apple.com/album/1646566587?i=1646566596",
       preview: "https://p.scdn.co/mp3-preview/87c8385fdb08381066fd7b509b6e7e4a09088b3e",
       year:    "2023",
       streams: "5,894",
@@ -616,8 +623,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02a4942d2171fce1ddcc90a6cb",
       url:     "https://open.spotify.com/intl-fr/track/6kBIiDyndZDFpfMxkLfEBz?si=e62c723bdf9848e7",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/2350794785",
+      apple:   "https://music.apple.com/album/1678334564?i=1678334869",
       preview: "https://p.scdn.co/mp3-preview/8801ad5c39c07389a954d56f0282dd01c0fdfcd8",
       year:    "2016",
       streams: "8,839",
@@ -632,8 +639,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273b49036e82f310ed2562f2904",
       url:     "https://open.spotify.com/intl-fr/track/3yF2FLkcwqGKWCBeFyvONw?si=446df8a322294b5d",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/3042178631",
+      apple:   "https://music.apple.com/album/1773568703?i=1773568704",
       preview: "https://p.scdn.co/mp3-preview/79aa66969de56b92ba9dcbcd0944f115d2c11b83",
       year:    "2025",
       streams: "7,503",
@@ -648,8 +655,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b2737a355cfc718a3585a319de47",
       url:     "https://open.spotify.com/intl-fr/track/7eqhUtsJwPZuw6zFRGQdI8?si=8e60a98a8e034f4b",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/1137521722",
+      apple:   "https://music.apple.com/album/1614429172?i=1614429758",
       preview: "https://p.scdn.co/mp3-preview/73d14c436ba57f5e055a522cac0040a2c65db8cb",
       year:    "2025",
       streams: "9,180",
@@ -664,8 +671,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273ba3c246858000d24e315c028",
       url:     "https://open.spotify.com/intl-fr/track/3dUzbL6rcZ9NqHOXr1uFvs?si=30da618dbe5e48c7",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/2589357052",
+      apple:   "https://music.apple.com/album/1446927817?i=1446928162",
       preview: "https://p.scdn.co/mp3-preview/02266b5c74afd94e82be047f0a1fd62dfcb4399a",
       year:    "2025",
       streams: "5,889",
@@ -680,8 +687,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b27330af1d8dda51b067ce7804a7",
       url:     "https://open.spotify.com/intl-fr/track/0bZ9PxqgHt06Ww7Jiqopeg?si=fdab619231ef4fc0",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/1939664037",
+      apple:   "https://music.apple.com/album/1647363925?i=1647363929",
       preview: "https://p.scdn.co/mp3-preview/c796a27bb6888858d28876c4e9667f2a8a2a98c1",
       year:    "2025",
       streams: "4,503",
@@ -700,8 +707,8 @@ const MUSIC_TIERS = {
       cover:   "https://res.cloudinary.com/dzhvoacrg/image/upload/v1773577077/Nic_Clay_Fly_xgzqfw.jpg",
       url:     "https://open.spotify.com/intl-fr/track/3j2VUykCoOeB8Q7YHySdk0",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/798204852",
+      apple:   "https://music.apple.com/album/1486538960?i=1486538967",
       preview: "https://p.scdn.co/mp3-preview/06ce868a3b7295ed66dc8b2e43373ccc04fe71e4",
       year:    "2022",
       streams: "74,993",
@@ -716,8 +723,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02e2e6b02f198bc40bc42a03cc",
       url:     "https://open.spotify.com/intl-fr/track/5mTou2Fq4ClMiNcUJdfYKE?si=a8b9b47915174a16",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/2500696561",
+      apple:   "https://music.apple.com/album/1737226527?i=1737226831",
       preview: "https://p.scdn.co/mp3-preview/908fd1d5b7a8fb28754b7d5dafc68ed7a91fc52e",
       year:    "2015",
       streams: "22,220",
@@ -732,8 +739,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273b7c84643f2083856676b28ff",
       url:     "https://open.spotify.com/intl-fr/track/1MQ27ys86klrv1eLDJUxgM?si=ff83ad004a1242a7",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/3368931581",
+      apple:   "https://music.apple.com/album/1810769843?i=1810769848",
       preview: "https://p.scdn.co/mp3-preview/995dd0bc1e70144aaea9611dd77b3f00ecc69dcc",
       year:    "2022",
       streams: "99,709",
@@ -748,7 +755,7 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e028e0fb4cea1a80bd4bca89fe7",
       url:     "https://open.spotify.com/intl-fr/track/0IFELCq2sa7OvKb1a9z9TO",
       youtube: "",
-      deezer:  "",
+      deezer:  "https://www.deezer.com/track/74948677",
       apple:   "",
       preview: "https://p.scdn.co/mp3-preview/f2902af4ec69e98b852ade11b764c241c9efdfaa",
       year:    "2013",
@@ -764,8 +771,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02b09afa4708dc0c12c127bc2c",
       url:     "https://open.spotify.com/intl-fr/track/30y6AIWDz0xop8Vtfn2EyM",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/1277454702",
+      apple:   "https://music.apple.com/album/1558192313?i=1558192315",
       preview: "https://p.scdn.co/mp3-preview/2cf34b68668077aa277336d6731eecdc9126240a",
       year:    "1996",
       streams: "192,183",
@@ -780,8 +787,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02149cbb103135acb2782a801e",
       url:     "https://open.spotify.com/intl-fr/track/2Y8NlHfswvpGLh0g8We0O1",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/3476579",
+      apple:   "https://music.apple.com/album/1021590355?i=1021590533",
       preview: "https://p.scdn.co/mp3-preview/daf1f5808b2fa9ed848672c919decfffef346dda",
       year:    "2024",
       streams: "49,305",
@@ -796,8 +803,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02fcbfd170b4d131ee14111a8e",
       url:     "https://open.spotify.com/intl-fr/track/2lBpXBjFsqYD1G6X6sKUN5",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/3257407801",
+      apple:   "https://music.apple.com/album/1799239159?i=1799239172",
       preview: "https://p.scdn.co/mp3-preview/86c69b36be6fca7f8a71ea0510723b14a80c0628",
       year:    "2001",
       streams: "50,574",
@@ -812,7 +819,7 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273fca3d664de4b07c2434f9bac",
       url:     "https://open.spotify.com/intl-fr/track/14IWEt9EVdzYKTDpfGnrbS?si=9a477fe81bcd49fd",
       youtube: "",
-      deezer:  "",
+      deezer:  "https://www.deezer.com/track/2076328407",
       apple:   "",
       preview: "https://p.scdn.co/mp3-preview/a26db006f19adc6454e83dffc9831a2bf59ff197",
       year:    "2025",
@@ -832,8 +839,8 @@ const MUSIC_TIERS = {
       cover:   "https://res.cloudinary.com/dzhvoacrg/image/upload/v1773581826/Mc_Solaar_zwwbg9.jpg",
       url:     "https://open.spotify.com/intl-fr/track/44IouzBSiqKJoJbP7gkCzI?si=162402cf575943fd",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/1421656762",
+      apple:   "https://music.apple.com/album/1572971729?i=1572971943",
       preview: "https://p.scdn.co/mp3-preview/afaee9ef545e7f898320ddda68b8137bab271eb1",
       year:    "1991",
       streams: "250,805",
@@ -849,7 +856,7 @@ const MUSIC_TIERS = {
       url:     "https://open.spotify.com/intl-fr/track/3cnDUZXt0mqpsHulp03aTC?si=3f23217a8c6c4084",
       youtube: "",
       deezer:  "",
-      apple:   "",
+      apple:   "https://music.apple.com/album/500090543?i=500090546",
       preview: "https://p.scdn.co/mp3-preview/c9d8f016e969475f9dfde47aee28f0012217a639",
       year:    "2012",
       streams: "145,647",
@@ -864,8 +871,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273d07adcb3c8a5170897f38742",
       url:     "https://open.spotify.com/intl-fr/track/3eDelv5gOUohvtjh3CilJC?si=21fdb7e576a54284",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/99402572",
+      apple:   "https://music.apple.com/album/983126737?i=983126740",
       preview: "https://p.scdn.co/mp3-preview/1491d8b9192a81fc086b7ddaa6d7cc38c53b8ad5",
       year:    "1982",
       streams: "220,301",
@@ -880,8 +887,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b2734b26949796bb3c8c3b8cd653",
       url:     "https://open.spotify.com/intl-fr/track/2Mhc2J3rtQvjIwlBfyK8pm?si=4ce9a157dbe44ef4",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/3761251982",
+      apple:   "https://music.apple.com/album/1733063633?i=1733064171",
       preview: "https://p.scdn.co/mp3-preview/0268691b270a62c5f5964c4f6bef95ddafdc6797",
       year:    "1994",
       streams: "270,101",
@@ -896,8 +903,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e026e55e8a4ad81d1da2d7bfa19",
       url:     "https://open.spotify.com/intl-fr/track/0hytuzek7EPtp156LPsDgl",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/1712256057",
+      apple:   "https://music.apple.com/album/1618214969?i=1618214974",
       preview: "https://p.scdn.co/mp3-preview/0c2d8f7a9e36b7013cff35d2e939b85bd472e2ec",
       year:    "2024",
       streams: "191,256",
@@ -912,8 +919,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02e32747c0799b7b77884f0a39",
       url:     "https://open.spotify.com/intl-fr/track/5EbMqkHe85GCamakRbpA7i",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/881541832",
+      apple:   "https://music.apple.com/album/1499534509?i=1499534510",
       preview: "https://p.scdn.co/mp3-preview/6d3ff1076a10c237fa9e9c7f4af8e858c54c5d0a",
       year:    "2024",
       streams: "270,807",
@@ -928,8 +935,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e023b001055ee29d8957cd5762d",
       url:     "https://open.spotify.com/intl-fr/track/7GOPlMISoD6Q05ScPNC3sU",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/2520278641",
+      apple:   "https://music.apple.com/album/1329354133?i=1329354135",
       preview: "https://p.scdn.co/mp3-preview/a9fb127c0b55e5f413853217d6ef9a62ebb4e058",
       year:    "1989",
       streams: "107,016",
@@ -944,8 +951,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02d5a2345516de9f0ac2a7a26f",
       url:     "https://open.spotify.com/intl-fr/track/0TucvrBpyEB5m9APtu1N4W",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/3399393601",
+      apple:   "https://music.apple.com/album/1818596511?i=1818596522",
       preview: "https://p.scdn.co/mp3-preview/88d0fd0a9a41df52c683384e50c6446b186fb7fa",
       year:    "2025",
       streams: "174,968",
@@ -964,8 +971,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e020c98dd7d3951d489df53b08e",
       url:     "https://open.spotify.com/intl-fr/track/39HnpKxGPzP3EUlXvs4VBQ",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/17099870",
+      apple:   "https://music.apple.com/album/693276843?i=693277507",
       preview: "https://p.scdn.co/mp3-preview/e92843f2984ee6beb32dcb3321c457d0cf524dfe",
       year:    "",
       streams: "",
@@ -980,8 +987,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b27339c366e31cd1d3086c62ea43",
       url:     "https://open.spotify.com/intl-fr/track/0PGiFTu8ZiGECQpoknlOcY?si=d280b5f23d8b4a04",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/2357267075",
+      apple:   "https://music.apple.com/album/158064535?i=158064763",
       preview: "https://p.scdn.co/mp3-preview/d56b7150f42a73256627fe96c149e2bdfc1c89d1",
       year:    "2006",
       streams: "??? — too good to be counted",
@@ -996,8 +1003,8 @@ const MUSIC_TIERS = {
       cover:   "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273eeac039419b675be02377e70",
       url:     "https://open.spotify.com/intl-fr/track/2XTd2loGYcpSwN3EApcDLe?si=3c094527344546d3",
       youtube: "",
-      deezer:  "",
-      apple:   "",
+      deezer:  "https://www.deezer.com/track/602606752",
+      apple:   "https://music.apple.com/album/1436938021?i=1436938074",
       preview: "https://p.scdn.co/mp3-preview/f1296425add050a6ceba56f9a09ed347f1edb4d3",
       year:    "",
       streams: "",
@@ -1025,6 +1032,10 @@ const MUSIC_TIERS = {
 
 // ═══════════════════════════════════════════════════════
 
+const _SVG_SPOTIFY = `<svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`;
+const _SVG_DEEZER  = `<svg viewBox="0 0 24 24"><path d="M18.81 11.283h3.873v1.815H18.81zm0 3.324h3.873V16.4H18.81zm0-6.648h3.873v1.814H18.81zM1.317 17.725h3.873v-1.814H1.317zm8.745 0h3.874v-1.814h-3.874zm4.373 0h3.874v-1.814h-3.874zm-8.746 0h3.874v-1.814H5.689zm8.746-3.118h3.874v-1.815h-3.874zm-4.373 0h3.874v-1.815h-3.874zm-4.373 0H9.563v-1.815H5.689zm0-3.325h3.874V9.467H5.689zm4.373 0h3.874V9.467h-3.874zm4.373 0h3.874V9.467h-3.874z"/></svg>`;
+const _SVG_APPLE   = `<svg viewBox="0 0 24 24"><path d="M23.997 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 0 0-1.589-.626c-.55-.107-1.1-.155-1.65-.18H5.662a9.94 9.94 0 0 0-1.652.18 4.99 4.99 0 0 0-1.59.626C1.322 1.71.575 2.7.258 4.01a9.28 9.28 0 0 0-.24 2.19C.01 6.5 0 6.81 0 7.117v9.764c0 .308.008.617.018.993.068 1.2.33 2.43 1.154 3.34a4.72 4.72 0 0 0 1.42 1.084c.653.337 1.35.527 2.057.61.74.09 1.49.12 2.24.12h9.226c.75 0 1.497-.03 2.24-.12.707-.083 1.405-.273 2.057-.61a4.72 4.72 0 0 0 1.42-1.084c.824-.91 1.086-2.14 1.154-3.34.01-.376.018-.685.018-.993V7.117c0-.308-.008-.617-.007-.993zM8 17a5 5 0 1 1 0-10A5 5 0 0 1 8 17zm0-8a3 3 0 1 0 0 6A3 3 0 0 0 8 9zm9-1a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>`;
+
 function buildMusicCard(m) {
   const flag    = m.flag    || '';
   const streams = m.streams || '';
@@ -1033,6 +1044,12 @@ function buildMusicCard(m) {
   const date    = m.date    || '';
   const isEmpty = !m.artist && !m.cover;
   const click   = isEmpty ? '' : `onclick="window.open('${m.url}','_blank')"`;
+  const platLinks = !isEmpty ? `
+        <div class="music-platform-links">
+          ${m.url && m.url !== '#' ? `<a class="music-plat-link music-plat--spotify" href="${m.url}" target="_blank" onclick="event.stopPropagation()" title="Spotify">${_SVG_SPOTIFY}</a>` : ''}
+          ${m.deezer ? `<a class="music-plat-link music-plat--deezer" href="${m.deezer}" target="_blank" onclick="event.stopPropagation()" title="Deezer">${_SVG_DEEZER}</a>` : ''}
+          ${m.apple  ? `<a class="music-plat-link music-plat--apple"  href="${m.apple}"  target="_blank" onclick="event.stopPropagation()" title="Apple Music">${_SVG_APPLE}</a>`  : ''}
+        </div>` : '';
   return `
     <div class="album-card${isEmpty ? ' album-card--empty' : ''}" ${click}>
       <div class="album-card-img-wrap">
@@ -1051,6 +1068,7 @@ function buildMusicCard(m) {
             <span class="music-streams">${streams} streams*</span>
             <span class="music-streams-date">${date}</span>
           </div>` : ''}
+          ${platLinks}
         </div>` : ''}
       </div>
     </div>`;
