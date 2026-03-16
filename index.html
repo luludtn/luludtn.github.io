@@ -99,8 +99,8 @@ body {
 .home-tagline em { font-style: normal; font-weight: 700; }
 
 #view-portfolio { min-height: 100vh; }
-.portfolio-layout { columns: 3; column-gap: 8px; padding: 8px; }
-.p-card { break-inside: avoid; margin-bottom: 8px; position: relative; cursor: pointer; overflow: hidden; display: block; }
+.portfolio-layout { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 8px; align-items: start; }
+.p-card { position: relative; cursor: pointer; overflow: hidden; display: block; }
 .p-card img { width: 100%; height: auto; display: block; }
 .p-card-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; align-items: flex-end; padding: 0; background: none; opacity: 0; transition: opacity 0.28s ease; }
 .p-card:hover .p-card-overlay { opacity: 1; }
@@ -323,7 +323,7 @@ body {
 .about-row a:hover { opacity: 0.45; }
 
 @media (max-width: 1100px) { .album-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 900px) { .portfolio-layout { columns: 2; } .series-header { grid-template-columns: 1fr; gap: 1rem; } .album-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; padding: 1.5rem 1rem 4rem; } }
+@media (max-width: 900px) { .portfolio-layout { grid-template-columns: 1fr 1fr; }.series-header { grid-template-columns: 1fr; gap: 1rem; } .album-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; padding: 1.5rem 1rem 4rem; } }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
   #sidebar { width: 100%; height: auto; position: fixed; top: 0; left: 0; right: 0; bottom: auto; flex-direction: column; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
@@ -337,7 +337,7 @@ body {
   .skin-label { display: none; }
   .skin-icon { width: 22px; height: 22px; }
   #main { margin-left: 0; padding-top: 200px; }
-  .portfolio-layout { columns: 1; }
+  .portfolio-layout { grid-template-columns: 1fr; }
   .series-masonry { gap: 1.5rem; padding: 1.5rem 1rem 4rem; }
   .series-row { flex-direction: column; gap: 1rem; }
   .series-photo { flex: none !important; width: 100% !important; }
@@ -399,7 +399,7 @@ body {
         <div class="p-card-overlay"><h2 class="p-card-title">Un bout d'été en Tunisie</h2></div>
       </div>
       <div class="p-card" onclick="openSeries('barcelona')">
-        <img src="" alt="Barcelona Bella" style="min-height:300px;background:var(--border)">
+        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773591638/000021930005_vhpao7.jpg" alt="Barcelona Bella" data-manual-cover="1" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">Barcelona Bella</h2></div>
       </div>
       <div class="p-card" onclick="openSeries('Eire')">
@@ -407,7 +407,7 @@ body {
         <div class="p-card-overlay"><h2 class="p-card-title">Eire</h2></div>
       </div>
       <div class="p-card" onclick="openSeries('laballe')">
-        <img src="" alt="La Balle" style="min-height:300px;background:var(--border)">
+        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773689037/000021900020_ewfopn.jpg" alt="La Balle" data-manual-cover="1" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">La Balle</h2></div>
       </div>
     </div>
@@ -1092,9 +1092,9 @@ function fetchCloudinaryTag(tag, key) {
       const seed = hashStr(SERIES_DATA[key].map(p => p.id).join(''));
       SERIES_DATA[key] = seededShuffle(SERIES_DATA[key], seed);
       buildMasonry(key);
-      // Update portfolio cover with first photo from the series
+      // Update portfolio cover with first photo from the series (skip if manually set)
       const coverEl = document.querySelector(`#view-portfolio .p-card[onclick*="${key}"] img`);
-      if (coverEl && SERIES_DATA[key].length) coverEl.src = SERIES_DATA[key][0].url;
+      if (coverEl && SERIES_DATA[key].length && !coverEl.dataset.manualCover) coverEl.src = SERIES_DATA[key][0].url;
     })
     .catch(() => {
       if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Could not load photos</p>`;
