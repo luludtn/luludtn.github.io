@@ -1427,10 +1427,10 @@ function toggleTunisiaPlayer() {
   const iframe = document.getElementById('tunisia-spotify-iframe');
   const btn = document.getElementById('tunisia-play-btn');
   if (tunisiaPlayerOpen) {
-    iframe.src = 'https://open.spotify.com/embed/playlist/4ZzhgDQVCMZoVxqxiUCosc?utm_source=generator&autoplay=1';
     wrap.style.display = 'block';
     btn.textContent = '◼ stop';
     btn.classList.add('active');
+    setTimeout(() => { iframe.src = 'https://open.spotify.com/embed/playlist/4ZzhgDQVCMZoVxqxiUCosc?utm_source=generator&autoplay=1'; }, 0);
   } else {
     iframe.src = '';
     wrap.style.display = 'none';
