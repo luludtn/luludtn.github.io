@@ -116,7 +116,6 @@ body {
 .series-main-desc { font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 300; }
 .series-masonry { display: flex; flex-direction: column; gap: 3rem; }
 .series-row { display: flex; gap: 4px; align-items: flex-start; cursor: pointer; }
-.series-row.pair-landscape { flex-direction: column; }
 .series-photo { min-width: 0; cursor: pointer; }
 .series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
 .series-photo:hover img { opacity: 0.88; }
@@ -307,11 +306,8 @@ body {
 /* ════ LIGHTBOX ════ */
 #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 500; align-items: center; justify-content: center; }
 #lightbox.open { display: flex; }
-#lb-pair { display: flex; gap: 6px; }
-#lb-pair.lb-portrait { flex-direction: row; height: 88vh; max-width: 92vw; align-items: stretch; }
-#lb-pair.lb-portrait img { flex: 1; min-width: 0; height: 100%; object-fit: contain; display: block; }
-#lb-pair.lb-landscape { flex-direction: column; width: 46vw; height: 90vh; gap: 6px; }
-#lb-pair.lb-landscape img { flex: 1; min-height: 0; width: 100%; object-fit: contain; display: block; }
+#lb-pair { display: flex; flex-direction: row; gap: 6px; height: 88vh; max-width: 92vw; align-items: stretch; }
+#lb-pair img { flex: 1; min-width: 0; height: 100%; object-fit: contain; display: block; }
 .lb-close { position: fixed; top: 1.5rem; right: 2rem; color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.2s; }
 .lb-close:hover { color: #fff; }
 .lb-arrow { position: fixed; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); font-size: 11px; cursor: pointer; background: none; border: none; font-family: var(--font-sans); padding: 2rem; transition: color 0.2s; }
@@ -1192,34 +1188,15 @@ function buildMasonry(key) {
     return;
   }
   SERIES_VISUAL[key] = photosData;
-
-  // Group by (bw, orientation) — same type pairs only
-  const groups = [
-    photosData.filter(p =>  p.isBW &&  p.isPortrait),
-    photosData.filter(p =>  p.isBW && !p.isPortrait),
-    photosData.filter(p => !p.isBW &&  p.isPortrait),
-    photosData.filter(p => !p.isBW && !p.isPortrait),
-  ];
-
   const rows = [], pairs = [];
-  for (const group of groups) {
-    for (let i = 0; i < group.length; i += 2) {
-      const a = group[i], b = group[i + 1];
-      const landscape = !a.isPortrait;
-      const pi = pairs.length;
-      pairs.push({ urls: [a.url, b?.url || null], isLandscape: landscape });
-      if (landscape) {
-        rows.push(`<div class="series-row pair-landscape" onclick="openLightbox('${key}',${pi})">
-          <div class="series-photo"><img src="${a.url}" alt="" loading="lazy"></div>
-          ${b ? `<div class="series-photo"><img src="${b.url}" alt="" loading="lazy"></div>` : ''}
-        </div>`);
-      } else {
-        rows.push(`<div class="series-row pair-portrait" onclick="openLightbox('${key}',${pi})">
-          <div class="series-photo" style="flex:1"><img src="${a.url}" alt="" loading="lazy"></div>
-          ${b ? `<div class="series-photo" style="flex:1"><img src="${b.url}" alt="" loading="lazy"></div>` : ''}
-        </div>`);
-      }
-    }
+  for (let i = 0; i < photosData.length; i += 2) {
+    const a = photosData[i], b = photosData[i + 1];
+    const pi = pairs.length;
+    pairs.push({ urls: [a.url, b?.url || null] });
+    rows.push(`<div class="series-row" onclick="openLightbox('${key}',${pi})">
+      <div class="series-photo" style="flex:1${!b ? ';max-width:50%' : ''}"><img src="${a.url}" alt="" loading="lazy"></div>
+      ${b ? `<div class="series-photo" style="flex:1"><img src="${b.url}" alt="" loading="lazy"></div>` : ''}
+    </div>`);
   }
   SERIES_PAIRS[key] = pairs;
   grid.innerHTML = rows.join('');
@@ -1228,30 +1205,6 @@ Object.keys(SERIES_DATA).forEach(buildMasonry);
 
 // ── Cloudinary dynamic fetch ──
 const CLD = 'dzhvoacrg';
-
-// Detect B&W by analyzing a tiny thumbnail via canvas
-function detectBW(photo) {
-  return new Promise(resolve => {
-    const thumb = `https://res.cloudinary.com/${CLD}/image/upload/w_20,h_20,c_fill,q_10,f_jpg/${photo.id}`;
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      try {
-        const c = document.createElement('canvas');
-        c.width = c.height = 20;
-        const ctx = c.getContext('2d');
-        ctx.drawImage(img, 0, 0, 20, 20);
-        const d = ctx.getImageData(0, 0, 20, 20).data;
-        let s = 0;
-        for (let i = 0; i < d.length; i += 4)
-          s += Math.max(d[i], d[i+1], d[i+2]) - Math.min(d[i], d[i+1], d[i+2]);
-        resolve(s / (d.length / 4) < 30);
-      } catch(e) { resolve(false); }
-    };
-    img.onerror = () => resolve(false);
-    img.src = thumb;
-  });
-}
 
 function fetchCloudinaryTag(tag, key) {
   const grid = document.getElementById('photos-' + key);
@@ -1262,15 +1215,8 @@ function fetchCloudinaryTag(tag, key) {
       let photos = data.resources
         .map(r => ({ url: `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`, width: r.width, height: r.height, id: r.public_id }));
       const seed = hashStr(photos.map(p => p.id).join(''));
-      photos = seededShuffle(photos, seed);
-      photos.forEach(p => { p.isPortrait = p.height >= p.width; });
-      SERIES_DATA[key] = photos;
-      return Promise.all(photos.map(detectBW));
-    })
-    .then(bwFlags => {
-      SERIES_DATA[key].forEach((p, i) => { p.isBW = bwFlags[i]; });
+      SERIES_DATA[key] = seededShuffle(photos, seed);
       buildMasonry(key);
-      // Update portfolio cover with first photo from the series (skip if manually set)
       const coverEl = document.querySelector(`#view-portfolio .p-card[onclick*="${key}"] img`);
       if (coverEl && SERIES_DATA[key].length && !coverEl.dataset.manualCover) coverEl.src = SERIES_DATA[key][0].url;
     })
@@ -1373,13 +1319,11 @@ function openLightbox(key, pairIndex) {
 }
 function updateLightbox() {
   const pair = currentPairs[currentLbIndex];
-  const lbPair = document.getElementById('lb-pair');
-  const imgA   = document.getElementById('lb-img-a');
-  const imgB   = document.getElementById('lb-img-b');
+  const imgA = document.getElementById('lb-img-a');
+  const imgB = document.getElementById('lb-img-b');
   imgA.src = pair.urls[0];
   imgB.src = pair.urls[1] || '';
   imgB.style.display = pair.urls[1] ? '' : 'none';
-  lbPair.className = pair.isLandscape ? 'lb-landscape' : 'lb-portrait';
   document.getElementById('lb-counter').textContent = (currentLbIndex + 1) + ' / ' + currentPairs.length;
 }
 function closeLightbox() {
