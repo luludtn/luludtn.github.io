@@ -1243,20 +1243,32 @@ Object.keys(SERIES_DATA).forEach(buildMasonry);
 // ── Cloudinary dynamic fetch ──
 const CLD = 'dzhvoacrg';
 
+// Fetch and cache the set of public_ids tagged "colors" (fetched once)
+let _colorIds = null;
+function getColorIds() {
+  if (_colorIds) return Promise.resolve(_colorIds);
+  return fetch(`https://res.cloudinary.com/${CLD}/image/list/colors.json`)
+    .then(r => r.json())
+    .then(data => { _colorIds = new Set((data.resources || []).map(r => r.public_id)); return _colorIds; })
+    .catch(() => { _colorIds = new Set(); return _colorIds; });
+}
+
 function fetchCloudinaryTag(tag, key) {
   const grid = document.getElementById('photos-' + key);
   if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Loading…</p>`;
-  fetch(`https://res.cloudinary.com/${CLD}/image/list/${tag}.json`)
-    .then(r => r.json())
-    .then(data => {
+  Promise.all([
+    fetch(`https://res.cloudinary.com/${CLD}/image/list/${tag}.json`).then(r => r.json()),
+    getColorIds()
+  ])
+    .then(([data, colorIds]) => {
       let photos = data.resources
         .map(r => ({
-          url:       `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`,
-          width:     r.width,
-          height:    r.height,
-          id:        r.public_id,
+          url:        `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`,
+          width:      r.width,
+          height:     r.height,
+          id:         r.public_id,
           isPortrait: r.height >= r.width,
-          isBW:      !(r.tags || []).includes('colors'),
+          isBW:       !colorIds.has(r.public_id),
         }));
       const seed = hashStr(photos.map(p => p.id).join(''));
       SERIES_DATA[key] = seededShuffle(photos, seed);
