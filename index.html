@@ -106,22 +106,24 @@ body {
 .p-card:hover .p-card-overlay { opacity: 1; }
 .p-card-title { width: 100%; padding: 1.2rem 1rem 1.4rem; font-size: clamp(2rem, 5.5vw, 4.5rem); font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.4); }
 
-.series-header { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; padding: 2.5rem var(--gap) 2rem; }
-.series-header-back { grid-column: 1 / -1; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.2s; display: flex; align-items: center; gap: 6px; padding: 0 0 1rem var(--gap); width: fit-content; }
+.series-layout { display: grid; grid-template-columns: 57% 43%; min-height: 100vh; align-items: start; }
+.series-col-photos { padding: 2.5rem 2rem 8rem; }
+.series-col-info { padding: 4rem 3rem 4rem 2.5rem; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; overflow: auto; }
+.series-header-back { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.2s; display: flex; align-items: center; gap: 6px; padding: 0 0 2.5rem 0; width: fit-content; }
 .series-header-back::before { content: '←'; }
 .series-header-back:hover { color: var(--fg); }
-.series-main-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; padding-left: var(--gap); }
-.series-main-desc { font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 300; padding-top: 0.5rem; padding-right: var(--gap); }
-.series-masonry { display: flex; flex-direction: column; gap: 3rem; padding: 3rem 2rem 7rem; }
+.series-main-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+.series-main-desc { font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 300; }
+.series-masonry { display: flex; flex-direction: column; gap: 3rem; }
 .series-row { display: flex; gap: 4px; align-items: flex-start; cursor: pointer; }
 .series-row.pair-landscape { flex-direction: column; }
-.series-photo { min-width: 0; cursor: pointer; overflow: hidden; }
+.series-photo { min-width: 0; cursor: pointer; }
 .series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
 .series-photo:hover img { opacity: 0.88; }
 
 /* ════ HE LISTENS ════ */
 .listens-header { padding: 1.5rem 2rem 2rem; border-bottom: 1px solid var(--border); }
-.listens-header .series-header-back { padding-left: 0; margin-bottom: 1rem; }
+.listens-header .series-header-back { margin-bottom: 1rem; }
 .listens-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
 .listens-range { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--fg); font-weight: 400; margin-bottom: 0.4rem; }
 .listens-subtitle { font-size: 13px; color: var(--muted); font-weight: 300; font-style: italic; margin-bottom: 1.4rem; }
@@ -308,8 +310,8 @@ body {
 #lb-pair { display: flex; gap: 6px; }
 #lb-pair.lb-portrait { flex-direction: row; height: 88vh; max-width: 92vw; align-items: stretch; }
 #lb-pair.lb-portrait img { flex: 1; min-width: 0; height: 100%; object-fit: contain; display: block; }
-#lb-pair.lb-landscape { flex-direction: column; width: 46vw; max-height: 90vh; overflow: hidden; }
-#lb-pair.lb-landscape img { width: 100%; height: auto; display: block; }
+#lb-pair.lb-landscape { flex-direction: column; width: 46vw; height: 90vh; gap: 6px; }
+#lb-pair.lb-landscape img { flex: 1; min-height: 0; width: 100%; object-fit: contain; display: block; }
 .lb-close { position: fixed; top: 1.5rem; right: 2rem; color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.2s; }
 .lb-close:hover { color: #fff; }
 .lb-arrow { position: fixed; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); font-size: 11px; cursor: pointer; background: none; border: none; font-family: var(--font-sans); padding: 2rem; transition: color 0.2s; }
@@ -350,8 +352,10 @@ body {
   .skin-icon { width: 22px; height: 22px; }
   #main { margin-left: 0; padding-top: 200px; }
   .portfolio-layout { grid-template-columns: 1fr; }
-  .series-masonry { gap: 1.5rem; padding: 1.5rem 1rem 4rem; }
-  .series-row { flex-direction: column; gap: 1rem; }
+  .series-layout { grid-template-columns: 1fr; }
+  .series-col-info { position: static; height: auto; padding: 2rem 1rem 1rem; }
+  .series-masonry { gap: 1.5rem; }
+  .series-row { flex-direction: column; gap: 0.5rem; }
   .series-photo { flex: none !important; width: 100% !important; }
   #view-home { height: auto; padding-top: 4rem; }
   #view-about { padding: 1.5rem; }
@@ -426,39 +430,55 @@ body {
   </div>
 
   <div class="view" id="view-series-tunisia">
-    <div class="series-header">
-      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
-      <h1 class="series-main-title">Un bout d'été en Tunisie </h1>
-      <p class="series-main-desc">Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. I've always heard about it, got told a million stories from there, could imagine it in some shapes into my head. But it's always been very fictional to me, until the opportunity came. I started photography recently, and fell in love with black and white. One could find it wrong to go to such a colorful place and remove colors. I love it and will love it forever. Now, please discover what I've discovered, look at these faces, these scenes, these moments with these characters. — Un bout d'été en Tunisie, Juillet 2025</p>
+    <div class="series-layout">
+      <div class="series-col-photos">
+        <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+        <div class="series-masonry" id="photos-tunisia"></div>
+      </div>
+      <div class="series-col-info">
+        <h1 class="series-main-title">Un bout d'été en Tunisie</h1>
+        <p class="series-main-desc">Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. I've always heard about it, got told a million stories from there, could imagine it in some shapes into my head. But it's always been very fictional to me, until the opportunity came. I started photography recently, and fell in love with black and white. One could find it wrong to go to such a colorful place and remove colors. I love it and will love it forever. Now, please discover what I've discovered, look at these faces, these scenes, these moments with these characters. — Un bout d'été en Tunisie, Juillet 2025</p>
+      </div>
     </div>
-    <div class="series-masonry" id="photos-tunisia"></div>
   </div>
 
   <div class="view" id="view-series-barcelona">
-    <div class="series-header">
-      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
-      <h1 class="series-main-title">Barcelona Bella</h1>
-      <p class="series-main-desc">Add a description for Barcelona Bella here.</p>
+    <div class="series-layout">
+      <div class="series-col-photos">
+        <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+        <div class="series-masonry" id="photos-barcelona"></div>
+      </div>
+      <div class="series-col-info">
+        <h1 class="series-main-title">Barcelona Bella</h1>
+        <p class="series-main-desc">Add a description for Barcelona Bella here.</p>
+      </div>
     </div>
-    <div class="series-masonry" id="photos-barcelona"></div>
   </div>
 
   <div class="view" id="view-series-Eire">
-    <div class="series-header">
-      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
-      <h1 class="series-main-title">Eire</h1>
-      <p class="series-main-desc">Add a description for Eire here.</p>
+    <div class="series-layout">
+      <div class="series-col-photos">
+        <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+        <div class="series-masonry" id="photos-Eire"></div>
+      </div>
+      <div class="series-col-info">
+        <h1 class="series-main-title">Eire</h1>
+        <p class="series-main-desc">Add a description for Eire here.</p>
+      </div>
     </div>
-    <div class="series-masonry" id="photos-Eire"></div>
   </div>
 
   <div class="view" id="view-series-laballe">
-    <div class="series-header">
-      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
-      <h1 class="series-main-title">La Balle</h1>
-      <p class="series-main-desc">La Balle.</p>
+    <div class="series-layout">
+      <div class="series-col-photos">
+        <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+        <div class="series-masonry" id="photos-laballe"></div>
+      </div>
+      <div class="series-col-info">
+        <h1 class="series-main-title">La Balle</h1>
+        <p class="series-main-desc">La Balle.</p>
+      </div>
     </div>
-    <div class="series-masonry" id="photos-laballe"></div>
   </div>
 
   <!-- ══ LISTENS MAIN ══ -->
@@ -1225,7 +1245,7 @@ function detectBW(photo) {
         let s = 0;
         for (let i = 0; i < d.length; i += 4)
           s += Math.max(d[i], d[i+1], d[i+2]) - Math.min(d[i], d[i+1], d[i+2]);
-        resolve(s / (d.length / 4) < 18);
+        resolve(s / (d.length / 4) < 30);
       } catch(e) { resolve(false); }
     };
     img.onerror = () => resolve(false);
