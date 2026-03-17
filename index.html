@@ -1243,27 +1243,6 @@ Object.keys(SERIES_DATA).forEach(buildMasonry);
 // ── Cloudinary dynamic fetch ──
 const CLD = 'dzhvoacrg';
 
-function detectBW(photo) {
-  return new Promise(resolve => {
-    const thumb = `https://res.cloudinary.com/${CLD}/image/upload/w_20,h_20,c_fill,q_10,f_jpg/${photo.id}`;
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      try {
-        const c = document.createElement('canvas'); c.width = c.height = 20;
-        const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, 20, 20);
-        const d = ctx.getImageData(0, 0, 20, 20).data;
-        let s = 0;
-        for (let i = 0; i < d.length; i += 4)
-          s += Math.max(d[i], d[i+1], d[i+2]) - Math.min(d[i], d[i+1], d[i+2]);
-        resolve(s / (d.length / 4) < 30);
-      } catch(e) { resolve(false); }
-    };
-    img.onerror = () => resolve(false);
-    img.src = thumb;
-  });
-}
-
 function fetchCloudinaryTag(tag, key) {
   const grid = document.getElementById('photos-' + key);
   if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Loading…</p>`;
@@ -1271,15 +1250,16 @@ function fetchCloudinaryTag(tag, key) {
     .then(r => r.json())
     .then(data => {
       let photos = data.resources
-        .map(r => ({ url: `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`, width: r.width, height: r.height, id: r.public_id }));
+        .map(r => ({
+          url:       `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`,
+          width:     r.width,
+          height:    r.height,
+          id:        r.public_id,
+          isPortrait: r.height >= r.width,
+          isBW:      !(r.tags || []).includes('colors'),
+        }));
       const seed = hashStr(photos.map(p => p.id).join(''));
-      photos = seededShuffle(photos, seed);
-      photos.forEach(p => { p.isPortrait = p.height >= p.width; });
-      SERIES_DATA[key] = photos;
-      return Promise.all(photos.map(detectBW));
-    })
-    .then(bwFlags => {
-      SERIES_DATA[key].forEach((p, i) => { p.isBW = bwFlags[i]; });
+      SERIES_DATA[key] = seededShuffle(photos, seed);
       buildMasonry(key);
       const coverEl = document.querySelector(`#view-portfolio .p-card[onclick*="${key}"] img`);
       if (coverEl && SERIES_DATA[key].length && !coverEl.dataset.manualCover) coverEl.src = SERIES_DATA[key][0].url;
