@@ -113,7 +113,7 @@ body {
 .series-main-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; padding-left: var(--gap); }
 .series-main-desc { font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 300; padding-top: 0.5rem; padding-right: var(--gap); }
 .series-masonry { display: flex; flex-direction: column; gap: 3rem; padding: 3rem 2rem 7rem; }
-.series-row { display: flex; gap: 0.6rem; align-items: flex-start; }
+.series-row { display: flex; gap: 4px; align-items: flex-start; cursor: pointer; }
 .series-photo { min-width: 0; cursor: pointer; overflow: hidden; }
 .series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
 .series-photo:hover img { opacity: 0.88; }
@@ -304,7 +304,8 @@ body {
 /* ════ LIGHTBOX ════ */
 #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 500; align-items: center; justify-content: center; }
 #lightbox.open { display: flex; }
-#lb-img { max-width: 90vw; max-height: 90vh; width: auto; height: auto; display: block; object-fit: contain; }
+#lb-pair { display: flex; gap: 6px; align-items: stretch; height: 88vh; max-width: 95vw; }
+#lb-pair img { flex: 1; min-width: 0; height: 100%; object-fit: contain; display: block; }
 .lb-close { position: fixed; top: 1.5rem; right: 2rem; color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.2s; }
 .lb-close:hover { color: #fff; }
 .lb-arrow { position: fixed; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); font-size: 11px; cursor: pointer; background: none; border: none; font-family: var(--font-sans); padding: 2rem; transition: color 0.2s; }
@@ -577,7 +578,10 @@ body {
 <div id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">Close ✕</button>
   <button class="lb-arrow lb-prev" onclick="lbMove(-1)">←</button>
-  <img id="lb-img" src="" alt="">
+  <div id="lb-pair">
+    <img id="lb-img-a" src="" alt="">
+    <img id="lb-img-b" src="" alt="">
+  </div>
   <button class="lb-arrow lb-next" onclick="lbMove(1)">→</button>
   <div class="lb-counter" id="lb-counter"></div>
 </div>
@@ -1162,17 +1166,17 @@ function buildMasonry(key) {
     grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Coming soon</p>`;
     return;
   }
-  const rows = buildLayoutRows(photosData);
-  const visual = rows.flatMap(r => r.photos);
-  SERIES_VISUAL[key] = visual;
-  grid.innerHTML = rows.map(row => {
-    const items = row.flexes.map((flex, fi) => {
-      const p = row.photos[fi];
-      const vi = visual.indexOf(p);
-      return `<div class="series-photo" style="flex:${flex}" onclick="openLightbox('${key}',${vi})"><img src="${p.url}" alt="" loading="lazy"></div>`;
-    }).join('');
-    return `<div class="series-row">${items}</div>`;
-  }).join('');
+  SERIES_VISUAL[key] = photosData;
+  const rows = [];
+  for (let i = 0; i < photosData.length; i += 2) {
+    const a = photosData[i], b = photosData[i + 1];
+    const pi = i / 2;
+    rows.push(`<div class="series-row" onclick="openLightbox('${key}',${pi})">
+      <div class="series-photo" style="flex:1"><img src="${a.url}" alt="" loading="lazy"></div>
+      ${b ? `<div class="series-photo" style="flex:1"><img src="${b.url}" alt="" loading="lazy"></div>` : ''}
+    </div>`);
+  }
+  grid.innerHTML = rows.join('');
 }
 Object.keys(SERIES_DATA).forEach(buildMasonry);
 
@@ -1282,26 +1286,34 @@ function showListensTier(tier) {
   document.getElementById('section-listens').classList.add('open');
 }
 
-let currentPhotos = [], currentLbIndex = 0;
+let currentPairs = [], currentLbIndex = 0;
 
-function openLightbox(key, index) {
-  const visual = SERIES_VISUAL[key] || SERIES_DATA[key];
-  currentPhotos = visual.map(p => p.url || p);
-  currentLbIndex = index;
+function openLightbox(key, pairIndex) {
+  const photos = SERIES_VISUAL[key] || SERIES_DATA[key];
+  currentPairs = [];
+  for (let i = 0; i < photos.length; i += 2) {
+    currentPairs.push([photos[i].url || photos[i], photos[i+1] ? (photos[i+1].url || photos[i+1]) : null]);
+  }
+  currentLbIndex = pairIndex;
   updateLightbox();
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 function updateLightbox() {
-  document.getElementById('lb-img').src = currentPhotos[currentLbIndex];
-  document.getElementById('lb-counter').textContent = (currentLbIndex + 1) + ' / ' + currentPhotos.length;
+  const pair = currentPairs[currentLbIndex];
+  const imgA = document.getElementById('lb-img-a');
+  const imgB = document.getElementById('lb-img-b');
+  imgA.src = pair[0];
+  imgB.src = pair[1] || '';
+  imgB.style.display = pair[1] ? 'block' : 'none';
+  document.getElementById('lb-counter').textContent = (currentLbIndex + 1) + ' / ' + currentPairs.length;
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
 function lbMove(dir) {
-  currentLbIndex = (currentLbIndex + dir + currentPhotos.length) % currentPhotos.length;
+  currentLbIndex = (currentLbIndex + dir + currentPairs.length) % currentPairs.length;
   updateLightbox();
 }
 document.addEventListener('keydown', e => {
