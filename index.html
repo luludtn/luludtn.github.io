@@ -192,6 +192,8 @@ body {
 .album-card-img-wrap { position: relative; width: 100%; padding-bottom: 100%; overflow: hidden; background: var(--border); }
 .album-card-img-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s, filter 0.4s; filter: grayscale(100%); }
 .album-card:hover .album-card-img-wrap img { opacity: 0.18; filter: grayscale(0%); }
+.album-card.is-playing .album-card-img-wrap img { filter: grayscale(0%); opacity: 1; }
+.album-card.is-playing .music-hover-overlay { opacity: 1; }
 .music-hover-overlay { position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; padding: 1rem 1rem 2.8rem; pointer-events: none; }
 .album-card:hover .music-hover-overlay { opacity: 1; }
 .music-genre { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg); text-align: center; }
@@ -1079,7 +1081,7 @@ function buildMusicCard(m) {
           ${m.apple  ? `<a class="music-plat-link music-plat--apple"  href="${m.apple}"  target="_blank" onclick="event.stopPropagation()" title="Apple Music">${_SVG_APPLE}</a>`  : ''}
         </div>` : '';
   return `
-    <div class="album-card${isEmpty ? ' album-card--empty' : ''}" ${click}>
+    <div class="album-card${isEmpty ? ' album-card--empty' : ''}" data-track-url="${m.url || ''}" ${click}>
       <div class="album-card-img-wrap">
         ${isEmpty
           ? `<div class="album-placeholder album-placeholder--empty"></div>`
@@ -1301,6 +1303,8 @@ function toggleShuffle(tier) {
 }
 
 function startShuffle(tier) {
+  if (globalPlayerState.playing) stopGlobalPlayer();
+  ['honey', 'bee', 'sunflower', 'joker'].forEach(t => { if (t !== tier && playerState[t]?.playing) stopShuffle(t); });
   const tracks = getPlayableTracks(tier);
   if (!tracks.length) return;
   playerState[tier] = { playing: true, queue: [...tracks].sort(() => Math.random() - 0.5), index: 0, timer: null };
@@ -1422,10 +1426,6 @@ function setHash(name) {
 
 function showView(name) {
   setHash(name);
-  ['honey', 'bee', 'sunflower', 'joker'].forEach(tier => {
-    if (playerState[tier]?.playing) stopShuffle(tier);
-  });
-  if (globalPlayerState.playing) stopGlobalPlayer();
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   window.scrollTo(0, 0);
@@ -1538,6 +1538,7 @@ function toggleGlobalPlayer() {
 }
 
 function startGlobalPlayer() {
+  ['honey', 'bee', 'sunflower', 'joker'].forEach(t => { if (playerState[t]?.playing) stopShuffle(t); });
   const tracks = getAllPlayableTracks();
   if (!tracks.length) return;
   globalPlayerState.playing = true;
@@ -1568,6 +1569,7 @@ function loadGlobalTrack() {
 
   document.getElementById('global-player-label').textContent = track.artist + ' — ' + track.album;
   document.getElementById('global-track-row').style.display = 'flex';
+  highlightPlayingCard(track);
   // Play preview audio
   const audio = document.getElementById('global-audio');
   clearTimeout(state.timer);
@@ -1600,6 +1602,7 @@ function globalPrev() {
 }
 
 function stopGlobalPlayer() {
+  document.querySelectorAll('.album-card.is-playing').forEach(c => c.classList.remove('is-playing'));
   stopLetterDance();
   clearTimeout(globalPlayerState.timer);
   globalPlayerState.playing = false;
@@ -1619,14 +1622,29 @@ function stopGlobalPlayer() {
 function discoverCurrentTrack() {
   const track = globalPlayerState.queue[globalPlayerState.index];
   if (!track) return;
-  // Keep global player running, navigate to the track's tier section
+  setHash('listens-' + track.tier);
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-listens-' + track.tier).classList.add('active');
   window.scrollTo(0, 0);
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('nav-' + track.tier);
-  if (el) el.classList.add('active');
+  const navEl = document.getElementById('nav-' + track.tier);
+  if (navEl) navEl.classList.add('active');
   document.getElementById('section-listens').classList.add('open');
+  highlightPlayingCard(track);
+  const grid = document.getElementById('album-grid-' + track.tier);
+  if (grid) {
+    const card = Array.from(grid.querySelectorAll('.album-card')).find(c => c.dataset.trackUrl === track.url);
+    if (card) setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
+  }
+}
+
+function highlightPlayingCard(track) {
+  document.querySelectorAll('.album-card.is-playing').forEach(c => c.classList.remove('is-playing'));
+  if (!track?.url) return;
+  const grid = document.getElementById('album-grid-' + track.tier);
+  if (!grid) return;
+  const card = Array.from(grid.querySelectorAll('.album-card')).find(c => c.dataset.trackUrl === track.url);
+  if (card) card.classList.add('is-playing');
 }
 
 function copyGlobalTrackUrl() {
