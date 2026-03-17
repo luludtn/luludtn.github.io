@@ -114,6 +114,7 @@ body {
 .series-main-desc { font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 300; padding-top: 0.5rem; padding-right: var(--gap); }
 .series-masonry { display: flex; flex-direction: column; gap: 3rem; padding: 3rem 2rem 7rem; }
 .series-row { display: flex; gap: 4px; align-items: flex-start; cursor: pointer; }
+.series-row.pair-landscape { flex-direction: column; }
 .series-photo { min-width: 0; cursor: pointer; overflow: hidden; }
 .series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
 .series-photo:hover img { opacity: 0.88; }
@@ -304,8 +305,11 @@ body {
 /* ════ LIGHTBOX ════ */
 #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 500; align-items: center; justify-content: center; }
 #lightbox.open { display: flex; }
-#lb-pair { display: flex; gap: 6px; align-items: stretch; height: 88vh; max-width: 95vw; }
-#lb-pair img { flex: 1; min-width: 0; height: 100%; object-fit: contain; display: block; }
+#lb-pair { display: flex; gap: 6px; }
+#lb-pair.lb-portrait { flex-direction: row; height: 88vh; max-width: 92vw; align-items: stretch; }
+#lb-pair.lb-portrait img { flex: 1; min-width: 0; height: 100%; object-fit: contain; display: block; }
+#lb-pair.lb-landscape { flex-direction: column; width: 46vw; max-height: 90vh; overflow: hidden; }
+#lb-pair.lb-landscape img { width: 100%; height: auto; display: block; }
 .lb-close { position: fixed; top: 1.5rem; right: 2rem; color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.2s; }
 .lb-close:hover { color: #fff; }
 .lb-arrow { position: fixed; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); font-size: 11px; cursor: pointer; background: none; border: none; font-family: var(--font-sans); padding: 2rem; transition: color 0.2s; }
@@ -1093,6 +1097,7 @@ function buildAllMusicGrids() {
 buildAllMusicGrids();
 
 const SERIES_VISUAL = {};
+const SERIES_PAIRS  = {};
 
 // Seeded shuffle — same mixed order every refresh, breaks up B&W/color grouping
 function hashStr(s) {
@@ -1167,32 +1172,83 @@ function buildMasonry(key) {
     return;
   }
   SERIES_VISUAL[key] = photosData;
-  const rows = [];
-  for (let i = 0; i < photosData.length; i += 2) {
-    const a = photosData[i], b = photosData[i + 1];
-    const pi = i / 2;
-    rows.push(`<div class="series-row" onclick="openLightbox('${key}',${pi})">
-      <div class="series-photo" style="flex:1"><img src="${a.url}" alt="" loading="lazy"></div>
-      ${b ? `<div class="series-photo" style="flex:1"><img src="${b.url}" alt="" loading="lazy"></div>` : ''}
-    </div>`);
+
+  // Group by (bw, orientation) — same type pairs only
+  const groups = [
+    photosData.filter(p =>  p.isBW &&  p.isPortrait),
+    photosData.filter(p =>  p.isBW && !p.isPortrait),
+    photosData.filter(p => !p.isBW &&  p.isPortrait),
+    photosData.filter(p => !p.isBW && !p.isPortrait),
+  ];
+
+  const rows = [], pairs = [];
+  for (const group of groups) {
+    for (let i = 0; i < group.length; i += 2) {
+      const a = group[i], b = group[i + 1];
+      const landscape = !a.isPortrait;
+      const pi = pairs.length;
+      pairs.push({ urls: [a.url, b?.url || null], isLandscape: landscape });
+      if (landscape) {
+        rows.push(`<div class="series-row pair-landscape" onclick="openLightbox('${key}',${pi})">
+          <div class="series-photo"><img src="${a.url}" alt="" loading="lazy"></div>
+          ${b ? `<div class="series-photo"><img src="${b.url}" alt="" loading="lazy"></div>` : ''}
+        </div>`);
+      } else {
+        rows.push(`<div class="series-row pair-portrait" onclick="openLightbox('${key}',${pi})">
+          <div class="series-photo" style="flex:1"><img src="${a.url}" alt="" loading="lazy"></div>
+          ${b ? `<div class="series-photo" style="flex:1"><img src="${b.url}" alt="" loading="lazy"></div>` : ''}
+        </div>`);
+      }
+    }
   }
+  SERIES_PAIRS[key] = pairs;
   grid.innerHTML = rows.join('');
 }
 Object.keys(SERIES_DATA).forEach(buildMasonry);
 
 // ── Cloudinary dynamic fetch ──
 const CLD = 'dzhvoacrg';
+
+// Detect B&W by analyzing a tiny thumbnail via canvas
+function detectBW(photo) {
+  return new Promise(resolve => {
+    const thumb = `https://res.cloudinary.com/${CLD}/image/upload/w_20,h_20,c_fill,q_10,f_jpg/${photo.id}`;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas');
+        c.width = c.height = 20;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, 20, 20);
+        const d = ctx.getImageData(0, 0, 20, 20).data;
+        let s = 0;
+        for (let i = 0; i < d.length; i += 4)
+          s += Math.max(d[i], d[i+1], d[i+2]) - Math.min(d[i], d[i+1], d[i+2]);
+        resolve(s / (d.length / 4) < 18);
+      } catch(e) { resolve(false); }
+    };
+    img.onerror = () => resolve(false);
+    img.src = thumb;
+  });
+}
+
 function fetchCloudinaryTag(tag, key) {
   const grid = document.getElementById('photos-' + key);
   if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Loading…</p>`;
   fetch(`https://res.cloudinary.com/${CLD}/image/list/${tag}.json`)
     .then(r => r.json())
     .then(data => {
-      SERIES_DATA[key] = data.resources
+      let photos = data.resources
         .map(r => ({ url: `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`, width: r.width, height: r.height, id: r.public_id }));
-      // Deterministic shuffle: same mixed order every refresh (seed = content fingerprint)
-      const seed = hashStr(SERIES_DATA[key].map(p => p.id).join(''));
-      SERIES_DATA[key] = seededShuffle(SERIES_DATA[key], seed);
+      const seed = hashStr(photos.map(p => p.id).join(''));
+      photos = seededShuffle(photos, seed);
+      photos.forEach(p => { p.isPortrait = p.height >= p.width; });
+      SERIES_DATA[key] = photos;
+      return Promise.all(photos.map(detectBW));
+    })
+    .then(bwFlags => {
+      SERIES_DATA[key].forEach((p, i) => { p.isBW = bwFlags[i]; });
       buildMasonry(key);
       // Update portfolio cover with first photo from the series (skip if manually set)
       const coverEl = document.querySelector(`#view-portfolio .p-card[onclick*="${key}"] img`);
@@ -1289,11 +1345,7 @@ function showListensTier(tier) {
 let currentPairs = [], currentLbIndex = 0;
 
 function openLightbox(key, pairIndex) {
-  const photos = SERIES_VISUAL[key] || SERIES_DATA[key];
-  currentPairs = [];
-  for (let i = 0; i < photos.length; i += 2) {
-    currentPairs.push([photos[i].url || photos[i], photos[i+1] ? (photos[i+1].url || photos[i+1]) : null]);
-  }
+  currentPairs = SERIES_PAIRS[key] || [];
   currentLbIndex = pairIndex;
   updateLightbox();
   document.getElementById('lightbox').classList.add('open');
@@ -1301,11 +1353,13 @@ function openLightbox(key, pairIndex) {
 }
 function updateLightbox() {
   const pair = currentPairs[currentLbIndex];
-  const imgA = document.getElementById('lb-img-a');
-  const imgB = document.getElementById('lb-img-b');
-  imgA.src = pair[0];
-  imgB.src = pair[1] || '';
-  imgB.style.display = pair[1] ? 'block' : 'none';
+  const lbPair = document.getElementById('lb-pair');
+  const imgA   = document.getElementById('lb-img-a');
+  const imgB   = document.getElementById('lb-img-b');
+  imgA.src = pair.urls[0];
+  imgB.src = pair.urls[1] || '';
+  imgB.style.display = pair.urls[1] ? '' : 'none';
+  lbPair.className = pair.isLandscape ? 'lb-landscape' : 'lb-portrait';
   document.getElementById('lb-counter').textContent = (currentLbIndex + 1) + ' / ' + currentPairs.length;
 }
 function closeLightbox() {
