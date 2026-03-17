@@ -121,15 +121,6 @@ body {
 .series-photo img { width: 100%; height: auto; display: block; transition: opacity 0.3s; }
 .series-photo:hover img { opacity: 0.88; }
 
-/* ════ TUNISIA PLAYER ════ */
-.tunisia-play-btn {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
-  font-family: var(--font-sans); color: var(--muted); background: none;
-  border: 1px solid var(--border); padding: 5px 13px; cursor: pointer; border-radius: 2px;
-  transition: color 0.2s, border-color 0.2s;
-}
-.tunisia-play-btn:hover, .tunisia-play-btn.active { color: var(--fg); border-color: var(--fg); }
-
 /* ════ HE LISTENS ════ */
 .listens-header { padding: 1.5rem 2rem 2rem; border-bottom: 1px solid var(--border); }
 .listens-header .series-header-back { margin-bottom: 1rem; }
@@ -449,10 +440,6 @@ body {
       <div class="series-col-info">
         <h1 class="series-main-title">Un bout d'été en Tunisie</h1>
         <p class="series-main-desc">Tunisia has been making me so curious over the last few years, mainly driven by the people surrounding me. I've always heard about it, got told a million stories from there, could imagine it in some shapes into my head. But it's always been very fictional to me, until the opportunity came. I started photography recently, and fell in love with black and white. One could find it wrong to go to such a colorful place and remove colors. I love it and will love it forever. Now, please discover what I've discovered, look at these faces, these scenes, these moments with these characters. — Un bout d'été en Tunisie, Juillet 2025</p>
-        <div style="margin-top:2rem;">
-          <button class="tunisia-play-btn" id="tunisia-play-btn" onclick="toggleTunisiaPlayer()">▶ jouer</button>
-          <audio id="tunisia-audio" src="https://p.scdn.co/mp3-preview/71a5664110274fafc10e1d7fc24e1c4d58e01c14" loop preload="none"></audio>
-        </div>
       </div>
     </div>
   </div>
@@ -1417,23 +1404,6 @@ document.addEventListener('keydown', e => {
 document.getElementById('lightbox').addEventListener('click', e => {
   if (e.target.id === 'lightbox') closeLightbox();
 });
-
-let tunisiaPlayerOpen = false;
-function toggleTunisiaPlayer() {
-  tunisiaPlayerOpen = !tunisiaPlayerOpen;
-  const audio = document.getElementById('tunisia-audio');
-  const btn   = document.getElementById('tunisia-play-btn');
-  if (tunisiaPlayerOpen) {
-    audio.play().catch(() => {});
-    btn.textContent = '◼ stop';
-    btn.classList.add('active');
-  } else {
-    audio.pause();
-    audio.currentTime = 0;
-    btn.textContent = '▶ jouer';
-    btn.classList.remove('active');
-  }
-}
 
 function showSeesOverview() {
   showView('portfolio');
