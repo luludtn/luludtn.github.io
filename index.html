@@ -452,7 +452,7 @@ body {
         <div style="margin-top:2rem;">
           <button class="tunisia-play-btn" id="tunisia-play-btn" onclick="toggleTunisiaPlayer()">▶ jouer</button>
           <div id="tunisia-player-wrap" style="display:none;margin-top:0.8rem;">
-            <iframe id="tunisia-spotify-iframe" style="border-radius:4px;display:block;" src="" width="100%" height="80" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+            <div id="tunisia-embed-target"></div>
           </div>
         </div>
       </div>
@@ -1421,18 +1421,31 @@ document.getElementById('lightbox').addEventListener('click', e => {
 });
 
 let tunisiaPlayerOpen = false;
+let tunisiaController = null;
+window.onSpotifyIframeApiReady = function(IFrameAPI) { window._spotifyAPI = IFrameAPI; };
+
 function toggleTunisiaPlayer() {
   tunisiaPlayerOpen = !tunisiaPlayerOpen;
   const wrap = document.getElementById('tunisia-player-wrap');
-  const iframe = document.getElementById('tunisia-spotify-iframe');
-  const btn = document.getElementById('tunisia-play-btn');
+  const btn  = document.getElementById('tunisia-play-btn');
   if (tunisiaPlayerOpen) {
     wrap.style.display = 'block';
     btn.textContent = '◼ stop';
     btn.classList.add('active');
-    setTimeout(() => { iframe.src = 'https://open.spotify.com/embed/playlist/4ZzhgDQVCMZoVxqxiUCosc?utm_source=generator&autoplay=1'; }, 0);
+    if (tunisiaController) {
+      tunisiaController.play();
+    } else if (window._spotifyAPI) {
+      window._spotifyAPI.createController(
+        document.getElementById('tunisia-embed-target'),
+        { uri: 'spotify:playlist:4ZzhgDQVCMZoVxqxiUCosc', width: '100%', height: 80 },
+        function(ctrl) {
+          tunisiaController = ctrl;
+          ctrl.addListener('ready', function() { ctrl.play(); });
+        }
+      );
+    }
   } else {
-    iframe.src = '';
+    if (tunisiaController) tunisiaController.pause();
     wrap.style.display = 'none';
     btn.textContent = '▶ jouer';
     btn.classList.remove('active');
@@ -1745,5 +1758,6 @@ function toggleTheme() {
 
 </script>
 <div id="yt-player" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;pointer-events:none;"></div>
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 </body>
 </html>
