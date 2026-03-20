@@ -248,6 +248,7 @@ body {
   color: var(--fg);
   text-align: center;
   user-select: none;
+  position: relative;
 }
 .global-section-label .letter {
   display: inline-block;
@@ -1609,39 +1610,36 @@ function startGlobalPlayer() {
 
 function updateCoverFloat(track) {
   requestAnimationFrame(() => {
-    const img       = document.getElementById('global-cover-float');
-    const label     = document.getElementById('global-section-label');
-    const container = document.querySelector('.listens-player-center');
-    if (!img || !label || !container) return;
+    const img   = document.getElementById('global-cover-float');
+    const label = document.getElementById('global-section-label');
+    if (!img || !label) return;
 
-    const lr = label.getBoundingClientRect();
-    const cr = container.getBoundingClientRect();
+    // Move cover inside the label — position: absolute will now be
+    // relative to the label, so the cover is always within its vertical bounds
+    if (img.parentNode !== label) label.appendChild(img);
 
-    const lTop = lr.top  - cr.top;
-    const lBot = lr.bottom - cr.top;
-    const lCX  = (lr.left + lr.right) / 2 - cr.left;
-    const lCY  = (lTop + lBot) / 2;
-
-    const CS = Math.round(Math.min(window.innerWidth * 0.13, 130));
-    const OL = 22; // overlap px — guarantees cover touches the word
+    const lW  = label.offsetWidth;
+    const lH  = label.offsetHeight;
+    const CS  = Math.round(Math.min(window.innerWidth * 0.13, 130));
+    const mid = lW / 2;
+    // top clamped to [0, lH-CS] so cover never leaves the label vertically
+    const tMax = Math.max(lH - CS, 0);
 
     const positions = [
-      { left: lCX,          top: lTop - CS + OL },   // above, right of centre
-      { left: lCX - CS,     top: lBot - OL },         // below, left of centre
-      { left: lCX + CS * 0.35,  top: lCY - CS / 2 }, // right, mid
-      { left: lCX - CS * 1.35,  top: lCY - CS / 2 }, // left, mid
-      { left: lCX - CS,     top: lTop - CS + OL },   // above, left of centre
-      { left: lCX,          top: lBot - OL },         // below, right of centre
+      { left: mid - CS - 12, top: 0     },   // top, left of centre
+      { left: mid + 12,      top: 0     },   // top, right of centre
+      { left: mid - CS - 12, top: tMax  },   // bottom, left of centre
+      { left: mid + 12,      top: tMax  },   // bottom, right of centre
+      { left: mid - CS / 2,  top: 0     },   // top, centred
+      { left: mid - CS / 2,  top: tMax  },   // bottom, centred
     ];
 
     const seed = track.artist.charCodeAt(0);
     const pos  = positions[(globalPlayerState.index * 7 + (seed % 3)) % positions.length];
 
-    // Retrigger fade-in animation
     img.style.animation = 'none';
-    img.style.cssText = `display:block; width:${CS}px; height:${CS}px; left:${pos.left}px; top:${pos.top}px;`;
+    img.style.cssText = `display:block; position:absolute; width:${CS}px; height:${CS}px; left:${pos.left}px; top:${pos.top}px;`;
     img.src = track.cover;
-    // Force reflow then restore animation
     void img.offsetWidth;
     img.style.animation = '';
   });
