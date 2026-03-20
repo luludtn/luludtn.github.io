@@ -227,6 +227,18 @@ body {
   align-items: center;
   gap: 1.4rem;
   width: 100%;
+  position: relative;
+}
+#global-cover-float {
+  position: absolute;
+  object-fit: cover;
+  display: none;
+  pointer-events: none;
+  animation: coverFadeIn 0.5s ease both;
+}
+@keyframes coverFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 .global-section-label {
   font-size: clamp(5rem, 22vw, 15rem);
@@ -248,26 +260,20 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 .listens-play-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
+  border: none;
   background: none;
-  font-size: 16px;
+  font-size: 28px;
   cursor: pointer;
   color: var(--fg);
   font-family: var(--font-sans);
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition: opacity 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
   padding-left: 3px;
 }
-.listens-play-btn:hover, .listens-play-btn.active {
-  background: var(--fg);
-  color: var(--bg);
-  border-color: var(--fg);
-}
+.listens-play-btn:hover { opacity: 0.5; }
 .listens-play-btn.active { padding-left: 0; }
 .global-controls {
   display: flex;
@@ -486,6 +492,7 @@ body {
   <!-- ══ LISTENS MAIN ══ -->
   <div class="view" id="view-listens">
     <div class="listens-player-center">
+      <img id="global-cover-float" src="" alt="">
       <button class="global-discover-btn" id="global-discover-btn" onclick="discoverCurrentTrack()" style="display:none">discover</button>
       <p class="global-section-label" id="global-section-label"></p>
       <button class="listens-play-btn" id="global-play-btn" onclick="toggleGlobalPlayer()">▶</button>
@@ -1600,6 +1607,46 @@ function startGlobalPlayer() {
   loadGlobalTrack();
 }
 
+function updateCoverFloat(track) {
+  requestAnimationFrame(() => {
+    const img       = document.getElementById('global-cover-float');
+    const label     = document.getElementById('global-section-label');
+    const container = document.querySelector('.listens-player-center');
+    if (!img || !label || !container) return;
+
+    const lr = label.getBoundingClientRect();
+    const cr = container.getBoundingClientRect();
+
+    const lTop = lr.top  - cr.top;
+    const lBot = lr.bottom - cr.top;
+    const lCX  = (lr.left + lr.right) / 2 - cr.left;
+    const lCY  = (lTop + lBot) / 2;
+
+    const CS = Math.round(Math.min(window.innerWidth * 0.13, 130));
+    const OL = 22; // overlap px — guarantees cover touches the word
+
+    const positions = [
+      { left: lCX,          top: lTop - CS + OL },   // above, right of centre
+      { left: lCX - CS,     top: lBot - OL },         // below, left of centre
+      { left: lCX + CS * 0.35,  top: lCY - CS / 2 }, // right, mid
+      { left: lCX - CS * 1.35,  top: lCY - CS / 2 }, // left, mid
+      { left: lCX - CS,     top: lTop - CS + OL },   // above, left of centre
+      { left: lCX,          top: lBot - OL },         // below, right of centre
+    ];
+
+    const seed = track.artist.charCodeAt(0);
+    const pos  = positions[(globalPlayerState.index * 7 + (seed % 3)) % positions.length];
+
+    // Retrigger fade-in animation
+    img.style.animation = 'none';
+    img.style.cssText = `display:block; width:${CS}px; height:${CS}px; left:${pos.left}px; top:${pos.top}px;`;
+    img.src = track.cover;
+    // Force reflow then restore animation
+    void img.offsetWidth;
+    img.style.animation = '';
+  });
+}
+
 function loadGlobalTrack() {
   const state = globalPlayerState;
   if (!state.playing) return;
@@ -1614,6 +1661,8 @@ function loadGlobalTrack() {
   labelEl.innerHTML = name.split('').map((ch, i) =>
     `<span class="letter" style="animation-delay:${i * 0.07}s">${ch === ' ' ? '&nbsp;' : ch}</span>`
   ).join('');
+
+  updateCoverFloat(track);
 
   document.getElementById('global-player-label').textContent = track.artist + ' — ' + track.album;
   document.getElementById('global-track-row').style.display = 'flex';
@@ -1665,6 +1714,8 @@ function stopGlobalPlayer() {
   document.getElementById('global-track-row').style.display = 'none';
   document.getElementById('global-player-label').textContent = '';
   document.getElementById('global-section-label').innerHTML = '';
+  const cfi = document.getElementById('global-cover-float');
+  if (cfi) { cfi.style.display = 'none'; cfi.src = ''; }
 }
 
 function discoverCurrentTrack() {
