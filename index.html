@@ -227,7 +227,6 @@ body {
   align-items: center;
   gap: 1.4rem;
   width: 100%;
-  position: relative;
 }
 #global-cover-float {
   position: absolute;
@@ -1610,28 +1609,32 @@ function startGlobalPlayer() {
 
 function updateCoverFloat(track) {
   requestAnimationFrame(() => {
-    const img   = document.getElementById('global-cover-float');
-    const label = document.getElementById('global-section-label');
-    if (!img || !label) return;
+    const img       = document.getElementById('global-cover-float');
+    const label     = document.getElementById('global-section-label');
+    const container = document.querySelector('.listens-player-center');
+    if (!img || !label || !container) return;
 
-    // Move cover inside the label — position: absolute will now be
-    // relative to the label, so the cover is always within its vertical bounds
-    if (img.parentNode !== label) label.appendChild(img);
+    // Keep img as a sibling in the container (never inside label —
+    // label.innerHTML resets destroy children on each track change).
+    // DOM order: img comes before label, so it naturally renders behind the text.
+    if (img.parentNode !== container) container.insertBefore(img, label);
 
-    const lW  = label.offsetWidth;
-    const lH  = label.offsetHeight;
+    const lr  = label.getBoundingClientRect();
+    const cr  = container.getBoundingClientRect();
     const CS  = Math.round(Math.min(window.innerWidth * 0.13, 130));
-    const mid = lW / 2;
-    // top clamped to [0, lH-CS] so cover never leaves the label vertically
-    const tMax = Math.max(lH - CS, 0);
+    const mid = cr.width / 2;
+
+    // Vertical bounds: constrain cover within label's vertical extent
+    const tMin = lr.top    - cr.top;
+    const tMax = lr.bottom - cr.top - CS;
 
     const positions = [
-      { left: mid - CS - 12, top: 0     },   // top, left of centre
-      { left: mid + 12,      top: 0     },   // top, right of centre
-      { left: mid - CS - 12, top: tMax  },   // bottom, left of centre
-      { left: mid + 12,      top: tMax  },   // bottom, right of centre
-      { left: mid - CS / 2,  top: 0     },   // top, centred
-      { left: mid - CS / 2,  top: tMax  },   // bottom, centred
+      { left: mid - CS - 12, top: tMin },  // top, left of centre
+      { left: mid + 12,      top: tMin },  // top, right of centre
+      { left: mid - CS - 12, top: tMax },  // bottom, left of centre
+      { left: mid + 12,      top: tMax },  // bottom, right of centre
+      { left: mid - CS / 2,  top: tMin },  // top, centred
+      { left: mid - CS / 2,  top: tMax },  // bottom, centred
     ];
 
     const seed = track.artist.charCodeAt(0);
