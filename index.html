@@ -1275,6 +1275,72 @@ function interleaveArrays(a, b) {
   return out;
 }
 
+function makeRng(seed) {
+  let s = seed >>> 0;
+  return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 0xffffffff; };
+}
+
+// ── Margate: custom 3-column layout per prompt ────────────────────────────────
+function buildMasonryMargate(key) {
+  const photosData = SERIES_DATA[key];
+  const grid = document.getElementById('photos-' + key);
+  if (!photosData?.length) {
+    grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Coming soon</p>`;
+    return;
+  }
+  SERIES_VISUAL[key] = photosData;
+
+  const portraits  = photosData.filter(p =>  p.isPortrait);
+  const landscapes = photosData.filter(p => !p.isPortrait);
+  const rng = makeRng(hashStr(key));
+
+  // flex value = display aspect ratio (width/height after EXIF correction)
+  const flexOf = p => p.isPortrait ? (2 / 3) : (3 / 2);
+  const photoDiv = p => `<div class="series-photo" style="flex:${flexOf(p).toFixed(4)}"><img src="${p.url}" alt="" loading="lazy"></div>`;
+
+  const rows  = [];
+  const pairs = []; // lightbox — one entry per photo
+  let pi = 0, li = 0;
+
+  while (pi < portraits.length || li < landscapes.length) {
+    const remP = portraits.length - pi;
+    const remL = landscapes.length - li;
+    const canSingle = remL >= 1 && remP >= 2;
+    const canDouble = remL >= 2 && remP >= 1;
+
+    let trio;
+    if (canSingle || canDouble) {
+      let useDouble = false;
+      if (canDouble && canSingle) {
+        useDouble = (remL / Math.max(remP, 1)) >= 2 && rng() < 0.5;
+      } else {
+        useDouble = canDouble;
+      }
+
+      if (useDouble) {
+        // 2L + 1P — portrait always center
+        trio = [landscapes[li++], portraits[pi++], landscapes[li++]];
+      } else {
+        // 1L + 2P — landscape at random column
+        const l = landscapes[li++], a = portraits[pi++], b = portraits[pi++];
+        const pos = Math.floor(rng() * 3);
+        trio = pos === 0 ? [l, a, b] : pos === 1 ? [a, l, b] : [a, b, l];
+      }
+    } else {
+      // Edge: drain remaining (< 3 of one type)
+      trio = [...portraits.slice(pi), ...landscapes.slice(li)].slice(0, 3);
+      pi = portraits.length; li = landscapes.length;
+    }
+
+    const startIdx = pairs.length;
+    trio.forEach(p => pairs.push({ urls: [p.url], isLandscape: !p.isPortrait }));
+    rows.push(`<div class="series-row" onclick="openLightbox('${key}',${startIdx})">${trio.map(photoDiv).join('')}</div>`);
+  }
+
+  SERIES_PAIRS[key] = pairs;
+  grid.innerHTML = rows.join('');
+}
+
 function buildMasonry(key) {
   const photosData = SERIES_DATA[key];
   const grid = document.getElementById('photos-' + key);
@@ -1314,7 +1380,11 @@ function buildMasonry(key) {
   });
   grid.innerHTML = rows.join('');
 }
-Object.keys(SERIES_DATA).forEach(buildMasonry);
+function buildMasonryForKey(key) {
+  if (key === 'margate') buildMasonryMargate(key);
+  else buildMasonry(key);
+}
+Object.keys(SERIES_DATA).forEach(buildMasonryForKey);
 
 // ── Cloudinary dynamic fetch ──
 const CLD = 'dzhvoacrg';
@@ -1358,7 +1428,7 @@ function fetchCloudinaryTag(tag, key) {
     .then(photos => {
       const seed = hashStr(photos.map(p => p.id).join(''));
       SERIES_DATA[key] = seededShuffle(photos, seed);
-      buildMasonry(key);
+      buildMasonryForKey(key);
       const coverEl = document.querySelector(`#view-portfolio .p-card[onclick*="${key}"] img`);
       if (coverEl && SERIES_DATA[key].length && !coverEl.dataset.manualCover) coverEl.src = SERIES_DATA[key][0].url;
     })
