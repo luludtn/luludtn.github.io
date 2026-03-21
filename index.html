@@ -386,6 +386,7 @@ body {
           <button class="nav-item" id="nav-barcelona" onclick="openSeries('barcelona')">Barcelona Bella</button>
           <button class="nav-item" id="nav-Eire"  onclick="openSeries('Eire')">Eire</button>
           <button class="nav-item" id="nav-laballe" onclick="openSeries('laballe')">La Balle</button>
+          <button class="nav-item" id="nav-margate" onclick="openSeries('margate')">Satur/Gate</button>
         </div>
       </div>
       <div class="nav-section" id="section-listens">
@@ -433,6 +434,10 @@ body {
       <div class="p-card" onclick="openSeries('laballe')">
         <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773689037/000021900020_ewfopn.jpg" alt="La Balle" data-manual-cover="1" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">La Balle</h2></div>
+      </div>
+      <div class="p-card" onclick="openSeries('margate')">
+        <img src="" alt="Satur/Gate" style="min-height:300px;background:var(--border)">
+        <div class="p-card-overlay"><h2 class="p-card-title">Satur/Gate</h2></div>
       </div>
     </div>
   </div>
@@ -485,6 +490,19 @@ body {
       <div class="series-col-info">
         <h1 class="series-main-title">La Balle</h1>
         <p class="series-main-desc">La Balle.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-series-margate">
+    <div class="series-layout">
+      <div class="series-col-photos">
+        <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+        <div class="series-masonry" id="photos-margate"></div>
+      </div>
+      <div class="series-col-info">
+        <h1 class="series-main-title">Satur/Gate</h1>
+        <p class="series-main-desc">Margate.</p>
       </div>
     </div>
   </div>
@@ -625,7 +643,8 @@ const SERIES_DATA = {
   tunisia:   [],
   barcelona: [],
   Eire: [],
-  laballe: []
+  laballe: [],
+  margate: []
 };
 
 // ═══════════════════════════════════════════════════════
@@ -1341,6 +1360,7 @@ fetchCloudinaryTag('Tunisia', 'tunisia');
 fetchCloudinaryTag('Barcelona', 'barcelona');
 fetchCloudinaryTag('Ireland', 'Eire');
 fetchCloudinaryTag('Football', 'laballe');
+fetchCloudinaryTag('margate', 'margate');
 
 // ═══════════════════════════════════════════════════════
 //  SHUFFLE PLAYER
