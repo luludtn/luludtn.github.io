@@ -1339,13 +1339,23 @@ function fetchCloudinaryTag(tag, key) {
     .then(([data, colorIds]) => {
       let photos = data.resources
         .map(r => ({
-          url:        `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto/${r.public_id}.${r.format}`,
+          url:        `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto,a_exif/${r.public_id}.${r.format}`,
           width:      r.width,
           height:     r.height,
           id:         r.public_id,
           isPortrait: r.height >= r.width,
           isBW:       !colorIds.has(r.public_id),
         }));
+      // Probe true orientation after EXIF rotation via tiny thumbnails
+      const probes = photos.map(p => new Promise(resolve => {
+        const img = new Image();
+        img.onload  = () => { p.isPortrait = img.naturalHeight >= img.naturalWidth; resolve(); };
+        img.onerror = () => resolve();
+        img.src = `https://res.cloudinary.com/${CLD}/image/upload/w_10,a_exif/${p.id}.jpg`;
+      }));
+      return Promise.all(probes).then(() => photos);
+    })
+    .then(photos => {
       const seed = hashStr(photos.map(p => p.id).join(''));
       SERIES_DATA[key] = seededShuffle(photos, seed);
       buildMasonry(key);
