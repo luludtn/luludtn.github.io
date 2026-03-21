@@ -439,7 +439,7 @@ body {
         <div class="p-card-overlay"><h2 class="p-card-title">La Balle</h2></div>
       </div>
       <div class="p-card" onclick="openSeries('margate')">
-        <img src="" alt="Satur/Gate" style="min-height:300px;background:var(--border)">
+        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto,a_exif/v1774126995/DSCF5144_oorq5b.jpg" alt="Satur/Gate" data-manual-cover="1" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">Satur/Gate</h2></div>
       </div>
     </div>
@@ -526,6 +526,7 @@ body {
       <div class="tier-player">
         <button class="player-btn" id="play-btn-honey" onclick="toggleShuffle('honey')">▶ Shuffle</button>
         <button class="player-btn" id="next-btn-honey" onclick="nextTrack('honey')" style="display:none">↝ Next</button>
+        <button class="global-discover-btn" id="discover-btn-honey" onclick="discoverTierTrack('honey')" style="display:none">discover</button>
       </div>
       <div class="player-embed-wrap" id="player-wrap-honey">
         <div class="track-row">
@@ -547,6 +548,7 @@ body {
       <div class="tier-player">
         <button class="player-btn" id="play-btn-bee" onclick="toggleShuffle('bee')">▶ Shuffle</button>
         <button class="player-btn" id="next-btn-bee" onclick="nextTrack('bee')" style="display:none">↝ Next</button>
+        <button class="global-discover-btn" id="discover-btn-bee" onclick="discoverTierTrack('bee')" style="display:none">discover</button>
       </div>
       <div class="player-embed-wrap" id="player-wrap-bee">
         <div class="track-row">
@@ -568,6 +570,7 @@ body {
       <div class="tier-player">
         <button class="player-btn" id="play-btn-sunflower" onclick="toggleShuffle('sunflower')">▶ Shuffle</button>
         <button class="player-btn" id="next-btn-sunflower" onclick="nextTrack('sunflower')" style="display:none">↝ Next</button>
+        <button class="global-discover-btn" id="discover-btn-sunflower" onclick="discoverTierTrack('sunflower')" style="display:none">discover</button>
       </div>
       <div class="player-embed-wrap" id="player-wrap-sunflower">
         <div class="track-row">
@@ -589,6 +592,7 @@ body {
       <div class="tier-player">
         <button class="player-btn" id="play-btn-joker" onclick="toggleShuffle('joker')">▶ Shuffle</button>
         <button class="player-btn" id="next-btn-joker" onclick="nextTrack('joker')" style="display:none">↝ Next</button>
+        <button class="global-discover-btn" id="discover-btn-joker" onclick="discoverTierTrack('joker')" style="display:none">discover</button>
       </div>
       <div class="player-embed-wrap" id="player-wrap-joker">
         <div class="track-row">
@@ -1478,6 +1482,7 @@ function startShuffle(tier) {
   document.getElementById('play-btn-' + tier).textContent = '◼ Stop';
   document.getElementById('play-btn-' + tier).classList.add('active');
   document.getElementById('next-btn-' + tier).style.display = 'inline-flex';
+  document.getElementById('discover-btn-' + tier).style.display = 'inline-block';
   document.getElementById('player-wrap-' + tier).classList.add('visible');
   loadTrack(tier);
 }
@@ -1521,6 +1526,7 @@ function stopShuffle(tier) {
   document.getElementById('play-btn-' + tier).textContent = '▶ Shuffle';
   document.getElementById('play-btn-' + tier).classList.remove('active');
   document.getElementById('next-btn-' + tier).style.display = 'none';
+  document.getElementById('discover-btn-' + tier).style.display = 'none';
   document.getElementById('player-wrap-' + tier).classList.remove('visible');
   document.getElementById('player-label-' + tier).textContent = '';
 }
@@ -1851,6 +1857,19 @@ function stopGlobalPlayer() {
   document.getElementById('global-section-label').innerHTML = '';
   const cfi = document.getElementById('global-cover-float');
   if (cfi) { cfi.style.display = 'none'; cfi.src = ''; }
+}
+
+function discoverTierTrack(tier) {
+  const state = playerState[tier];
+  if (!state || !state.playing) return;
+  const track = state.queue[state.index];
+  if (!track) return;
+  highlightPlayingCard(track);
+  const grid = document.getElementById('album-grid-' + tier);
+  if (grid) {
+    const card = Array.from(grid.querySelectorAll('.album-card')).find(c => c.dataset.trackUrl === track.url);
+    if (card) setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+  }
 }
 
 function discoverCurrentTrack() {
