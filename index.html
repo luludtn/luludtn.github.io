@@ -234,11 +234,6 @@ body {
   display: none;
   pointer-events: none;
   z-index: 10;
-  animation: coverFadeIn 0.5s ease both;
-}
-@keyframes coverFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
 }
 .global-section-label {
   font-size: clamp(5rem, 22vw, 15rem);
@@ -423,11 +418,11 @@ body {
   <div class="view" id="view-portfolio">
     <div class="portfolio-layout">
       <div class="p-card" onclick="openSeries('tunisia')">
-        <img src="" alt="Un bout d'été en Tunisie" style="min-height:300px;background:var(--border)">
+        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto,a_exif/v1773595598/C0D389FC-22EE-45DF-BD79-EF3B21AEBC6C_1_201_a_eg1ccs.jpg" alt="Un bout d'été en Tunisie" data-manual-cover="1" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">Un bout d'été en Tunisie</h2></div>
       </div>
       <div class="p-card" onclick="openSeries('barcelona')">
-        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773591638/000021930005_vhpao7.jpg" alt="Barcelona Bella" data-manual-cover="1" style="min-height:300px;background:var(--border)">
+        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773591637/000021930016_v6xjvy.jpg" alt="Barcelona Bella" data-manual-cover="1" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">Barcelona Bella</h2></div>
       </div>
       <div class="p-card" onclick="openSeries('Eire')">
@@ -1784,11 +1779,11 @@ function updateCoverFloat(track) {
     img.dataset.cx = x;
     img.dataset.cy = y;
 
-    // Restart animation: set animation:none first, reflow, then let CSS rule take over
-    img.style.cssText = `display:block;position:fixed;width:${CS}px;height:${CS}px;left:${Math.round(x)}px;top:${Math.round(y)}px;pointer-events:none;z-index:10;animation:none;`;
     img.src = track.cover;
+    img.style.cssText = `display:block;position:fixed;width:${CS}px;height:${CS}px;left:${Math.round(x)}px;top:${Math.round(y)}px;pointer-events:none;z-index:10;opacity:0;transition:none;`;
     void img.offsetWidth;
-    img.style.animation = '';
+    img.style.transition = 'opacity 0.5s ease';
+    img.style.opacity = '1';
   });
 }
 
