@@ -1316,9 +1316,11 @@ function buildMasonryMargate(key) {
         trio = pos === 0 ? [l, a, b] : pos === 1 ? [a, l, b] : [a, b, l];
       }
     } else {
-      // Edge: drain remaining (< 3 of one type)
+      // Edge: drain remaining photos up to 3, then continue loop
       trio = [...portraits.slice(pi), ...landscapes.slice(li)].slice(0, 3);
-      pi = portraits.length; li = landscapes.length;
+      let pUsed = 0, lUsed = 0;
+      trio.forEach(p => { if (p.isPortrait) pUsed++; else lUsed++; });
+      pi += pUsed; li += lUsed;
     }
 
     const indices = trio.map((_, i) => pairs.length + i);
