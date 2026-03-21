@@ -458,28 +458,20 @@ body {
   </div>
 
   <div class="view" id="view-series-barcelona">
-    <div class="series-layout">
-      <div class="series-col-photos">
-        <button class="series-header-back" onclick="showSeesOverview()">All work</button>
-        <div class="series-masonry" id="photos-barcelona"></div>
-      </div>
-      <div class="series-col-info">
-        <h1 class="series-main-title">Barcelona Bella</h1>
-        <p class="series-main-desc">Add a description for Barcelona Bella here.</p>
-      </div>
+    <div style="padding:2.5rem 2rem 8rem;">
+      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+      <h1 class="series-main-title">Barcelona Bella</h1>
+      <p class="series-main-desc" style="margin-bottom:2.5rem;">Add a description for Barcelona Bella here.</p>
+      <div class="series-masonry" id="photos-barcelona"></div>
     </div>
   </div>
 
   <div class="view" id="view-series-Eire">
-    <div class="series-layout">
-      <div class="series-col-photos">
-        <button class="series-header-back" onclick="showSeesOverview()">All work</button>
-        <div class="series-masonry" id="photos-Eire"></div>
-      </div>
-      <div class="series-col-info">
-        <h1 class="series-main-title">Eire</h1>
-        <p class="series-main-desc">Add a description for Eire here.</p>
-      </div>
+    <div style="padding:2.5rem 2rem 8rem;">
+      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+      <h1 class="series-main-title">Eire</h1>
+      <p class="series-main-desc" style="margin-bottom:2.5rem;">Add a description for Eire here.</p>
+      <div class="series-masonry" id="photos-Eire"></div>
     </div>
   </div>
 
@@ -1380,8 +1372,9 @@ function buildMasonry(key) {
   });
   grid.innerHTML = rows.join('');
 }
+const NEW_LAYOUT_SERIES = new Set(['margate', 'barcelona', 'Eire']);
 function buildMasonryForKey(key) {
-  if (key === 'margate') buildMasonryMargate(key);
+  if (NEW_LAYOUT_SERIES.has(key)) buildMasonryMargate(key);
   else buildMasonry(key);
 }
 Object.keys(SERIES_DATA).forEach(buildMasonryForKey);
