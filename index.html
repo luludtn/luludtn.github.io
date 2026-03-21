@@ -1754,34 +1754,38 @@ function updateCoverFloat(track) {
     const prevX = parseFloat(img.dataset.cx ?? -9999);
     const prevY = parseFloat(img.dataset.cy ?? -9999);
 
-    function fits(x, y, checkDist) {
-      if (x < PAD || y < PAD || x + CS > window.innerWidth - PAD || y + CS > window.innerHeight - PAD) return false;
-      if (avoidRects.some(r => x < r.r && x + CS > r.l && y < r.b && y + CS > r.t)) return false;
-      if (checkDist) {
-        const dx = x - prevX, dy = y - prevY;
-        if (Math.sqrt(dx * dx + dy * dy) < MIN_DIST) return false;
-      }
-      return true;
+    const maxX = window.innerWidth  - CS - PAD;
+    const maxY = window.innerHeight - CS - PAD;
+
+    function inBounds(x, y) {
+      return x >= PAD && y >= PAD && x + CS <= window.innerWidth - PAD && y + CS <= window.innerHeight - PAD;
+    }
+    function noOverlap(x, y) {
+      return !avoidRects.some(r => x < r.r && x + CS > r.l && y < r.b && y + CS > r.t);
+    }
+    function farEnough(x, y) {
+      const dx = x - prevX, dy = y - prevY;
+      return Math.sqrt(dx * dx + dy * dy) >= MIN_DIST;
     }
 
-    const W = window.innerWidth - CS - PAD;
-    const H = window.innerHeight - CS - PAD;
-    let x = PAD, y = PAD, found = false;
-
-    // Pass 0: avoid overlap + enforce min distance. Pass 1: just avoid overlap.
-    for (let pass = 0; pass < 2 && !found; pass++) {
-      for (let i = 0; i < 400; i++) {
-        const tx = PAD + Math.random() * (W - PAD);
-        const ty = PAD + Math.random() * (H - PAD);
-        if (fits(tx, ty, pass === 0)) { x = tx; y = ty; found = true; break; }
+    let x = PAD, y = PAD;
+    // 3 passes: all constraints → no distance → only inBounds (always on screen)
+    outer: for (let pass = 0; pass < 3; pass++) {
+      for (let i = 0; i < 300; i++) {
+        const tx = PAD + Math.random() * (maxX - PAD);
+        const ty = PAD + Math.random() * (maxY - PAD);
+        if (!inBounds(tx, ty)) continue;
+        if (pass < 2 && !noOverlap(tx, ty)) continue;
+        if (pass < 1 && !farEnough(tx, ty)) continue;
+        x = tx; y = ty; break outer;
       }
     }
 
     img.dataset.cx = x;
     img.dataset.cy = y;
 
-    img.style.animation = 'none';
-    img.style.cssText = `display:block;position:fixed;width:${CS}px;height:${CS}px;left:${Math.round(x)}px;top:${Math.round(y)}px;pointer-events:none;z-index:10;`;
+    // Restart animation: set animation:none first, reflow, then let CSS rule take over
+    img.style.cssText = `display:block;position:fixed;width:${CS}px;height:${CS}px;left:${Math.round(x)}px;top:${Math.round(y)}px;pointer-events:none;z-index:10;animation:none;`;
     img.src = track.cover;
     void img.offsetWidth;
     img.style.animation = '';
