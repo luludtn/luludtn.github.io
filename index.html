@@ -396,7 +396,7 @@ body {
         <div class="nav-section-items">
           <button class="nav-item" id="nav-honey"     onclick="showListensTier('honey')">Honey</button>
           <button class="nav-item" id="nav-bee"       onclick="showListensTier('bee')">Bee</button>
-          <button class="nav-item" id="nav-sunflower" onclick="showListensTier('sunflower')">Flower</button>
+          <button class="nav-item" id="nav-sunflower" onclick="showListensTier('sunflower')">Sunflower</button>
           <button class="nav-item" id="nav-joker"     onclick="showListensTier('joker')">Joker</button>
           <button class="nav-item" id="nav-random"    onclick="showView('listens')">RadiO-tfchck</button>
         </div>
@@ -561,7 +561,7 @@ body {
   <div class="view" id="view-listens-sunflower">
     <div class="listens-header">
       <button class="series-header-back" onclick="showView('home')">Back</button>
-      <h1 class="listens-title">Flower</h1>
+      <h1 class="listens-title">Sunflower</h1>
       <p class="listens-range">100,000 — 300,000 streams</p>
       <p class="listens-subtitle">They've been here enough times that the flowers lean toward them.</p>
       <div class="tier-player">
@@ -1690,7 +1690,7 @@ function stopLetterDance() {
 //  GLOBAL PLAYER (all tiers)
 // ═══════════════════════════════════════════════════════
 const globalPlayerState = { playing: false, queue: [], index: 0, timer: null };
-const TIER_LABELS = { honey: 'Honey', bee: 'Bee', sunflower: 'Flower', joker: 'Joker' };
+const TIER_LABELS = { honey: 'Honey', bee: 'Bee', sunflower: 'Sunflower', joker: 'Joker' };
 
 function getAllPlayableTracks() {
   const result = [];
@@ -1909,8 +1909,14 @@ function stopYouTubePreview() {
 
 function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
 }
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+})();
 
 // Restore page on refresh from URL hash
 (function() {
