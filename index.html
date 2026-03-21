@@ -320,6 +320,8 @@ body {
 #lb-pair.lb-portrait img { flex: 1; min-width: 0; height: 100%; object-fit: contain; display: block; }
 #lb-pair.lb-landscape { flex-direction: column; width: 46vw; height: 90vh; }
 #lb-pair.lb-landscape img { flex: 1; min-height: 0; width: 100%; object-fit: contain; display: block; }
+#lb-pair.lb-single { display: block; }
+#lb-pair.lb-single img { max-height: 90vh; max-width: 90vw; width: auto; height: auto; display: block; object-fit: contain; }
 .lb-close { position: fixed; top: 1.5rem; right: 2rem; color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; background: none; border: none; font-family: var(--font-sans); transition: color 0.2s; }
 .lb-close:hover { color: #fff; }
 .lb-arrow { position: fixed; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); font-size: 11px; cursor: pointer; background: none; border: none; font-family: var(--font-sans); padding: 2rem; transition: color 0.2s; }
@@ -1327,9 +1329,12 @@ function buildMasonryMargate(key) {
       pi = portraits.length; li = landscapes.length;
     }
 
-    const startIdx = pairs.length;
+    const indices = trio.map((_, i) => pairs.length + i);
     trio.forEach(p => pairs.push({ urls: [p.url], isLandscape: !p.isPortrait }));
-    rows.push(`<div class="series-row" onclick="openLightbox('${key}',${startIdx})">${trio.map(photoDiv).join('')}</div>`);
+    const photoDivs = trio.map((p, i) =>
+      `<div class="series-photo" style="flex:1;cursor:pointer" onclick="event.stopPropagation();openLightbox('${key}',${indices[i]})"><img src="${p.url}" alt="" loading="lazy"></div>`
+    ).join('');
+    rows.push(`<div class="series-row">${photoDivs}</div>`);
   }
 
   SERIES_PAIRS[key] = pairs;
@@ -1534,7 +1539,8 @@ function updateLightbox() {
   imgA.src = pair.urls[0];
   imgB.src = pair.urls[1] || '';
   imgB.style.display = pair.urls[1] ? '' : 'none';
-  document.getElementById('lb-pair').className = pair.isLandscape ? 'lb-landscape' : 'lb-portrait';
+  const isSingle = !pair.urls[1];
+  document.getElementById('lb-pair').className = isSingle ? 'lb-single' : (pair.isLandscape ? 'lb-landscape' : 'lb-portrait');
   document.getElementById('lb-counter').textContent = (currentLbIndex + 1) + ' / ' + currentPairs.length;
 }
 function closeLightbox() {
