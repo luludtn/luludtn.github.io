@@ -229,10 +229,11 @@ body {
   width: 100%;
 }
 #global-cover-float {
-  position: absolute;
+  position: fixed;
   object-fit: cover;
   display: none;
   pointer-events: none;
+  z-index: 10;
   animation: coverFadeIn 0.5s ease both;
 }
 @keyframes coverFadeIn {
@@ -1721,39 +1722,60 @@ function startGlobalPlayer() {
 
 function updateCoverFloat(track) {
   requestAnimationFrame(() => {
-    const img       = document.getElementById('global-cover-float');
-    const label     = document.getElementById('global-section-label');
-    const container = document.querySelector('.listens-player-center');
-    if (!img || !label || !container) return;
+    const img = document.getElementById('global-cover-float');
+    if (!img) return;
 
-    // Keep img as a sibling in the container (never inside label —
-    // label.innerHTML resets destroy children on each track change).
-    // DOM order: img comes before label, so it naturally renders behind the text.
-    if (img.parentNode !== container) container.insertBefore(img, label);
+    const CS      = Math.round(Math.min(window.innerWidth * 0.13, 140));
+    const PAD     = 28;
+    const APAD    = 22; // extra padding around avoided elements
+    const MIN_DIST = CS * 2.5; // minimum distance from previous position
 
-    const lr  = label.getBoundingClientRect();
-    const cr  = container.getBoundingClientRect();
-    const CS  = Math.round(Math.min(window.innerWidth * 0.13, 130));
-    const mid = cr.width / 2;
+    // Elements whose bounding boxes the cover must not overlap
+    const avoidEls = [
+      document.querySelector('.sidebar'),
+      document.getElementById('global-section-label'),
+      document.getElementById('global-discover-btn'),
+      document.getElementById('global-play-btn'),
+      document.getElementById('global-controls'),
+      document.getElementById('global-track-row'),
+    ].filter(Boolean);
 
-    // Vertical bounds: constrain cover within label's vertical extent
-    const tMin = lr.top    - cr.top;
-    const tMax = lr.bottom - cr.top - CS;
+    const avoidRects = avoidEls.map(el => {
+      const r = el.getBoundingClientRect();
+      return { l: r.left - APAD, t: r.top - APAD, r: r.right + APAD, b: r.bottom + APAD };
+    }).filter(r => r.r > r.l && r.b > r.t);
 
-    const positions = [
-      { left: mid - CS - 12, top: tMin },  // top, left of centre
-      { left: mid + 12,      top: tMin },  // top, right of centre
-      { left: mid - CS - 12, top: tMax },  // bottom, left of centre
-      { left: mid + 12,      top: tMax },  // bottom, right of centre
-      { left: mid - CS / 2,  top: tMin },  // top, centred
-      { left: mid - CS / 2,  top: tMax },  // bottom, centred
-    ];
+    const prevX = parseFloat(img.dataset.cx ?? -9999);
+    const prevY = parseFloat(img.dataset.cy ?? -9999);
 
-    const seed = track.artist.charCodeAt(0);
-    const pos  = positions[(globalPlayerState.index * 7 + (seed % 3)) % positions.length];
+    function fits(x, y, checkDist) {
+      if (x < PAD || y < PAD || x + CS > window.innerWidth - PAD || y + CS > window.innerHeight - PAD) return false;
+      if (avoidRects.some(r => x < r.r && x + CS > r.l && y < r.b && y + CS > r.t)) return false;
+      if (checkDist) {
+        const dx = x - prevX, dy = y - prevY;
+        if (Math.sqrt(dx * dx + dy * dy) < MIN_DIST) return false;
+      }
+      return true;
+    }
+
+    const W = window.innerWidth - CS - PAD;
+    const H = window.innerHeight - CS - PAD;
+    let x = PAD, y = PAD, found = false;
+
+    // Pass 0: avoid overlap + enforce min distance. Pass 1: just avoid overlap.
+    for (let pass = 0; pass < 2 && !found; pass++) {
+      for (let i = 0; i < 400; i++) {
+        const tx = PAD + Math.random() * (W - PAD);
+        const ty = PAD + Math.random() * (H - PAD);
+        if (fits(tx, ty, pass === 0)) { x = tx; y = ty; found = true; break; }
+      }
+    }
+
+    img.dataset.cx = x;
+    img.dataset.cy = y;
 
     img.style.animation = 'none';
-    img.style.cssText = `display:block; position:absolute; width:${CS}px; height:${CS}px; left:${pos.left}px; top:${pos.top}px;`;
+    img.style.cssText = `display:block;position:fixed;width:${CS}px;height:${CS}px;left:${Math.round(x)}px;top:${Math.round(y)}px;pointer-events:none;z-index:10;`;
     img.src = track.cover;
     void img.offsetWidth;
     img.style.animation = '';
