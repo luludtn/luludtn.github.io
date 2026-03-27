@@ -1733,7 +1733,7 @@ function updateCoverFloat(track) {
 
     // Elements whose bounding boxes the cover must not overlap
     const avoidEls = [
-      document.querySelector('.sidebar'),
+      document.getElementById('sidebar'),
       document.getElementById('global-section-label'),
       document.getElementById('global-discover-btn'),
       document.getElementById('global-play-btn'),
@@ -1763,11 +1763,15 @@ function updateCoverFloat(track) {
       return Math.sqrt(dx * dx + dy * dy) >= MIN_DIST;
     }
 
-    let x = PAD, y = PAD;
-    // 3 passes: all constraints → no distance → only inBounds (always on screen)
+    const sidebarEl = document.getElementById('sidebar');
+    const sidebarR = sidebarEl ? sidebarEl.getBoundingClientRect().right + APAD : PAD;
+    const minX = Math.max(PAD, sidebarR);
+
+    let x = minX, y = PAD;
+    // 3 passes: all constraints → no distance → only inBounds+sidebar (always on screen, never behind menu)
     outer: for (let pass = 0; pass < 3; pass++) {
       for (let i = 0; i < 300; i++) {
-        const tx = PAD + Math.random() * (maxX - PAD);
+        const tx = minX + Math.random() * (maxX - minX);
         const ty = PAD + Math.random() * (maxY - PAD);
         if (!inBounds(tx, ty)) continue;
         if (pass < 2 && !noOverlap(tx, ty)) continue;
