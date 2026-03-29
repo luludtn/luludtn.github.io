@@ -485,15 +485,11 @@ body {
   </div>
 
   <div class="view" id="view-series-laballe">
-    <div class="series-layout">
-      <div class="series-col-photos">
-        <button class="series-header-back" onclick="showSeesOverview()">All work</button>
-        <div class="series-masonry" id="photos-laballe"></div>
-      </div>
-      <div class="series-col-info">
-        <h1 class="series-main-title">La Balle</h1>
-        <p class="series-main-desc">La Balle.</p>
-      </div>
+    <div style="padding:2.5rem 2rem 8rem;">
+      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+      <h1 class="series-main-title">La Balle</h1>
+      <p class="series-main-desc" style="margin-bottom:2.5rem;">La Balle.</p>
+      <div class="series-masonry" id="photos-laballe"></div>
     </div>
   </div>
 
@@ -1419,7 +1415,7 @@ function buildMasonry(key) {
   });
   grid.innerHTML = rows.join('');
 }
-const NEW_LAYOUT_SERIES = new Set(['margate', 'barcelona', 'Eire']);
+const NEW_LAYOUT_SERIES = new Set(['margate', 'barcelona', 'Eire', 'laballe']);
 function buildMasonryForKey(key) {
   if (NEW_LAYOUT_SERIES.has(key)) buildMasonryMargate(key);
   else buildMasonry(key);
