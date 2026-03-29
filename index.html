@@ -127,6 +127,9 @@ body {
 .series-header-back:hover { color: var(--fg); }
 .series-main-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
 .series-main-desc { font-size: 13px; line-height: 1.75; color: var(--muted); font-weight: 300; }
+.laballe-filter { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); background: none; border: none; font-family: var(--font-sans); cursor: pointer; padding: 0; transition: color 0.2s; }
+.laballe-filter:hover { color: var(--fg); }
+.laballe-filter.active { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
 .series-masonry { display: flex; flex-direction: column; gap: 3rem; }
 .series-row { display: flex; gap: 4px; align-items: flex-start; cursor: pointer; }
 .series-row.pair-landscape { flex-direction: column; }
@@ -488,7 +491,12 @@ body {
     <div style="padding:2.5rem 2rem 8rem;">
       <button class="series-header-back" onclick="showSeesOverview()">All work</button>
       <h1 class="series-main-title">La Balle</h1>
-      <p class="series-main-desc" style="margin-bottom:2.5rem;">La Balle.</p>
+      <p class="series-main-desc" style="margin-bottom:2rem;">La Balle.</p>
+      <div style="display:flex;gap:1.2rem;margin-bottom:2.5rem;">
+        <button class="laballe-filter active" id="laballe-filter-all"   onclick="filterLaBalle('all')">All</button>
+        <button class="laballe-filter"        id="laballe-filter-color" onclick="filterLaBalle('color')">Color</button>
+        <button class="laballe-filter"        id="laballe-filter-bw"    onclick="filterLaBalle('bw')">B&W</button>
+      </div>
       <div class="series-masonry" id="photos-laballe"></div>
     </div>
   </div>
@@ -1506,9 +1514,11 @@ fetchCloudinaryTag('margate', 'margate');
   })
   .then(photos => {
     const seed = hashStr(photos.map(p => p.id).join(''));
-    const color = photos.filter(p => !p.isBW);
-    const bw    = photos.filter(p =>  p.isBW);
-    SERIES_DATA[key] = [...seededShuffle(color, seed), ...seededShuffle(bw, seed + 1)];
+    const color = seededShuffle(photos.filter(p => !p.isBW), seed);
+    const bw    = seededShuffle(photos.filter(p =>  p.isBW), seed + 1);
+    SERIES_DATA[key] = [...color, ...bw];
+    SERIES_DATA._laballeColor = color;
+    SERIES_DATA._laballe_bw  = bw;
     buildMasonryForKey(key);
     const coverEl = document.querySelector(`#view-portfolio .p-card[onclick*="${key}"] img`);
     if (coverEl && SERIES_DATA[key].length && !coverEl.dataset.manualCover) coverEl.src = SERIES_DATA[key][0].url;
@@ -1517,6 +1527,17 @@ fetchCloudinaryTag('margate', 'margate');
     if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Could not load photos</p>`;
   });
 })();
+
+function filterLaBalle(mode) {
+  document.querySelectorAll('.laballe-filter').forEach(b => b.classList.remove('active'));
+  document.getElementById('laballe-filter-' + mode).classList.add('active');
+  const color = SERIES_DATA._laballeColor || [];
+  const bw    = SERIES_DATA._laballe_bw   || [];
+  if (mode === 'color')     SERIES_DATA.laballe = color;
+  else if (mode === 'bw')   SERIES_DATA.laballe = bw;
+  else                      SERIES_DATA.laballe = [...color, ...bw];
+  buildMasonryForKey('laballe');
+}
 
 // ═══════════════════════════════════════════════════════
 //  SHUFFLE PLAYER
