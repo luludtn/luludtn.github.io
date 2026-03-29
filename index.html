@@ -1498,7 +1498,7 @@ fetchCloudinaryTag('margate', 'margate');
       height:     r.height,
       id:         r.public_id,
       isPortrait: r.height >= r.width,
-      isBW:       bwIds.has(r.public_id) || !colorIds.has(r.public_id),
+      isBW:       bwIds.has(r.public_id),
     }));
     const probes = photos.map(p => new Promise(resolve => {
       const img = new Image();
