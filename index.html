@@ -1516,12 +1516,13 @@ fetchCloudinaryTag('margate', 'margate');
     const seed = hashStr(photos.map(p => p.id).join(''));
     const color = seededShuffle(photos.filter(p => !p.isBW), seed);
     const bw    = seededShuffle(photos.filter(p =>  p.isBW), seed + 1);
-    SERIES_DATA[key] = [...color, ...bw];
     SERIES_DATA._laballeColor = color;
     SERIES_DATA._laballe_bw  = bw;
-    buildMasonryForKey(key);
+    SERIES_DATA[key] = [...color, ...bw];
+    if (_laballe_pending_filter !== 'all') filterLaBalle(_laballe_pending_filter);
+    else buildMasonryForKey(key);
     const coverEl = document.querySelector(`#view-portfolio .p-card[onclick*="${key}"] img`);
-    if (coverEl && SERIES_DATA[key].length && !coverEl.dataset.manualCover) coverEl.src = SERIES_DATA[key][0].url;
+    if (coverEl && color.length && !coverEl.dataset.manualCover) coverEl.src = color[0].url;
   })
   .catch(() => {
     if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Could not load photos</p>`;
@@ -1531,6 +1532,7 @@ fetchCloudinaryTag('margate', 'margate');
 function filterLaBalle(mode) {
   document.querySelectorAll('.laballe-filter').forEach(b => b.classList.remove('active'));
   document.getElementById('laballe-filter-' + mode).classList.add('active');
+  setHash('series-laballe' + (mode !== 'all' ? '-' + mode : ''));
   const color = SERIES_DATA._laballeColor || [];
   const bw    = SERIES_DATA._laballe_bw   || [];
   if (mode === 'color')     SERIES_DATA.laballe = color;
@@ -1538,6 +1540,7 @@ function filterLaBalle(mode) {
   else                      SERIES_DATA.laballe = [...color, ...bw];
   buildMasonryForKey('laballe');
 }
+let _laballe_pending_filter = 'all';
 
 // ═══════════════════════════════════════════════════════
 //  SHUFFLE PLAYER
@@ -2062,7 +2065,11 @@ function toggleTheme() {
 (function() {
   const hash = location.hash.slice(1);
   if (!hash) return;
-  if (hash.startsWith('series-')) openSeries(hash.replace('series-', ''));
+  if (hash.startsWith('series-laballe')) {
+    const mode = hash === 'series-laballe-color' ? 'color' : hash === 'series-laballe-bw' ? 'bw' : 'all';
+    _laballe_pending_filter = mode;
+    openSeries('laballe');
+  } else if (hash.startsWith('series-')) openSeries(hash.replace('series-', ''));
   else if (hash.startsWith('listens-')) showListensTier(hash.replace('listens-', ''));
   else showView(hash);
 })();
