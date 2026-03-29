@@ -1479,8 +1479,48 @@ function fetchCloudinaryTag(tag, key) {
 fetchCloudinaryTag('Tunisia', 'tunisia');
 fetchCloudinaryTag('Barcelona', 'barcelona');
 fetchCloudinaryTag('Ireland', 'Eire');
-fetchCloudinaryTag('Football', 'laballe');
 fetchCloudinaryTag('margate', 'margate');
+
+// La Balle: fetch BW tag from Cloudinary to group BW photos together
+(function fetchLaBalle() {
+  const key = 'laballe';
+  const grid = document.getElementById('photos-' + key);
+  if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Loading…</p>`;
+  Promise.all([
+    fetch(`https://res.cloudinary.com/${CLD}/image/list/Football.json`).then(r => r.json()),
+    fetch(`https://res.cloudinary.com/${CLD}/image/list/BW.json`).then(r => r.json()).then(d => new Set((d.resources || []).map(r => r.public_id))).catch(() => new Set()),
+    getColorIds()
+  ])
+  .then(([data, bwIds, colorIds]) => {
+    const photos = data.resources.map(r => ({
+      url:        `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto,a_exif/${r.public_id}.${r.format}`,
+      width:      r.width,
+      height:     r.height,
+      id:         r.public_id,
+      isPortrait: r.height >= r.width,
+      isBW:       bwIds.has(r.public_id) || !colorIds.has(r.public_id),
+    }));
+    const probes = photos.map(p => new Promise(resolve => {
+      const img = new Image();
+      img.onload  = () => { p.isPortrait = img.naturalHeight >= img.naturalWidth; resolve(); };
+      img.onerror = () => resolve();
+      img.src = `https://res.cloudinary.com/${CLD}/image/upload/w_10,a_exif/${p.id}.jpg`;
+    }));
+    return Promise.all(probes).then(() => photos);
+  })
+  .then(photos => {
+    const seed = hashStr(photos.map(p => p.id).join(''));
+    const color = photos.filter(p => !p.isBW);
+    const bw    = photos.filter(p =>  p.isBW);
+    SERIES_DATA[key] = [...seededShuffle(color, seed), ...seededShuffle(bw, seed + 1)];
+    buildMasonryForKey(key);
+    const coverEl = document.querySelector(`#view-portfolio .p-card[onclick*="${key}"] img`);
+    if (coverEl && SERIES_DATA[key].length && !coverEl.dataset.manualCover) coverEl.src = SERIES_DATA[key][0].url;
+  })
+  .catch(() => {
+    if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Could not load photos</p>`;
+  });
+})();
 
 // ═══════════════════════════════════════════════════════
 //  SHUFFLE PLAYER
