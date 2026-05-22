@@ -399,8 +399,6 @@ body {
           <button class="nav-item" id="nav-tunisia"   onclick="openSeries('tunisia')">Un bout d'été en Tunisie</button>
           <button class="nav-item" id="nav-Eire"  onclick="openSeries('Eire')">Eire</button>
           <button class="nav-item" id="nav-laballe" onclick="openSeries('laballe')">La Balle</button>
-          <button class="nav-item" id="nav-barcelona" onclick="openSeries('barcelona')">Barcelona Bella</button>
-          <button class="nav-item" id="nav-margate" onclick="openSeries('margate')">Satur/Gate</button>
         </div>
       </div>
       <div class="nav-section" id="section-listens">
@@ -445,14 +443,6 @@ body {
         <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773689037/000021900020_ewfopn.jpg" alt="La Balle" data-manual-cover="1" style="min-height:300px;background:var(--border)">
         <div class="p-card-overlay"><h2 class="p-card-title">La Balle</h2></div>
       </div>
-      <div class="p-card" onclick="openSeries('barcelona')">
-        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto/v1773591637/000021930016_v6xjvy.jpg" alt="Barcelona Bella" data-manual-cover="1" style="min-height:300px;background:var(--border)">
-        <div class="p-card-overlay"><h2 class="p-card-title">Barcelona Bella</h2></div>
-      </div>
-      <div class="p-card" onclick="openSeries('margate')">
-        <img src="https://res.cloudinary.com/dzhvoacrg/image/upload/q_auto,f_auto,a_exif/v1774126995/DSCF5144_oorq5b.jpg" alt="Satur/Gate" data-manual-cover="1" style="min-height:300px;background:var(--border)">
-        <div class="p-card-overlay"><h2 class="p-card-title">Satur/Gate</h2></div>
-      </div>
     </div>
   </div>
 
@@ -469,14 +459,6 @@ body {
     </div>
   </div>
 
-  <div class="view" id="view-series-barcelona">
-    <div style="padding:2.5rem 2rem 8rem;">
-      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
-      <h1 class="series-main-title">Barcelona Bella</h1>
-      <p class="series-main-desc" style="margin-bottom:2.5rem;">Add a description for Barcelona Bella here.</p>
-      <div class="series-masonry" id="photos-barcelona"></div>
-    </div>
-  </div>
 
   <div class="view" id="view-series-Eire">
     <div style="padding:2.5rem 2rem 8rem;">
@@ -501,14 +483,6 @@ body {
     </div>
   </div>
 
-  <div class="view" id="view-series-margate">
-    <div style="padding:2.5rem 2rem 8rem;">
-      <button class="series-header-back" onclick="showSeesOverview()">All work</button>
-      <h1 class="series-main-title">Satur/Gate</h1>
-      <p class="series-main-desc" style="margin-bottom:2.5rem;">Margate.</p>
-      <div class="series-masonry" id="photos-margate"></div>
-    </div>
-  </div>
 
   <!-- ══ LISTENS MAIN ══ -->
   <div class="view" id="view-listens">
@@ -648,10 +622,8 @@ body {
 
 const SERIES_DATA = {
   tunisia:   [],
-  barcelona: [],
   Eire: [],
-  laballe: [],
-  margate: []
+  laballe: []
 };
 
 // ═══════════════════════════════════════════════════════
@@ -1455,7 +1427,7 @@ function buildMasonry(key) {
   });
   grid.innerHTML = rows.join('');
 }
-const NEW_LAYOUT_SERIES = new Set(['margate', 'barcelona', 'Eire', 'laballe']);
+const NEW_LAYOUT_SERIES = new Set(['Eire', 'laballe']);
 function buildMasonryForKey(key) {
   if (NEW_LAYOUT_SERIES.has(key)) buildMasonryMargate(key);
   else buildMasonry(key);
@@ -1513,9 +1485,7 @@ function fetchCloudinaryTag(tag, key) {
     });
 }
 fetchCloudinaryTag('Tunisia', 'tunisia');
-fetchCloudinaryTag('Barcelona', 'barcelona');
 fetchCloudinaryTag('Ireland', 'Eire');
-fetchCloudinaryTag('margate', 'margate');
 
 // La Balle: fetch BW tag from Cloudinary to group BW photos together
 (function fetchLaBalle() {
