@@ -450,6 +450,11 @@ body {
     <div class="series-layout">
       <div class="series-col-photos">
         <button class="series-header-back" onclick="showSeesOverview()">All work</button>
+        <div style="display:flex;gap:1.2rem;margin-bottom:2rem;">
+          <button class="laballe-filter active" id="tunisia-filter-all"   onclick="filterTunisia('all')">All</button>
+          <button class="laballe-filter"        id="tunisia-filter-sea"   onclick="filterTunisia('sea')">Sea</button>
+          <button class="laballe-filter"        id="tunisia-filter-earth" onclick="filterTunisia('earth')">Earth</button>
+        </div>
         <div class="series-masonry" id="photos-tunisia"></div>
       </div>
       <div class="series-col-info">
@@ -1484,8 +1489,50 @@ function fetchCloudinaryTag(tag, key) {
       if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Could not load photos</p>`;
     });
 }
-fetchCloudinaryTag('Tunisia', 'tunisia');
 fetchCloudinaryTag('Ireland', 'Eire');
+
+// Tunisia: fetch sea + earth tags from Cloudinary
+(function fetchTunisia() {
+  const key = 'tunisia';
+  const grid = document.getElementById('photos-' + key);
+  if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Loading…</p>`;
+  Promise.all([
+    fetch(`https://res.cloudinary.com/${CLD}/image/list/sea.json`).then(r => r.json()).catch(() => ({ resources: [] })),
+    fetch(`https://res.cloudinary.com/${CLD}/image/list/earth.json`).then(r => r.json()).catch(() => ({ resources: [] }))
+  ])
+  .then(([seaData, earthData]) => {
+    const toPhotos = resources => resources.map(r => ({
+      url:        `https://res.cloudinary.com/${CLD}/image/upload/q_auto,f_auto,a_exif/${r.public_id}.${r.format}`,
+      width:      r.width,
+      height:     r.height,
+      id:         r.public_id,
+      isPortrait: r.height >= r.width,
+    }));
+    const sea   = toPhotos(seaData.resources   || []);
+    const earth = toPhotos(earthData.resources || []);
+    SERIES_DATA._tunisiaSea   = sea;
+    SERIES_DATA._tunisiaEarth = earth;
+    SERIES_DATA[key] = [...sea, ...earth];
+    if (_tunisia_pending_filter !== 'all') filterTunisia(_tunisia_pending_filter);
+    else buildMasonryForKey(key);
+  })
+  .catch(() => {
+    if (grid) grid.innerHTML = `<p style="padding:4rem 1rem;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)">Could not load photos</p>`;
+  });
+})();
+
+function filterTunisia(mode) {
+  document.querySelectorAll('#view-series-tunisia .laballe-filter').forEach(b => b.classList.remove('active'));
+  document.getElementById('tunisia-filter-' + mode).classList.add('active');
+  setHash('series-tunisia' + (mode !== 'all' ? '-' + mode : ''));
+  const sea   = SERIES_DATA._tunisiaSea   || [];
+  const earth = SERIES_DATA._tunisiaEarth || [];
+  if (mode === 'sea')         SERIES_DATA.tunisia = sea;
+  else if (mode === 'earth')  SERIES_DATA.tunisia = earth;
+  else                        SERIES_DATA.tunisia = [...sea, ...earth];
+  buildMasonryForKey('tunisia');
+}
+let _tunisia_pending_filter = 'all';
 
 // La Balle: fetch BW tag from Cloudinary to group BW photos together
 (function fetchLaBalle() {
@@ -2071,6 +2118,10 @@ function toggleTheme() {
     const mode = hash === 'series-laballe-color' ? 'color' : hash === 'series-laballe-bw' ? 'bw' : 'all';
     _laballe_pending_filter = mode;
     openSeries('laballe');
+  } else if (hash.startsWith('series-tunisia')) {
+    const mode = hash === 'series-tunisia-sea' ? 'sea' : hash === 'series-tunisia-earth' ? 'earth' : 'all';
+    _tunisia_pending_filter = mode;
+    openSeries('tunisia');
   } else if (hash.startsWith('series-')) openSeries(hash.replace('series-', ''));
   else if (hash.startsWith('listens-')) showListensTier(hash.replace('listens-', ''));
   else showView(hash);
